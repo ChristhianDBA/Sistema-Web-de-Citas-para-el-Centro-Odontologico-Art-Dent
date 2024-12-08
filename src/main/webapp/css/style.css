@@ -1,0 +1,14 @@
+
+h1, h2, .card-title {
+  font-family: 'Roboto', sans-serif;
+}
+
+body, .card-text {
+  font-family: 'Open Sans', sans-serif;
+}
+
+#titulo{
+  color: rgb(32, 32, 115);
+  text-align: center;
+  font-family: 'Roboto', sans-serif;
+}
