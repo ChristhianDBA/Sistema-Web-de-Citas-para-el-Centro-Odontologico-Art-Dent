@@ -15,6 +15,7 @@ public class ReporteMensual {
     private int reservasConfirmadas;
     private int reservasCanceladas;
     private int totalReservas;
+    private double totalIngresos;
 
     public ReporteMensual(String mes, int totalReservas, int totalCitas, int reservasCompletadas, int reservasCanceladas, int citasCompletadas, int citasCanceladas, int citasEnEspera, int citasReprogramadas, int citasConfirmadas, int reservasEnEspera, int reservasReprogramadas, int reservasConfirmadas) {
         this.mes = mes;
@@ -134,6 +135,14 @@ public class ReporteMensual {
 
     public void setTotalReservas(int totalReservas) {
         this.totalReservas = totalReservas;
+    }
+
+    public double getTotalIngresos() {
+        return totalIngresos;
+    }
+
+    public void setTotalIngresos(double totalIngresos) {
+        this.totalIngresos = totalIngresos;
     }
 
 }

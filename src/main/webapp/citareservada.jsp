@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -18,10 +19,10 @@
 
             <div class="d-flex align-items-center">
                 <p class="fs-5 flex-grow-1">
-                    ¡Su cita ha sido reservada con éxito! En breves momentos le llegará un correo con los datos de la cita y el boucher que deberá presentar el día de su cita.
+                    Â¡Su cita ha sido reservada con Ã©xito! En breves momentos le llegarÃ¡ un correo con los datos de la cita y el boucher que deberÃ¡ presentar el dÃ­a de su cita.
                 </p>
                 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSd_sY3lepDSDeBVnqjZh3k_3vyiGmBqPC0HFibHJoSRTg2ImiCkb06-4Dd_XXB29-Q3AI&usqp=CAU" 
-                     class="img-fluid ms-3" alt="Imagen confirmación de cita" style="max-width: 150px;">
+                     class="img-fluid ms-3" alt="Imagen confirmaciÃ³n de cita" style="max-width: 150px;">
             </div>
         </div>
         <%@include file="footer.jsp"%>

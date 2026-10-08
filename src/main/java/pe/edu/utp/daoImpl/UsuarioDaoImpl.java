@@ -17,6 +17,7 @@ import pe.edu.utp.config.Conexion;
 import pe.edu.utp.dao.UsuarioDao;
 import pe.edu.utp.dto.InicioSesionDTO;
 import pe.edu.utp.entity.Usuario;
+import pe.edu.utp.utils.SecurityUtils;
 
 /**
  *
@@ -34,29 +35,65 @@ public class UsuarioDaoImpl implements UsuarioDao {
 
         String SQL = "{call sp_iniciosesion (?,?)}";
 
-        try {
-            cx = Conexion.getConection();
-            ps = cx.prepareStatement(SQL);
-            ps.setString(1, dni);
-            ps.setString(2, password);
-            rs = ps.executeQuery();
-
-            while (rs.next()) {
-                InicioSesionDTO login = new InicioSesionDTO();
-                login.setIdUsuario(rs.getInt("idUsuario"));
-                login.setNombre(rs.getString("Nombre"));
-                login.setApellido(rs.getString("Apellido"));
-                login.setDni(rs.getInt("DNI"));
-                login.setTipoRol(rs.getString("TipoRol"));
-
-                lista.add(login);
+        try (Connection conn = Conexion.getConection()) {
+            if (conn == null) {
+                System.out.println("Error: No se pudo conectar a la base de datos.");
+                return lista;
             }
 
-        } catch (SQLException e) {
-            System.out.println("Inicio Sesion erroneo: " + e);
+            // 1. Intento con Hash (Nuevos usuarios o usuarios migrados)
+            String hashPassword = SecurityUtils.hashPassword(password);
+            lista = intentarLogin(conn, SQL, dni, hashPassword);
+
+            // 2. Si falla, intentar con texto plano (Usuarios antiguos)
+            if (lista.isEmpty()) {
+                lista = intentarLogin(conn, SQL, dni, password);
+
+                // Si funcionó con texto plano, migramos la contraseña al nuevo Hash
+                if (!lista.isEmpty()) {
+                    int idUsuario = lista.get(0).getIdUsuario();
+                    actualizarClaveHash(conn, idUsuario, hashPassword);
+                }
+            }
+
+        } catch (Exception e) {
+            System.out.println("Inicio Sesion erroneo: " + e.getMessage());
+            e.printStackTrace();
         }
 
         return lista;
+    }
+
+    private List<InicioSesionDTO> intentarLogin(Connection conn, String SQL, String dni, String claveCheck) throws SQLException {
+        List<InicioSesionDTO> lista = new ArrayList<>();
+        try (PreparedStatement stmt = conn.prepareStatement(SQL)) {
+            stmt.setString(1, dni);
+            stmt.setString(2, claveCheck);
+            try (ResultSet res = stmt.executeQuery()) {
+                while (res.next()) {
+                    InicioSesionDTO login = new InicioSesionDTO();
+                    login.setIdUsuario(res.getInt("idUsuario"));
+                    login.setNombre(res.getString("Nombre"));
+                    login.setApellido(res.getString("Apellido"));
+                    login.setDni(res.getInt("DNI"));
+                    login.setTipoRol(res.getString("TipoRol"));
+                    lista.add(login);
+                }
+            }
+        }
+        return lista;
+    }
+
+    private void actualizarClaveHash(Connection conn, int idUsuario, String nuevoHash) {
+        String updateSQL = "UPDATE usuario SET Clave = ? WHERE idUsuario = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(updateSQL)) {
+            stmt.setString(1, nuevoHash);
+            stmt.setInt(2, idUsuario);
+            stmt.executeUpdate();
+            System.out.println("Contraseña migrada automáticamente a SHA-256 para el usuario ID: " + idUsuario);
+        } catch (SQLException e) {
+            System.out.println("Error al intentar migrar la contraseña: " + e.getMessage());
+        }
     }
 
     @Override
@@ -201,7 +238,7 @@ public class UsuarioDaoImpl implements UsuarioDao {
             ps.setString(5, usuario.getCorreoElectronico());
             ps.setString(6, usuario.getDireccion());
             ps.setDate(7, Date.valueOf(usuario.getFechaNacimiento()));
-            ps.setString(8, usuario.getClave());
+            ps.setString(8, SecurityUtils.hashPassword(usuario.getClave()));
             ps.setInt(9, usuario.getRol_idRol());
 
             resultado = ps.executeUpdate() > 0;
@@ -262,7 +299,7 @@ public class UsuarioDaoImpl implements UsuarioDao {
             ps.setString(6, usuario.getCorreoElectronico());
             ps.setString(7, usuario.getDireccion());
             ps.setDate(8, Date.valueOf(usuario.getFechaNacimiento()));
-            ps.setString(9, usuario.getClave());
+            ps.setString(9, SecurityUtils.hashPassword(usuario.getClave()));
             ps.setInt(10, usuario.getRol_idRol());
             
             resultado = ps.executeUpdate() > 0;

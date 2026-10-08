@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <%
@@ -35,36 +36,34 @@
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label for="email" class="form-label">Correo electr髇ico</label>
-                    <input type="email" class="form-control" id="email" name="email" placeholder="Ingrese su correo electr髇ico" required>
+                    <label for="email" class="form-label">Correo electr贸nico</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Ingrese su correo electr贸nico" required>
                 </div>
-                <div class="mb-3">
+                                <div class="mb-3">
                     <label for="motivo" class="form-label">Motivo (Servicio)</label>
                     <select class="form-select" id="motivo" name="motivo" onchange="actualizarPrecio()" required>
                         <option value="">Seleccionar</option>
-                        <%@page import="java.sql.*"%>
-                        <%@page import="pe.edu.utp.config.Conexion"%>
+                        <%@page import="java.util.List"%>
+                        <%@page import="pe.edu.utp.dao.ServicioDao"%>
+                        <%@page import="pe.edu.utp.daoImpl.ServicioDaoImpl"%>
+                        <%@page import="pe.edu.utp.entity.Servicio"%>
+                        <%@page import="pe.edu.utp.dao.UsuarioDao"%>
+                        <%@page import="pe.edu.utp.daoImpl.UsuarioDaoImpl"%>
+                        <%@page import="pe.edu.utp.entity.Usuario"%>
                         <%
-                            Connection conn2 = null;
-                            Statement stmt2 = null;
-                            ResultSet rs2 = null;
-                            try {
-                                conn2 = Conexion.getConection();
-                                String sql2 = "SELECT idServicio, TipoServicio, Costo FROM servicio";
-                                stmt2 = conn2.createStatement();
-                                rs2 = stmt2.executeQuery(sql2);
-                                while (rs2.next()) {
+                            ServicioDao servicioDao = new ServicioDaoImpl();
+                            List<Servicio> serviciosList = servicioDao.listarServicios();
+                            request.setAttribute("serviciosList", serviciosList);
+
+                            UsuarioDao usuarioDao = new UsuarioDaoImpl();
+                            List<Usuario> doctoresList = usuarioDao.obtenerMedicosDisponibles();
+                            request.setAttribute("doctoresList", doctoresList);
                         %>
-                        <option value="<%= rs2.getString("TipoServicio")%>" data-costo="<%= rs2.getDouble("Costo")%>" data-id="<%= rs2.getInt("idServicio")%>">
-                            <%= rs2.getString("TipoServicio")%>
-                        </option>
-                        <%
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                out.println("<p>Error al cargar los servicios: " + e.getMessage() + "</p>");
-                            }
-                        %>
+                        <c:forEach var="serv" items="${serviciosList}">
+                            <option value="${serv.tipoServicio}" data-costo="${serv.costo}" data-id="${serv.idServicio}">
+                                ${serv.tipoServicio}
+                            </option>
+                        </c:forEach>
                     </select>
                 </div>
 
@@ -77,28 +76,11 @@
                 </div>
                 <div class="mb-3">
                     
-                    <label for="medico" class="form-label">M閐ico Asignado</label>
+                    <label for="medico" class="form-label">M茅dico Asignado</label>
                     <select class="form-select" id="medico" name="medico">
-                        <%
-                            Connection conn = null;
-                            Statement stmt = null;
-                            ResultSet rs = null;
-                            try {
-                                conn = Conexion.getConection();
-                                String sql = "SELECT * FROM usuario WHERE Rol_idRol = 3";
-                                stmt = conn.createStatement();
-                                rs = stmt.executeQuery(sql);
-                                while (rs.next()) {
-                        %>
-                        <option value="dr_mendoza"><%=rs.getString("Apellido") +", " + rs.getString("Nombre")%></option>
-                        <!-- Agrega m醩 opciones si es necesario -->
-                        <%
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                out.println("<p>Error al cargar los Doctores Disponibles " + e.getMessage() + "</p>");
-                            }
-                        %>
+                        <c:forEach var="doc" items="${doctoresList}">
+                            <option value="${doc.idUsuario}">${doc.apellido}, ${doc.nombre}</option>
+                        </c:forEach>
                     </select>
                 </div>
                 <div class="row mb-3">
@@ -112,13 +94,13 @@
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label for="descripcion" class="form-label">Descripci髇</label>
-                    <textarea class="form-control" id="descripcion" name="descripcion" rows="3" placeholder="Agregue una descripci髇"></textarea>
+                    <label for="descripcion" class="form-label">Descripci贸n</label>
+                    <textarea class="form-control" id="descripcion" name="descripcion" rows="3" placeholder="Agregue una descripci贸n"></textarea>
                 </div>
                 <div class="form-check mb-3">
                     <input class="form-check-input" type="checkbox" id="aceptar-condiciones" name="aceptar-condiciones" required>
                     <label class="form-check-label" for="aceptar-condiciones">
-                        Acepto los t閞minos y condiciones en l韓ea
+                        Acepto los t茅rminos y condiciones en l铆nea
                     </label>
                 </div>
 
@@ -127,7 +109,7 @@
         </div>
 
         <script>
-            // Funci髇 para actualizar el precio y los campos ocultos autom醫icamente
+            // Funci贸n para actualizar el precio y los campos ocultos autom谩ticamente
             function actualizarPrecio() {
                 const motivoSelect = document.getElementById("motivo");
                 const selectedOption = motivoSelect.options[motivoSelect.selectedIndex];
@@ -137,13 +119,13 @@
                 const precioConsultaField = document.getElementById("precio_consulta");
                 const idServicioField = document.getElementById("idServicio");
 
-                // Asignar precio y id solo si se ha seleccionado un servicio v醠ido
+                // Asignar precio y id solo si se ha seleccionado un servicio v谩lido
                 if (costo) {
                     pagoField.value = parseFloat(costo).toFixed(2);
                     precioConsultaField.value = costo; // Actualiza el campo oculto
                     idServicioField.value = idServicio; // Actualiza el campo oculto
                 } else {
-                    pagoField.value = ""; // Vaciar el campo si no se ha seleccionado un motivo v醠ido
+                    pagoField.value = ""; // Vaciar el campo si no se ha seleccionado un motivo v谩lido
                     precioConsultaField.value = ""; // Vaciar el campo oculto
                     idServicioField.value = ""; // Vaciar el campo oculto
                 }

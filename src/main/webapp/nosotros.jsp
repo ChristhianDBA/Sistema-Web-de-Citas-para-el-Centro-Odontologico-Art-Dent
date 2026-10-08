@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -38,19 +39,19 @@
                 animation-delay: 1.5s;
             }
 
-            /* Transici?n suave para el texto */
+            /* Transición suave para el texto */
             .text-transition {
                 transition: opacity 0.5s ease, transform 0.5s ease;
             }
 
-            /* Transici?n suave para la imagen */
+            /* Transición suave para la imagen */
             .img-transition {
                 transition: transform 0.5s ease-in-out;
             }
 
             /* Efecto de hover en la imagen */
             .img-transition:hover {
-                transform: scale(1.05); /* Aumenta ligeramente el tama?o al pasar el rat?n */
+                transform: scale(1.05); /* Aumenta ligeramente el tamaño al pasar el ratón */
             }
             .chat-widget {
                 position: fixed;
@@ -218,7 +219,7 @@
             </div>
         </nav>
 
-        <!-- Secci?n con Imagen de Fondo y Texto Centrado -->
+        <!-- Sección con Imagen de Fondo y Texto Centrado -->
         <div class="bg-dark text-white position-relative" 
              style="background-image: url('https://www.flowww.es/hubfs/Q32024%20Septiembre/Blog/historia-clinica-dental-atencion-eficiente-paciente-clinicas-odontologicas.webp');
              background-size: cover; background-position: center; height: 600px; animation: fadeInEffect 1.5s ease-in-out forwards;">
@@ -229,22 +230,22 @@
             <div class="container d-flex flex-column justify-content-center h-100 position-relative px-4">
                 <div class="text-center fade-in fade-in-delay-1">
                     <h1 class="display-4 font-weight-bold text-transition">Acerca de Nosotros</h1>
-                    <p class="lead fade-in fade-in-delay-2 text-transition">Estamos aqu� para brindar el servicio que necesitan tus dientes.</p>
+                    <p class="lead fade-in fade-in-delay-2 text-transition">Estamos aquí para brindar el servicio que necesitan tus dientes.</p>
                 </div>
             </div>
         </div>
 
-        <!-- Secci�n de Contenido -->
+        <!-- Sección de Contenido -->
         <main class="py-5">
             <div class="container">
                 <div class="row align-items-center">
                     <div class="col-md-6"><br>
-                        <h2 class="display-6" style="font-weight: bold;">Nuestro sue?o es ayudar a tu sonrisa</h2><br>
-                        <p class="mt-4">En nuestra cl?nica dental, nos dedicamos a mejorar la salud bucal de cada uno de nuestros
+                        <h2 class="display-6" style="font-weight: bold;">Nuestro sueño es ayudar a tu sonrisa</h2><br>
+                        <p class="mt-4">En nuestra clínica dental, nos dedicamos a mejorar la salud bucal de cada uno de nuestros
                             pacientes, porque creemos que una sonrisa saludable puede transformar vidas. Con un equipo de
-                            expertos comprometidos y una atenci?n personalizada, trabajamos d?a a d?a para brindarte los
-                            mejores tratamientos y hacer que te sientas c?modo y seguro. Nuestro sue?o es ayudarte a
-                            recuperar y mantener la confianza en tu sonrisa, ofreci?ndote siempre el cuidado que necesitas
+                            expertos comprometidos y una atención personalizada, trabajamos día a día para brindarte los
+                            mejores tratamientos y hacer que te sientas cómodo y seguro. Nuestro sueño es ayudarte a
+                            recuperar y mantener la confianza en tu sonrisa, ofreciéndote siempre el cuidado que necesitas
                             con la calidez y profesionalismo que mereces.</p>
                     </div>
                     <div class="col-md-6 position-relative d-inline-block">
@@ -267,8 +268,8 @@
 
                     <!-- Columna de texto a la derecha -->
                     <div class="col-md-6">
-                        <h2 class="display-6" style="font-weight: bold;" class="text-transition">Tu sonrisa, nuestra misi�n</h2>
-                        <p class="mt-4 text-transition">En nuestra cl�nica, tu bienestar y salud dental son nuestra prioridad. Sabemos que cada sonrisa es �nica, y por eso nos esforzamos en ofrecerte un servicio personalizado que se ajuste a tus necesidades. Con un equipo de profesionales dedicados y utilizando las ?ltimas tecnolog?as, buscamos no solo cuidar de tu salud bucal, sino tambi?n brindarte una experiencia agradable y sin estr?s. Conf?a en nosotros para mejorar tu sonrisa y devolverle la seguridad que te mereces. ?Juntos haremos que sonr?as con confianza!</p>
+                        <h2 class="display-6" style="font-weight: bold;" class="text-transition">Tu sonrisa, nuestra misión</h2>
+                        <p class="mt-4 text-transition">En nuestra clínica, tu bienestar y salud dental son nuestra prioridad. Sabemos que cada sonrisa es única, y por eso nos esforzamos en ofrecerte un servicio personalizado que se ajuste a tus necesidades. Con un equipo de profesionales dedicados y utilizando las últimas tecnologías, buscamos no solo cuidar de tu salud bucal, sino también brindarte una experiencia agradable y sin estrés. Confía en nosotros para mejorar tu sonrisa y devolverle la seguridad que te mereces. ¡Juntos haremos que sonrías con confianza!</p>
                     </div>
                 </div>
             </div>
@@ -281,7 +282,7 @@
                 </button>
             </div>
             <div class="chat-body" id="chat-body">
-                <!-- Los mensajes se agregar�n aqu� din�micamente -->
+                <!-- Los mensajes se agregarán aquí dinámicamente -->
             </div>
             <div class="loading-animation" id="loading-animation">
                 <span></span>
@@ -289,7 +290,7 @@
                 <span></span>
             </div>
             <div class="chat-input">
-                <input type="text" id="pregunta" placeholder="Describe tus s�ntomas o preocupaciones...">
+                <input type="text" id="pregunta" placeholder="Describe tus síntomas o preocupaciones...">
                 <button onclick="enviarPregunta()"><i class="fas fa-paper-plane"></i></button>
             </div>
         </div>
@@ -314,7 +315,19 @@
                 });
 
                 // Mensaje inicial del bot
-                agregarMensajeBot('�Hola! Soy el asistente virtual de Art Dent. �En qu� puedo ayudarte hoy? Puedes describir tus s�ntomas o preocupaciones dentales y te recomendar� el servicio m�s adecuado.');
+                agregarMensajeBot('¡Hola! Soy el asistente virtual de Art Dent. ¿En qué puedo ayudarte hoy? Puedes describir tus síntomas o preocupaciones dentales y te recomendaré el servicio más adecuado.');
+
+                // Enviar mensaje al presionar Enter
+                const preguntaInput = document.getElementById('pregunta');
+                if(preguntaInput){
+                    preguntaInput.addEventListener('keypress', function (e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            enviarPregunta();
+                        }
+                    });
+                }
+
             });
 
             async function enviarPregunta() {
@@ -363,8 +376,7 @@
                 const mensajeDiv = document.createElement('div');
                 mensajeDiv.className = 'message bot-message';
 
-                const mensajeConLinks = convertirUrlsAClickables(mensaje);
-                mensajeDiv.innerHTML = mensajeConLinks;
+                mensajeDiv.innerHTML = mensaje;
 
                 chatBody.appendChild(mensajeDiv);
                 scrollToBottom();

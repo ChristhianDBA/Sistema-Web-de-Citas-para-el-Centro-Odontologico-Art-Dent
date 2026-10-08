@@ -60,6 +60,10 @@ public class ReservaController extends HttpServlet {
                 case "listarCitas":
                     listarCitas(request, response);
                     break;
+                case "hoy":
+                    request.getSession().removeAttribute("semanaActual");
+                    listarReservasPorSemana(request, response);
+                    break;
                 case "listarReservasPorDia":
                     listarReservasPorSemana(request, response);
                     break;

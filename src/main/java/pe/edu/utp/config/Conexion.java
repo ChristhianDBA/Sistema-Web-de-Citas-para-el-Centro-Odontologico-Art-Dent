@@ -1,23 +1,42 @@
 package pe.edu.utp.config;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import java.sql.SQLException;
 
 public class Conexion {
+    private static HikariDataSource dataSource;
+
+    static {
+        try {
+            HikariConfig config = new HikariConfig();
+            config.setJdbcUrl(pe.edu.utp.utils.ConfigLoader.getProperty("db.url"));
+            config.setUsername(pe.edu.utp.utils.ConfigLoader.getProperty("db.user"));
+            config.setPassword(pe.edu.utp.utils.ConfigLoader.getProperty("db.password"));
+            config.setDriverClassName("com.mysql.cj.jdbc.Driver");
+            
+            // Configuracion de pool para manejar alta concurrencia (RNF4)
+            config.setMaximumPoolSize(50); 
+            config.setMinimumIdle(5);
+            config.setIdleTimeout(30000);
+            config.setMaxLifetime(1800000);
+            config.setConnectionTimeout(30000);
+            
+            dataSource = new HikariDataSource(config);
+            System.out.println("Pool de conexiones (HikariCP) inicializado correctamente");
+        } catch (Exception e) {
+            System.out.println("Error inicializando pool de conexiones");
+            e.printStackTrace();
+        }
+    }
+
     public static Connection getConection() {
         Connection conn = null;
         try {
-            // Cargar el driver manualmente
-            Class.forName("com.mysql.cj.jdbc.Driver");
-
-            // Ajusta los parámetros de conexión según tu base de datos
-            String url = "jdbc:mysql://localhost:3306/db_artdent?serverTimezone=America/Lima";
-            String user = "root";
-            String password = "root";
-            conn = DriverManager.getConnection(url, user, password);
-            System.out.println("Conexión correcta");
-        } catch (Exception e) {
-            System.out.println("error de conexion");
+            conn = dataSource.getConnection();
+        } catch (SQLException e) {
+            System.out.println("Error obteniendo conexion del pool");
             e.printStackTrace();
         }
         return conn;

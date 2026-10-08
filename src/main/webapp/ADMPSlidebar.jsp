@@ -4,7 +4,6 @@
     Author     : alex0
 --%>
 
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
     <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">

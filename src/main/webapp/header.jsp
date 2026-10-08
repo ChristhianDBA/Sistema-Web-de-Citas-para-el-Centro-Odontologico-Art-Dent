@@ -1,9 +1,10 @@
+<%@ page pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="es">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Navbar Clínica</title>
+        <title>Navbar Cl&iacute;nica</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     </head>
@@ -17,7 +18,7 @@
                     <img src="https://logomaker.designfreelogoonline.com/media/productdesigner/logo/resized/0001036_dental_logo_maker_dentist_Logo-02.png" alt="Logo de la empresa" width="50" height="50">
                 </a>
 
-                <!-- Botón colapsable para móviles -->
+                <!-- BotÃ³n colapsable para mÃ³viles -->
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -40,7 +41,7 @@
 
                     </ul>
 
-                    <!-- Botón de Usuario -->
+                    <!-- BotÃ³n de Usuario -->
                     <div class="d-flex justify-content-center me-4">
 
                         <%
@@ -50,12 +51,14 @@
                             String tiporol = (String) sesion.getAttribute("TipoRol");
 
                             if (idUser == null) { %>
-                        <!-- Botón de Iniciar Sesión si no está autenticado -->
-                        <a href="iniciosesion.jsp" class="btn btn-primary rounded-pill px-3 mx-5">
-                            Iniciar Sesión
+                        <!-- BotÃ³n de Iniciar Sesi&oacute;n si no estÃ¡ autenticado -->
+                                    
+
+                    <a href="iniciosesion.jsp" class="btn btn-primary rounded-pill px-3 mx-5">
+                            Iniciar Sesi&oacute;n
                         </a>
                         <% } else {%>
-                        <!-- Menú desplegable si el usuario está autenticado -->
+                        <!-- MenÃº desplegable si el usuario estÃ¡ autenticado -->
                         <div class="dropdown">
                             <button class="btn btn-primary rounded-pill px-3 mx-5 dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="fa-regular fa-user"></i>
@@ -68,7 +71,7 @@
                                 <%}%>
                                 <li><a class="dropdown-item" href="ReservaController?accion=formcita">Crear reserva</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="CerrarSesionController">Cerrar sesión</a></li>
+                                <li><a class="dropdown-item" href="CerrarSesionController">Cerrar sesi&oacute;n</a></li>
                             </ul>
                         </div>
                         <% }%>
@@ -79,6 +82,20 @@
 
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    
+        <!-- Google Translate Widget Fijo -->
+        <div id="google_translate_element" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;"></div>
+        <script type="text/javascript">
+            function googleTranslateElementInit() {
+                new google.translate.TranslateElement({
+                    pageLanguage: 'es', 
+                    includedLanguages: 'es,en',
+                    layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+                }, 'google_translate_element');
+            }
+        </script>
+        <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
     </body>
 </html>

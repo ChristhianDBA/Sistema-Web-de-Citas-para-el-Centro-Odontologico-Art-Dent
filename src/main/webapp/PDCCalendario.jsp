@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@page import="pe.edu.utp.entity.VerReserva"%>
 <%@ page import="java.util.Map" %>
 <%@ page import="pe.edu.utp.components.DiasNumericosDeLaSemana" %>
@@ -8,26 +9,32 @@
 <%
     Integer semanaActual = (Integer) request.getAttribute("semanaActual");
     if (semanaActual == null) {
-        semanaActual = LocalDate.now().get(WeekFields.of(Locale.getDefault()).weekOfYear());
+        semanaActual = (Integer) request.getSession().getAttribute("semanaActual");
+    }
+    if (semanaActual == null) {
+        semanaActual = LocalDate.now().get(WeekFields.ISO.weekOfYear());
     }
     LocalDate inicioSemana = LocalDate.now()
-            .with(WeekFields.of(Locale.getDefault()).weekOfYear(), semanaActual)
-            .with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 1);
-    LocalDate finSemana = inicioSemana.plusDays(6);
-    Locale localeEspañol = new Locale("es", "ES");
-    DateTimeFormatter formatoMes = DateTimeFormatter.ofPattern("MMMM", localeEspañol);
+            .with(WeekFields.ISO.weekOfYear(), semanaActual)
+            .with(WeekFields.ISO.dayOfWeek(), 1); // Lunes
+    LocalDate finSemana = inicioSemana.plusDays(6); // Domingo
+    Locale localeEspanol = new Locale("es", "ES");
+    DateTimeFormatter formatoMes = DateTimeFormatter.ofPattern("MMMM", localeEspanol);
 
     String mesInicio = inicioSemana.format(formatoMes);
-
     mesInicio = mesInicio.substring(0, 1).toUpperCase() + mesInicio.substring(1);
-    int x = inicioSemana.getDayOfMonth() + 1;
+
+    String mesFin = finSemana.format(formatoMes);
+    mesFin = mesFin.substring(0, 1).toUpperCase() + mesFin.substring(1);
+
+    String rangoTexto = "Del " + inicioSemana.getDayOfMonth() + " de " + mesInicio + " al " + finSemana.getDayOfMonth() + " de " + mesFin + " de " + finSemana.getYear();
 %>
 <!DOCTYPE html>
 <html lang="es">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Panel de Control - Clínica</title>
+        <title>Panel de Control - ClÃ­nica</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css">
         <style>
@@ -190,12 +197,12 @@
             <div class="content container-fluid p-4">
                 <h3 style="color: darkblue; font-weight: bold;">Calendario de Citas</h3>
                 <div class="calendar-controls d-flex justify-content-between align-items-center pb-4 pt-2">
-                    <div class="">
-                        <span><%= inicioSemana.getYear()%></span><br>
-                        <span>Semana: <%= semanaActual%> - Del <%= x%> al <%= finSemana.getDayOfMonth() + 1%> de <%= mesInicio%></span>
+                    <div>
+                        <span class="fs-5 fw-bold text-primary">Semana <%= semanaActual%></span><br>
+                        <span class="text-muted"><%= rangoTexto%></span>
                     </div>
                     <div class="d-flex align-items-center">
-                        <a class="btn btn-outline-primary me-2" href="#">Hoy</a>
+                        <a class="btn btn-outline-primary me-2" href="ReservaController?accion=hoy">Hoy</a>
                         <a class="btn btn-primary me-1" href="ReservaController?accion=semanaAnterior"><i class="bi bi-arrow-left"></i></a>
                         <a class="btn btn-primary" href="ReservaController?accion=semanaSiguiente"><i class="bi bi-arrow-right"></i></a>
 
@@ -228,13 +235,13 @@
                                 try {
                                     DiasNumericosDeLaSemana dias = new DiasNumericosDeLaSemana();
 
-                                    Map<Integer, Integer> diasNumericos = dias.obtenerDiasNumericosDeEstaSemana(x);
+                                    Map<Integer, Integer> diasNumericos = dias.obtenerDiasNumericosDeEstaSemana(inicioSemana);
                                     int contador = 1;
                             %>
 
 
 
-                            <c:set var="nombresDias" value="Lunes,Martes,Miércoles,Jueves,Viernes,Sábado,Domingo" />
+                            <c:set var="nombresDias" value="Lunes,Martes,MiÃ©rcoles,Jueves,Viernes,SÃ¡bado,Domingo" />
                             <c:forEach var="dia" items="${fn:split(nombresDias, ',')}" varStatus="status">
                                 <div class="day-of-events" data-day="${dia}">
                                     <dt>
@@ -291,7 +298,7 @@
 
                                 </div>
                                 <%
-                                    contador++; // Incrementar el contador para el siguiente día
+                                    contador++; // Incrementar el contador para el siguiente dÃ­a
                                 %>
                             </c:forEach>
 
@@ -316,10 +323,10 @@
                                 <p><strong>Hora:</strong> <span id="reservaHora"></span></p>
                                 <p><strong>Servicio:</strong> <span id="reservaServicio"></span></p>
                                 <p><strong>Paciente:</strong> <span id="reservaPaciente"></span></p>
-                                <p><strong>Odontólogo:</strong> <span id="reservaOdontologo"></span></p>
+                                <p><strong>OdontÃ³logo:</strong> <span id="reservaOdontologo"></span></p>
                                 <p><strong>Estado:</strong> <span id="reservaEstado"></span></p>
                                 <p><strong>Importe:</strong> <span id="reservaImporte"></span></p>
-                                <p><strong>Descripción:</strong> <span id="reservaDescripcion"></span></p>
+                                <p><strong>DescripciÃ³n:</strong> <span id="reservaDescripcion"></span></p>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -341,7 +348,7 @@
                                 <p><strong>Hora:</strong> <span id="citaHora"></span></p>
                                 <p><strong>Servicio:</strong> <span id="citaServicio"></span></p>
                                 <p><strong>Paciente:</strong> <span id="citaPaciente"></span></p>
-                                <p><strong>Odontólogo:</strong> <span id="citaOdontologo"></span></p>
+                                <p><strong>OdontÃ³logo:</strong> <span id="citaOdontologo"></span></p>
                                 <p><strong>Estado:</strong> <span id="citaEstado"></span></p>
                                 <p><strong>Importe:</strong> <span id="citaCosto"></span></p>
                             </div>

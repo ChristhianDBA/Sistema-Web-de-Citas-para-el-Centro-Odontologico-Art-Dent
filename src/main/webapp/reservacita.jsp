@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="es">
@@ -50,7 +51,7 @@
                     <div class="mb-3">
                         <label for="email" class="form-label">Correo electronico</label>
                         <input type="email" class="form-control" id="correo" name="correo" 
-                               placeholder="Ingrese el correo electrÛnico" 
+                               placeholder="Ingrese el correo electr√≥nico" 
                                value="${correo}">
                     </div>
                     <div class="row mb-3">
@@ -90,7 +91,7 @@
                         <input type="number" class="form-control" id="pago" name="pago" readonly required>
                     </div>
                     <div class="mb-3" id="medico-container" style="display:none;">
-                        <label for="medico" class="form-label">MÈdico Asignado</label>
+                        <label for="medico" class="form-label">M√©dico Asignado</label>
                         <select class="form-select" id="medico" name="medico">
                             <option value="" selected disabled>Seleccionar</option>
                         </select>
@@ -136,37 +137,37 @@
             </script>
         </div>
 
-        <%@include file="footer.jsp" %> <!-- Incluye el pie de p·gina -->
+        <%@include file="footer.jsp" %> <!-- Incluye el pie de p√°gina -->
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
         <script>
-                // Esta funciÛn se ejecuta cuando cambia la hora o fecha
+                // Esta funci√≥n se ejecuta cuando cambia la hora o fecha
                 function verificarCampos() {
                     var motivo = document.getElementById('motivo').value;
                     var fecha = document.getElementById('fecha').value;
                     var hora = document.getElementById('hora').value;
 
-                    // Limpiar el campo de selecciÛn de mÈdicos
+                    // Limpiar el campo de selecci√≥n de m√©dicos
                     var medicoSelect = document.getElementById('medico');
-                    medicoSelect.innerHTML = '<option value="" selected disabled>Seleccionar</option>';  // Reiniciar mÈdicos
+                    medicoSelect.innerHTML = '<option value="" selected disabled>Seleccionar</option>';  // Reiniciar m√©dicos
 
-                    // Si el motivo, fecha y hora est·n seleccionados, mostramos el selector de mÈdicos
+                    // Si el motivo, fecha y hora est√°n seleccionados, mostramos el selector de m√©dicos
                     if (motivo && fecha && hora) {
-                        cargarDoctores();  // Llamar la funciÛn que carga los mÈdicos basados en la nueva hora, fecha y motivo
-                        document.getElementById('medico-container').style.display = 'block';  // Mostrar el selector de mÈdicos
+                        cargarDoctores();  // Llamar la funci√≥n que carga los m√©dicos basados en la nueva hora, fecha y motivo
+                        document.getElementById('medico-container').style.display = 'block';  // Mostrar el selector de m√©dicos
                     } else {
-                        document.getElementById('medico-container').style.display = 'none';  // Ocultar el selector de mÈdicos
+                        document.getElementById('medico-container').style.display = 'none';  // Ocultar el selector de m√©dicos
                     }
                 }
 
-                // Resetear el mÈdico cuando se cambia la hora
+                // Resetear el m√©dico cuando se cambia la hora
                 document.getElementById('hora').addEventListener('change', function () {
-                    // Limpiar el select de mÈdicos cuando se cambie la hora
+                    // Limpiar el select de m√©dicos cuando se cambie la hora
                     var medicoSelect = document.getElementById('medico');
-                    medicoSelect.value = "";  // Resetear el valor del select de mÈdicos
+                    medicoSelect.value = "";  // Resetear el valor del select de m√©dicos
 
-                    verificarCampos();  // Llamar a verificarCampos para que se actualicen los dem·s campos
+                    verificarCampos();  // Llamar a verificarCampos para que se actualicen los dem√°s campos
                 });
 
                 // Llamar a verificarCampos cuando se cambien la fecha o el motivo

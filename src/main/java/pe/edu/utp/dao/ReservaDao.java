@@ -47,5 +47,6 @@ public interface ReservaDao {
     
      List<VerReserva> listarTodasReservasAd();
     public double obtenerTotalIngresos();
-    
+
+    public String getEmailPacienteByReservaId(int idReserva);
 }

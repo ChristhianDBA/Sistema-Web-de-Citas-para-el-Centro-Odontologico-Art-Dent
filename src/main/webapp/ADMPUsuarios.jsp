@@ -1,4 +1,4 @@
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="es">
@@ -188,9 +188,10 @@
                                 <label for="rol" class="form-label">Rol</label>
                                 <select class="form-select" id="rol" name="rol" required>
                                     <option value="">Seleccionar rol</option>
-                                    <option value="1">Administrador</option>
-                                    <option value="2">Secretaria</option>
-                                    <option value="3">Odontólogo</option>
+                                    <c:forEach var="rolObj" items="${roles}">
+                                        <option value="${rolObj.idRol}">${rolObj.tipoRol}</option>
+                                    </c:forEach>
+
                                 </select>
                             </div>
                         </div>

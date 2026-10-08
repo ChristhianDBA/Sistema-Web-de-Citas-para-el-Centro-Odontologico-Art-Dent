@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%//@include file="WEB-INF/template/libreria.jspf" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
@@ -7,7 +8,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Panel de Control - Cl�nica</title>
+        <title>Panel de Control - Clínica</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
               integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
@@ -23,7 +24,7 @@
 
         <%@include file="NavPanel.jsp" %>
 
-        <!-- Contenido de la P�gina -->
+        <!-- Contenido de la Página -->
         <div class="d-flex flex-grow-1">
             <!-- Sidebar -->
             <%@include file="Sidebar.jsp" %>
@@ -36,7 +37,7 @@
                 </div>
                 <br>
                 <!-- Tabla de Reservas -->
-                <!-- Bot�n para mostrar u ocultar la tabla -->
+                <!-- Botón para mostrar u ocultar la tabla -->
                 <button id="toggleButton" class="btn btn-primary mb-3">Mostrar/Ocultar Reportes</button>
 
                 <!-- Div que contiene la tabla -->
@@ -81,33 +82,40 @@
                     </table>
                 </div>
                 <div class="container mt-5">
-                    <h5 class="text-center">Gr�ficos de Reservas y Citas</h5>
+                    <h5 class="text-center">Gráficos de Reservas y Citas</h5>
                     <div class="d-flex justify-content-around">
-                        <!-- Gr�fico de Barras -->
+                        <!-- Gráfico de Barras -->
                         <div style="width: 45%;">
-                            <h6 class="text-center">Gr�fico de Barras - Total de Reservas y Citas</h6>
+                            <h6 class="text-center">Gráfico de Barras - Total de Reservas y Citas</h6>
                             <canvas id="barChart"></canvas>
                         </div>
-                        <!-- Gr�fico Lineal -->
+                        <!-- Gráfico Lineal -->
                         <div style="width: 45%;">
-                            <h6 class="text-center">Gr�fico Lineal - Comparaci�n de Reservas y Citas</h6>
+                            <h6 class="text-center">Gráfico Lineal - Comparación de Reservas y Citas</h6>
                             <canvas id="lineChart"></canvas>
                         </div>
                     </div>
                 </div>
 
                 <div class="container mt-5">
-                    <h5 class="text-center">Gr�fico de Atenci�n al Cliente</h5>
+                    <h5 class="text-center">Gráfico de Atención al Cliente</h5>
                     <div class="d-flex justify-content-around">
-                        <!-- Gr�fico Circular -->
+                        <!-- Gráfico Circular -->
                         <div style="width: 45%;">
-                            <h6 class="text-center">Proporci�n de Citas Atendidas y No Atendidas</h6>
+                            <h6 class="text-center">Proporción de Citas Atendidas y No Atendidas</h6>
                             <canvas id="pieChart"></canvas>
                         </div>
-                        <!-- Gr�fico de L�nea para Citas -->
+                        <!-- Gráfico de Línea para Citas -->
                         <div style="width: 45%;">
                             <h6 class="text-center">Tendencias de Citas</h6>
                             <canvas id="trendLineChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-around align-items-center mt-5">
+                        <div style="width: 80%;">
+                            <h6 class="text-center">Ingresos Mensuales (S/.)</h6>
+                            <canvas id="ingresosChart"></canvas>
                         </div>
                     </div>
                 </div>
@@ -125,15 +133,17 @@
         crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script>
-            // Datos din�micos desde el servidor
+            // Datos dinámicos desde el servidor
             const meses = [];
             const totalReservas = [];
             const totalCitas = [];
+            const totalIngresos = [];
 
             <c:forEach var="reporte" items="${reporteMensual}">
             meses.push("${reporte.mes}");
             totalReservas.push(${reporte.totalReservas});
             totalCitas.push(${reporte.totalCitas});
+            totalIngresos.push(${reporte.totalIngresos});
             </c:forEach>;
 
             console.log("a:", meses);
@@ -142,7 +152,7 @@
 
 
 
-            // Gr�fico de Barras
+            // Gráfico de Barras
             const ctxBar = document.getElementById('barChart').getContext('2d');
             new Chart(ctxBar, {
                 type: 'bar',
@@ -172,7 +182,7 @@
                 }
             });
 
-            // Gr�fico Lineal
+            // Gráfico Lineal
             const ctxLine = document.getElementById('lineChart').getContext('2d');
             new Chart(ctxLine, {
                 type: 'line',
@@ -211,7 +221,7 @@
             citasNoAtendidas.push(${reporte.totalCitas} - ${reporte.citasCompletadas});
             </c:forEach>;
 
-// Gr�fico Circular (Pie Chart)
+// Gráfico Circular (Pie Chart)
             const ctxPie = document.getElementById('pieChart').getContext('2d');
             new Chart(ctxPie, {
                 type: 'pie',
@@ -236,7 +246,7 @@
                 }
             });
 
-// Gr�fico de L�nea para Tendencias
+// Gráfico de Línea para Tendencias
             const ctxTrendLine = document.getElementById('trendLineChart').getContext('2d');
             new Chart(ctxTrendLine, {
                 type: 'line',
@@ -273,7 +283,33 @@
                 }
             });
 
-            // Datos din�micos desde la base de datos
+            // Gráfico de Ingresos
+            const ctxIngresos = document.getElementById('ingresosChart').getContext('2d');
+            new Chart(ctxIngresos, {
+                type: 'bar',
+                data: {
+                    labels: meses,
+                    datasets: [
+                        {
+                            label: 'Ingresos Mensuales (S/.)',
+                            data: totalIngresos,
+                            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Datos dinámicos desde la base de datos
             const razones = [];
             const frecuencia = [];
 
@@ -283,7 +319,7 @@
             </c:forEach>;
 
 
-// Gr�fico de Razones para Servicios No Completados
+// Gráfico de Razones para Servicios No Completados
             const ctxReason = document.getElementById('reasonChart').getContext('2d');
             new Chart(ctxReason, {
                 type: 'bar',
@@ -316,7 +352,7 @@
                 }
             });
 
-            // Datos din�micos de estados desde el servidor
+            // Datos dinámicos de estados desde el servidor
             const estados = ['Completadas', 'Canceladas', 'En Espera', 'Reprogramadas', 'No Asistieron'];
             const metricas = [
             ${reporteEstados.completadas},
@@ -326,7 +362,7 @@
             ${reporteEstados.noAsistieron}
             ];
 
-// Gr�fico de M�tricas Clave (Circular)
+// Gráfico de Métricas Clave (Circular)
             const ctxMetrics = document.getElementById('keyMetricsChart').getContext('2d');
             new Chart(ctxMetrics, {
                 type: 'pie',
@@ -358,12 +394,12 @@
                         },
                         title: {
                             display: true,
-                            text: 'Distribuci�n de Estados de Citas'
+                            text: 'Distribución de Estados de Citas'
                         }
                     }
                 }
             });
-            // Funci�n para alternar la visibilidad
+            // Función para alternar la visibilidad
 
 
         </script>

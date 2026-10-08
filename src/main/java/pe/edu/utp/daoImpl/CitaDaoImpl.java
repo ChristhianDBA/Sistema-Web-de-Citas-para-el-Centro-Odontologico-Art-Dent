@@ -711,4 +711,20 @@ public class CitaDaoImpl implements CitaDao {
         return total;
     }
     
+    @Override
+    public String getEmailPacienteByCitaId(int idCita) {
+        String correo = "";
+        String SQL = "SELECT p.Correo FROM cita c INNER JOIN paciente p ON c.Paciente_idPaciente = p.idPaciente WHERE c.idCita = ?";
+        try (Connection conn = Conexion.getConection(); PreparedStatement ps = conn.prepareStatement(SQL)) {
+            ps.setInt(1, idCita);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    correo = rs.getString("Correo");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return correo;
+    }
 }

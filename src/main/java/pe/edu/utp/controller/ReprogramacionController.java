@@ -19,6 +19,7 @@ import pe.edu.utp.daoImpl.ReservaDaoImpl;
 import pe.edu.utp.entity.Cita;
 import pe.edu.utp.entity.VerCita;
 import pe.edu.utp.entity.VerReserva;
+import pe.edu.utp.utils.EmailService;
 import static sun.jvm.hotspot.HelloWorld.e;
 
 /**
@@ -135,6 +136,11 @@ public class ReprogramacionController extends HttpServlet {
         int resultado = citaDao.updateCita(idCita, nuevaFecha, nuevaHora);
 
         if (resultado > 0) {
+            String correo = citaDao.getEmailPacienteByCitaId(idCita);
+            if (correo != null && !correo.isEmpty()) {
+                EmailService.sendEmail(correo, "Cita Reprogramada - ArtDent", 
+                    "Estimado paciente, su cita ha sido reprogramada para la fecha: " + nuevaFecha + " a las " + nuevaHora + ".");
+            }
             request.getRequestDispatcher("PDCCalendario.jsp").forward(request, response); // Redirige a la página principal
         } else {
             // Si hubo un error en la actualización
@@ -153,6 +159,11 @@ public class ReprogramacionController extends HttpServlet {
         int resultado = reservaDao.updateReserva(idReserva, nuevaFecha, nuevaHora);
 
         if (resultado > 0) {
+            String correo = reservaDao.getEmailPacienteByReservaId(idReserva);
+            if (correo != null && !correo.isEmpty()) {
+                EmailService.sendEmail(correo, "Reserva Reprogramada - ArtDent", 
+                    "Estimado paciente, su reserva ha sido reprogramada para la fecha: " + nuevaFecha + " a las " + nuevaHora + ".");
+            }
             request.getRequestDispatcher("PDCCalendario.jsp").forward(request, response); // Redirige a la página principal
         } else {
             request.getRequestDispatcher("error.jsp").forward(request, response); // Redirige a la página de error
@@ -167,6 +178,11 @@ public class ReprogramacionController extends HttpServlet {
         ReservaDao reservaDao = new ReservaDaoImpl();
         int resultado = reservaDao.updateEstadoReserv(idReserva, estadoActual);
         if (resultado > 0) {
+            String correo = reservaDao.getEmailPacienteByReservaId(idReserva);
+            if (correo != null && !correo.isEmpty()) {
+                EmailService.sendEmail(correo, "Actualización de Reserva - ArtDent", 
+                    "Estimado paciente, el estado de su reserva ha cambiado a: " + estadoActual + ".");
+            }
             response.sendRedirect("ReservaController?accion=listar");
         } else {
             request.getRequestDispatcher("error.jsp").forward(request, response);
@@ -181,6 +197,11 @@ public class ReprogramacionController extends HttpServlet {
         CitaDao CitaDao = new CitaDaoImpl();
         int resultado = CitaDao.updateEstadoCita(idCita, estadoActual);
         if (resultado > 0) {
+            String correo = CitaDao.getEmailPacienteByCitaId(idCita);
+            if (correo != null && !correo.isEmpty()) {
+                EmailService.sendEmail(correo, "Actualización de Cita - ArtDent", 
+                    "Estimado paciente, el estado de su cita ha cambiado a: " + estadoActual + ".");
+            }
             response.sendRedirect("ReservaController?accion=listar");
         } else {
             request.getRequestDispatcher("error.jsp").forward(request, response);
@@ -193,6 +214,11 @@ public class ReprogramacionController extends HttpServlet {
         
         int resultado = reservaDao.updateEstadoCancelado(idReserva);
         if (resultado > 0) {
+            String correo = reservaDao.getEmailPacienteByReservaId(idReserva);
+            if (correo != null && !correo.isEmpty()) {
+                EmailService.sendEmail(correo, "Reserva Cancelada - ArtDent", 
+                    "Estimado paciente, su reserva ha sido cancelada.");
+            }
             request.getRequestDispatcher("PDCCalendario.jsp").forward(request, response);
         } else {
             request.getRequestDispatcher("error.jsp").forward(request, response);
@@ -205,6 +231,11 @@ public class ReprogramacionController extends HttpServlet {
         CitaDao CitaDao = new CitaDaoImpl();
         int resultado = CitaDao.updateEstadoCitaCancelado(idCita);
         if (resultado > 0) {
+            String correo = CitaDao.getEmailPacienteByCitaId(idCita);
+            if (correo != null && !correo.isEmpty()) {
+                EmailService.sendEmail(correo, "Cita Cancelada - ArtDent", 
+                    "Estimado paciente, su cita ha sido cancelada.");
+            }
             request.getRequestDispatcher("PDCCalendario.jsp").forward(request, response);
         } else {
             request.getRequestDispatcher("error.jsp").forward(request, response);

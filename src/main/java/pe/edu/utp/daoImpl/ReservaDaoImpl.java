@@ -731,4 +731,21 @@ public class ReservaDaoImpl implements ReservaDao {
         return total;
     }
 
+    @Override
+    public String getEmailPacienteByReservaId(int idReserva) {
+        String correo = "";
+        String SQL = "SELECT p.Correo FROM reserva r INNER JOIN paciente p ON r.Paciente_idPaciente = p.idPaciente WHERE r.idReserva = ?";
+        try (Connection conn = Conexion.getConection(); PreparedStatement ps = conn.prepareStatement(SQL)) {
+            ps.setInt(1, idReserva);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    correo = rs.getString("Correo");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return correo;
+    }
+
 }

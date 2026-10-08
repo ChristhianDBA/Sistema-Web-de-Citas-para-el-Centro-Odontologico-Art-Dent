@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%//@include file="WEB-INF/template/libreria.jspf" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
@@ -5,7 +6,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Panel de Control - Clínica</title>
+        <title>Panel de Control - ClÃ­nica</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
         <style>
@@ -31,7 +32,7 @@
             
         %>
         <%@include file="NavPanel.jsp" %>        
-        <!-- Contenido de la Página -->
+        <!-- Contenido de la PÃ¡gina -->
         <div class="d-flex flex-grow-1">
             <!-- Sidebar -->
             <%@include file="Sidebar.jsp" %>
@@ -73,7 +74,7 @@
                                 <td>${VerReserva[0].horaReserva}</td>
                             </tr>
                             <tr>
-                                <th class="text-dark p-3 bg-info-subtle" >Descripción</th>
+                                <th class="text-dark p-3 bg-info-subtle" >DescripciÃ³n</th>
                                 <td>${VerReserva[0].descripcion}</td>
                             </tr>
                             <tr>
@@ -81,7 +82,7 @@
                                 <td>${VerReserva[0].tipoServicio}</td>
                             </tr>
                             <tr>
-                                <th class="text-dark p-3 bg-info-subtle" >Médico Asignado</th>
+                                <th class="text-dark p-3 bg-info-subtle" >MÃ©dico Asignado</th>
                                 <td>${VerReserva[0].nombreUsuario} ${VerReserva[0].apellidoUsuario}</td>
                             </tr>
                             <tr>
@@ -103,7 +104,7 @@
                                 <input type="time" class="form-control" id="new-time" name="new-time" required>
                             </div>
                             <div>
-                                <button type="submit" class="btn btn-success mt-4" name="accion" value="UpdateReserva">Confirmar reprogramación</button>
+                                <button type="submit" class="btn btn-success mt-4" name="accion" value="UpdateReserva">Confirmar reprogramaciÃ³n</button>
                             </div>
                         </form>
 
@@ -161,7 +162,7 @@
                                 <input type="time" class="form-control" id="new-time" name="new-time" required>
                             </div>
                             <div>
-                                <button type="submit" class="btn btn-success mt-4" name="accion" value="UpdateCita">Confirmar reprogramación</button>
+                                <button type="submit" class="btn btn-success mt-4" name="accion" value="UpdateCita">Confirmar reprogramaciÃ³n</button>
                             </div>
                         </form>
 

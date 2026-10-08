@@ -39,16 +39,22 @@ public class InicioSesionController extends HttpServlet {
 
         String dni = request.getParameter("document");
         String clave = request.getParameter("password");
+        if (dni != null) {
+            dni = dni.trim();
+        }
+        if (clave != null) {
+            clave = clave.trim();
+        }
 
         HttpSession sesion = request.getSession();
         List<InicioSesionDTO> login = udao.login(dni, clave);
-        if (!login.isEmpty()) {
+        if (login != null && !login.isEmpty()) {
             sesion.setAttribute("idUsuario", login.get(0).getIdUsuario());
             sesion.setAttribute("Nombre", login.get(0).getNombre());
             sesion.setAttribute("Apellido", login.get(0).getApellido());
             sesion.setAttribute("Dni", login.get(0).getDni());
             sesion.setAttribute("TipoRol", login.get(0).getTipoRol());
-            if (login.get(0).getTipoRol().equals("Administrador")) {
+            if ("Administrador".equalsIgnoreCase(login.get(0).getTipoRol())) {
                 response.sendRedirect("DashboardController?action=dashboard");
             } else {
                 response.sendRedirect("ReservaController?accion=listarReservasPorDia");

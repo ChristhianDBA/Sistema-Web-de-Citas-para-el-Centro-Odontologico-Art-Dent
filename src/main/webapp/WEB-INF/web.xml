@@ -2,7 +2,7 @@
 <web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
     <servlet>
         <servlet-name>MenuController</servlet-name>
-        <servlet-class>pe.edu.pe.controller.MenuController</servlet-class>
+        <servlet-class>pe.edu.utp.controller.MenuController</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>InicioSesionController</servlet-name>
@@ -12,11 +12,6 @@
         <servlet-name>MenuController</servlet-name>
         <url-pattern>/MenuController</url-pattern>
     </servlet-mapping>
-    <servlet>
-        <servlet-name>Faces Servlet</servlet-name>
-        <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
     <servlet>
         <servlet-name>jsp</servlet-name>
         <servlet-class>org.apache.jasper.servlet.JspServlet</servlet-class>
@@ -31,10 +26,6 @@
         <load-on-startup>3</load-on-startup>
     </servlet>
     <servlet>
-        <servlet-name>MostrarServicioController</servlet-name>
-        <servlet-class>pe.edu.utp.controller.MostrarServicioController</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>HistorialController</servlet-name>
         <servlet-class>pe.edu.utp.controller.HistorialController</servlet-class>
     </servlet>
@@ -46,15 +37,7 @@
         <servlet-name>InicioSesionController</servlet-name>
         <url-pattern>/InicioSesionController</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
-    <servlet-name>Faces Servlet</servlet-name>
-    <url-pattern>*.xhtml</url-pattern>
-</servlet-mapping>
 
-    <servlet-mapping>
-        <servlet-name>MostrarServicioController</servlet-name>
-        <url-pattern>/MostrarServicioController</url-pattern>
-    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>HistorialController</servlet-name>
         <url-pattern>/HistorialController</url-pattern>

@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="es">
@@ -14,12 +15,12 @@
 
         <div class="container flex-grow-1">
 
-            <!-- Aquí incluyes el formulario de reserva, que ya estará cargado con los servicios -->
+            <!-- AquÃ­ incluyes el formulario de reserva, que ya estarÃ¡ cargado con los servicios -->
             <jsp:include page="formularioreserva.jsp" />
 
         </div>
 
-        <%@include file="footer.jsp" %> <!-- Incluye el pie de página -->
+        <%@include file="footer.jsp" %> <!-- Incluye el pie de pÃ¡gina -->
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     </body>

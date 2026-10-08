@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%//@include file="WEB-INF/template/libreria.jspf" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
@@ -7,7 +8,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Panel de Control - Clínica</title>
+        <title>Panel de Control - ClÃ­nica</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
               integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
@@ -23,7 +24,7 @@
 
         <%@include file="NavPanel.jsp" %>
 
-        <!-- Contenido de la Página -->
+        <!-- Contenido de la PÃ¡gina -->
         <div class="d-flex flex-grow-1">
             <!-- Sidebar -->
             <%@include file="Sidebar.jsp" %>
@@ -70,7 +71,7 @@
                                                 <i class="bi bi-check-circle-fill me-3 fs-4"></i>
                                                 <div class="col">
                                                     <strong class="fs-4">Reserva Completada</strong><br>
-                                                    ${reserva.nombrePaciente} ${reserva.apellidoPaciente} completó su cita el ${reserva.diaReserva}.
+                                                    ${reserva.nombrePaciente} ${reserva.apellidoPaciente} completÃ³ su cita el ${reserva.diaReserva}.
                                                     <br>
                                                     <a class="fw-bold">${reserva.horaReserva}</a>
                                                 </div>
@@ -109,7 +110,7 @@
                                                 <i class="bi bi-x-circle-fill me-3 fs-4"></i>
                                                 <div class="col">
                                                     <strong class="fs-4">Reserva Cancelada</strong><br>
-                                                    ${reserva.nombrePaciente} ${reserva.apellidoPaciente} canceló su cita para el ${reserva.diaReserva}.
+                                                    ${reserva.nombrePaciente} ${reserva.apellidoPaciente} cancelÃ³ su cita para el ${reserva.diaReserva}.
                                                     <br>
                                                     <a class="fw-bold">${reserva.horaReserva}</a>
                                                 </div>
@@ -140,7 +141,7 @@
                                                 <i class="bi bi-check-circle-fill me-3 fs-4"></i>
                                                 <div class="col">
                                                     <strong class="fs-4">Cita Completada</strong><br>
-                                                    ${cita.nombrePaciente} ${cita.apellidoPaciente} completó su cita el ${cita.diaReserva}.
+                                                    ${cita.nombrePaciente} ${cita.apellidoPaciente} completÃ³ su cita el ${cita.diaReserva}.
                                                     <br>
                                                     <a class="fw-bold">${cita.horaReserva}</a>
                                                 </div>
@@ -179,7 +180,7 @@
                                                 <i class="bi bi-x-circle-fill me-3 fs-4"></i>
                                                 <div class="col">
                                                     <strong class="fs-4">Cita Cancelada</strong><br>
-                                                    ${cita.nombrePaciente} ${cita.apellidoPaciente} canceló su cita para el ${cita.diaReserva}.
+                                                    ${cita.nombrePaciente} ${cita.apellidoPaciente} cancelÃ³ su cita para el ${cita.diaReserva}.
                                                     <br>
                                                     <a class="fw-bold">${cita.horaReserva}</a>
                                                 </div>

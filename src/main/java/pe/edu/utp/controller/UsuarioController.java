@@ -66,11 +66,13 @@ public class UsuarioController extends HttpServlet {
     private void listUsuarios(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         RequestDispatcher dispatcher = request.getRequestDispatcher("ADMPUsuarios.jsp");
         request.setAttribute("usuarios", usuarioDAO.listarUsuarios());
+        request.setAttribute("roles", new pe.edu.utp.daoImpl.RolDaoImpl().listarRoles());
         dispatcher.forward(request, response);
     }
 
     private void showAddForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         RequestDispatcher dispatcher = request.getRequestDispatcher("ADMPUsuarios.jsp");
+        request.setAttribute("roles", new pe.edu.utp.daoImpl.RolDaoImpl().listarRoles());
         dispatcher.forward(request, response);
     }
 
@@ -95,6 +97,7 @@ public class UsuarioController extends HttpServlet {
         Usuario existingUsuario = getUsuario(id);
         RequestDispatcher dispatcher = request.getRequestDispatcher("ADMPeditarUsuario.jsp");
         request.setAttribute("usuario", existingUsuario);
+        request.setAttribute("roles", new pe.edu.utp.daoImpl.RolDaoImpl().listarRoles());
         dispatcher.forward(request, response);
     }
 

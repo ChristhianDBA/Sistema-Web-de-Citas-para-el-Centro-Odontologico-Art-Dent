@@ -1,4 +1,4 @@
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -81,9 +81,10 @@
                             <div class="col-md-6 mb-3">
                                 <label for="rol" class="form-label">Rol</label>
                                 <select class="form-select" id="rol" name="rol" required>
-                                    <option value="1" ${usuario.rol_idRol == 1 ? 'selected' : ''}>Administrador</option>
-                                    <option value="2" ${usuario.rol_idRol == 2 ? 'selected' : ''}>Secretaria</option>
-                                    <option value="3" ${usuario.rol_idRol == 3 ? 'selected' : ''}>Odontólogo</option>
+                                    <c:forEach var="rolObj" items="${roles}">
+                                        <option value="${rolObj.idRol}" ${usuario.rol_idRol == rolObj.idRol ? 'selected' : ''}>${rolObj.tipoRol}</option>
+                                    </c:forEach>
+
                                 </select>
                             </div>
                         </div>

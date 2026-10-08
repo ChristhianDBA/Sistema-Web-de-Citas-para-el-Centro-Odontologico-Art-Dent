@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@page import="pe.edu.utp.entity.Servicio"%>
 <%@page import="java.util.List"%>
 <%@page import="pe.edu.utp.daoImpl.ServicioDaoImpl"%>
@@ -22,7 +23,7 @@
                 animation: fadeIn 1s ease-in-out forwards;
             }
 
-            /* Retardo de la animaci?n para cada elemento */
+            /* Retardo de la animaciÃ³n para cada elemento */
             .fade-in-delay-1 {
                 animation-delay: 0.5s;
             }
@@ -74,12 +75,12 @@
         <div class="container mt-5 pb-4 mb-4">
             <main>
                 <article class="mb-4">
-                    <h2 style="color: darkblue" class="mb-4 fade-in fade-in-delay-3">¿Qué es?</h2>
-                    <p class="fade-in fade-in-delay-4">${servicio.descripcion}</p> <!-- Mostrar la descripci?n del servicio -->
+                    <h2 style="color: darkblue" class="mb-4 fade-in fade-in-delay-3">Â¿QuÃ© es?</h2>
+                    <p class="fade-in fade-in-delay-4">${servicio.descripcion}</p> <!-- Mostrar la descripciÃ³n del servicio -->
                 </article>
 
                 <article class="mb-4">
-                    <h2 style="color: darkblue" class="mb-4 fade-in fade-in-delay-5">¿Necesito llevar aparato de dientes?</h2>
+                    <h2 style="color: darkblue" class="mb-4 fade-in fade-in-delay-5">Â¿Necesito llevar aparato de dientes?</h2>
                     <p class="fade-in fade-in-delay-6">${servicio.respuesta}</p>
                 </article>
             </main>

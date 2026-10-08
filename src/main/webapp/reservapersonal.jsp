@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html> 
 <html lang="es">
@@ -19,91 +20,101 @@
                     <div class="card shadow">               
                         <div class="card-body">                   
                             <form action="CitaController" method="POST">
-                                <!-- Información del paciente -->
-                                <div class="row mb-3">
+                                <!-- Fila 1: DNI y Correo -->
+                                <div class="row g-3 mb-3">
                                     <div class="col-md-6">
-                                        <label for="dni" class="form-label">DNI del Paciente</label>
-                                        <input type="text" class="form-control" id="dni" name="dni" 
-                                               placeholder="Ingrese el DNI" maxlength="8" 
+                                        <label for="dni" class="form-label fw-semibold">DNI del Paciente</label>
+                                        <input type="text" class="form-control form-control-lg fs-6" id="dni" name="dni" 
+                                               placeholder="Ingrese el DNI (8 dÃ­gitos)" maxlength="8" 
                                                value="${param.dni}" required 
-                                               onkeyup="if (event.keyCode === 13)
-                                                           buscarPaciente();">
+                                               onkeyup="if (event.keyCode === 13) buscarPaciente();">
                                     </div>
 
                                     <div class="col-md-6">
-                                        <label for="correo" class="form-label">Correo electrónico del Paciente</label>
-                                        <input type="email" class="form-control" id="correo" name="correo" 
-                                               placeholder="Ingrese el correo electrónico" 
-                                               value="${correo}">
+                                        <label for="correo" class="form-label fw-semibold">Correo electrÃ³nico</label>
+                                        <input type="email" class="form-control form-control-lg fs-6" id="correo" name="correo" 
+                                               placeholder="correo@ejemplo.com" 
+                                               value="${correo}" required>
                                     </div>
                                 </div>
 
-                                <div class="row mb-3">
+                                <!-- Fila 2: Nombre y Apellido -->
+                                <div class="row g-3 mb-3">
                                     <div class="col-md-6">
-                                        <label for="nombre" class="form-label">Nombre</label>
-                                        <input type="text" class="form-control" id="nombre" name="nombre"
+                                        <label for="nombre" class="form-label fw-semibold">Nombre</label>
+                                        <input type="text" class="form-control form-control-lg fs-6" id="nombre" name="nombre"
                                                placeholder="Ingrese su nombre" value="${nombre}" required>
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="apellido" class="form-label">Apellido</label>
-                                        <input type="text" class="form-control" id="apellido" name="apellido"
+                                        <label for="apellido" class="form-label fw-semibold">Apellido</label>
+                                        <input type="text" class="form-control form-control-lg fs-6" id="apellido" name="apellido"
                                                placeholder="Ingrese su apellido" value="${apellido}" required>
                                     </div>
                                 </div>
 
-                                <div class="row mb-3">
+                                <!-- Fila 3: Celular y Servicio -->
+                                <div class="row g-3 mb-3">
                                     <div class="col-md-6">
-                                        <label for="telefono" class="form-label">Celular</label>
-                                        <input type="tel" class="form-control" id="telefono" name="telefono"
-                                               placeholder="Ingrese su celular" minlength="9" maxlength="9" 
-                                               pattern="\d{9}" value="${telefono}" required>
+                                        <label for="telefono" class="form-label fw-semibold">Celular</label>
+                                        <input type="tel" class="form-control form-control-lg fs-6" id="telefono" name="telefono"
+                                               placeholder="Ingrese su celular (9 dÃ­gitos)" minlength="9" maxlength="9" 
+                                               pattern="[0-9]{9}" value="${telefono}" required>
                                     </div>
-                                    <div class="col-md-3">
-                                        <label for="fecha" class="form-label">Fecha de Cita</label>
-                                        <input type="date" class="form-control" id="fecha" name="fecha">
+                                    <div class="col-md-6">
+                                        <label for="motivo" class="form-label fw-semibold">Motivo (Servicio)</label>
+                                        <select class="form-select form-select-lg fs-6" id="motivo" name="motivo" onchange="cargarDoctores();actualizarPrecio();verificarCampos();" required>
+                                            <option value="" selected disabled>Seleccionar Servicio</option>
+                                            <c:forEach var="servicio" items="${servicios}">
+                                                <option value="${servicio.idServicio}" data-costo="${servicio.costo}" data-id="${servicio.idServicio}">
+                                                    ${servicio.tipoServicio}
+                                                </option>
+                                            </c:forEach>
+                                        </select>
                                     </div>
-                                    <script>
-                                        const fechaHoy = new Date();
-                                        fechaHoy.setDate(fechaHoy.getDate());
-                                        const fechaSiguiente = fechaHoy.toISOString().split('T')[0];
-                                        document.getElementById('fecha').setAttribute('min', fechaSiguiente);
-                                    </script>
-                                    <div class="col-md-3">
-                                        <label for="hora" class="form-label">Hora de Cita</label>
-                                        <input type="time" class="form-control" id="hora" name="hora" onchange="ajustarHora()" min="08:00" max="22:00">
-                                    </div>
-
                                 </div>
 
-                                <div class="mb-3">
-                                    <label for="motivo" class="form-label">Motivo (Servicio)</label>
-                                    <select class="form-select" id="motivo" name="motivo" onchange="cargarDoctores();actualizarPrecio();verificarCampos();" required>
-                                        <option value="" selected disabled>Seleccionar</option>
-                                        <c:forEach var="servicio" items="${servicios}">
-                                            <option value="${servicio.idServicio}" data-costo="${servicio.costo}" data-id="${servicio.idServicio}">
-                                                ${servicio.tipoServicio}
-                                            </option>
-                                        </c:forEach>
-                                    </select>
+                                <!-- Fila 4: Fecha y Hora de Cita -->
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-6">
+                                        <label for="fecha" class="form-label fw-semibold">Fecha de Cita</label>
+                                        <input type="date" class="form-control form-control-lg fs-6" id="fecha" name="fecha" required onchange="verificarCampos();">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="hora" class="form-label fw-semibold">Hora de Cita</label>
+                                        <input type="time" class="form-control form-control-lg fs-6" id="hora" name="hora" onchange="ajustarHora();verificarCampos();" min="08:00" max="22:00" required>
+                                    </div>
                                 </div>
+
+                                <!-- Fila 5: MÃ©dico Asignado (se muestra al elegir servicio, fecha y hora) -->
+                                <div class="row g-3 mb-3" id="medico-container" style="display:none;">
+                                    <div class="col-12">
+                                        <label for="medico" class="form-label fw-semibold text-primary"><i class="fa fa-user-md me-1"></i>MÃ©dico Asignado</label>
+                                        <select class="form-select form-select-lg fs-6 border-primary" id="medico" name="medico">
+                                            <option value="" selected disabled>Seleccionar MÃ©dico</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Fila 6: Total a Pagar Centrado -->
+                                <div class="row justify-content-center my-4">
+                                    <div class="col-md-6 col-sm-8 text-center">
+                                        <div class="p-3 bg-light rounded-3 border">
+                                            <label for="pago" class="form-label fw-bold text-muted mb-1 text-uppercase small">Total a pagar</label>
+                                            <div class="d-flex justify-content-center align-items-center">
+                                                <span class="fs-4 fw-bold text-dark me-2">S/</span>
+                                                <input type="number" class="form-control-plaintext text-center fs-3 fw-bold text-primary p-0" id="pago" name="pago" readonly required placeholder="0.00" style="max-width: 140px; display: inline-block;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <input type="hidden" name="precio_consulta" id="precio_consulta">
                                 <input type="hidden" name="idServicio" id="idServicio">
 
-                                <div class="mb-3" id="medico-container" style="display:none;">
-                                    <label for="medico" class="form-label">Médico Asignado</label>
-                                    <select class="form-select" id="medico" name="medico">
-                                        <option value="" selected disabled>Seleccionar</option>
-                                    </select>
+                                <!-- BotÃ³n de envÃ­o PayPal Perfectamente Centrado -->
+                                <div class="d-flex justify-content-center w-100 mt-3">
+                                    <div id="paypal-button-container" class="w-100" style="max-width: 460px;"></div>
                                 </div>
-                                <div class="mb-3">
-                                    <label for="pago" class="form-label">Total a pagar</label>
-                                    <input type="number" class="form-control" id="pago" name="pago" readonly required>
-                                </div>
-                                <!-- Botón de envío -->
-                                <div class="d-grid gap-2">
-                                    <div type="submit" id="paypal-button-container"></div>
-                                </div>
-
                             </form>
                         </div>
                     </div>
@@ -116,32 +127,32 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
         <script>
-                                        // Esta función se ejecuta cuando cambia la hora o fecha
+                                        // Esta funciÃ³n se ejecuta cuando cambia la hora o fecha
                                         function verificarCampos() {
                                             var motivo = document.getElementById('motivo').value;
                                             var fecha = document.getElementById('fecha').value;
                                             var hora = document.getElementById('hora').value;
 
-                                            // Limpiar el campo de selección de médicos
+                                            // Limpiar el campo de selecciÃ³n de mÃ©dicos
                                             var medicoSelect = document.getElementById('medico');
-                                            medicoSelect.innerHTML = '<option value="" selected disabled>Seleccionar</option>';  // Reiniciar médicos
+                                            medicoSelect.innerHTML = '<option value="" selected disabled>Seleccionar</option>';  // Reiniciar mÃ©dicos
 
-                                            // Si el motivo, fecha y hora están seleccionados, mostramos el selector de médicos
+                                            // Si el motivo, fecha y hora estÃ¡n seleccionados, mostramos el selector de mÃ©dicos
                                             if (motivo && fecha && hora) {
-                                                cargarDoctores();  // Llamar la función que carga los médicos basados en la nueva hora, fecha y motivo
-                                                document.getElementById('medico-container').style.display = 'block';  // Mostrar el selector de médicos
+                                                cargarDoctores();  // Llamar la funciÃ³n que carga los mÃ©dicos basados en la nueva hora, fecha y motivo
+                                                document.getElementById('medico-container').style.display = 'block';  // Mostrar el selector de mÃ©dicos
                                             } else {
-                                                document.getElementById('medico-container').style.display = 'none';  // Ocultar el selector de médicos
+                                                document.getElementById('medico-container').style.display = 'none';  // Ocultar el selector de mÃ©dicos
                                             }
                                         }
 
-                                        // Resetear el médico cuando se cambia la hora
+                                        // Resetear el mÃ©dico cuando se cambia la hora
                                         document.getElementById('hora').addEventListener('change', function () {
-                                            // Limpiar el select de médicos cuando se cambie la hora
+                                            // Limpiar el select de mÃ©dicos cuando se cambie la hora
                                             var medicoSelect = document.getElementById('medico');
-                                            medicoSelect.value = "";  // Resetear el valor del select de médicos
+                                            medicoSelect.value = "";  // Resetear el valor del select de mÃ©dicos
 
-                                            verificarCampos();  // Llamar a verificarCampos para que se actualicen los demás campos
+                                            verificarCampos();  // Llamar a verificarCampos para que se actualicen los demÃ¡s campos
                                         });
 
                                         // Llamar a verificarCampos cuando se cambien la fecha o el motivo
@@ -276,7 +287,7 @@
 
                         return actions.order.create({
                             purchase_units: [{
-                                    description: "Pago de consulta médica",
+                                    description: "Pago de consulta mÃ©dica",
                                     amount: {
                                         currency_code: "USD",
                                         value: total // Utiliza el valor del campo pago
@@ -308,7 +319,7 @@
 
                             })
                                     .then(() => {
-                                        // Redirige al usuario a una página de confirmación
+                                        // Redirige al usuario a una pÃ¡gina de confirmaciÃ³n
                                         window.location.href = 'citareservada.jsp';
                                     })
                                     .catch(error => console.error('Error:', error));
@@ -323,5 +334,5 @@
             }
         </script>
 
-         </body>
+        Â </body>
 </html>

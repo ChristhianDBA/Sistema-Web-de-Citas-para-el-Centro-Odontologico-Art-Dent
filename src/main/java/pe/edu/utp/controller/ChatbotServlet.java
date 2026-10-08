@@ -32,7 +32,7 @@ public class ChatbotServlet extends HttpServlet {
         String pregunta = request.getParameter("pregunta");
 
         String serviciosInfo = obtenerServiciosDeBaseDeDatos();
-        // Construir el mensaje a enviar a la API de OpenAI
+        String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
         String mensajeParaGPT = "Eres un chatbot integrado en la plataforma de Art Dent, una clínica dental. "
                 + "Tu tarea es recomendar servicios dentales basados en los síntomas o preocupaciones que el usuario mencione. "
                 + "Utiliza la siguiente información sobre los servicios disponibles para hacer tus recomendaciones:\\n" + serviciosInfo
@@ -40,8 +40,8 @@ public class ChatbotServlet extends HttpServlet {
                 + "\\nResponde de manera amable y profesional, explicando por qué recomiendas cierto servicio basado en los síntomas mencionados. "
                 + "Si el usuario pregunta por el costo, inclúyelo en tu respuesta. "
                 + "Si el usuario solicita algo no relacionado con servicios dentales, responde cortésmente y trata de redirigir la conversación hacia la salud dental. "
-                + "Usa '\\n' para los saltos de línea en tu respuesta. "
-                + "Si mencionas un servicio específico, incluye un enlace en este formato: (http://localhost:8089/ArtDent/ServicioController?action=cargar&id=IdDelServicio) "
+                + "Usa etiquetas HTML <br> para los saltos de línea en tu respuesta en lugar de \\n. "
+                + "Si mencionas un servicio específico, DEBES generar un enlace HTML clickeable usando la etiqueta <a> en este formato exacto: <a href='" + baseUrl + "/ServicioController?action=cargar&id=IdDelServicio'>Nombre del Servicio</a> "
                 + "donde reemplazas IdDelServicio con el id correspondiente del servicio del que estás hablando.";
 
         System.out.println(mensajeParaGPT);
@@ -51,21 +51,20 @@ public class ChatbotServlet extends HttpServlet {
             return;
         }
 
-        String apiKey = "API DE OPEN IA";
+        String apiKey = pe.edu.utp.utils.ConfigLoader.getProperty("gemini.api.key");
 
         HttpClient client = HttpClient.newHttpClient();
         String body = String.format(
-                "{ \"model\": \"gpt-4o\", "
-                + "\"messages\": [ "
-                + "{ \"role\": \"user\", "
-                + "\"content\": \"%s\" } ] }",
-                mensajeParaGPT.replace("\"", "\\\"")
+                "{ \"model\": \"gemini-3.7-flash\", "
+                + "\"input\": \"%s\" }",
+                mensajeParaGPT.replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "")
         );
 
         HttpRequest requestApi = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.openai.com/v1/chat/completions"))
+                .uri(URI.create("https://generativelanguage.googleapis.com/v1beta/interactions"))
                 .header("Content-Type", "application/json")
-                .header("Authorization", "Bearer " + apiKey)
+                .header("x-goog-api-key", apiKey)
+                .header("Api-Revision", "2026-05-20")
                 .POST(HttpRequest.BodyPublishers.ofString(body))
                 .build();
 
@@ -76,18 +75,34 @@ public class ChatbotServlet extends HttpServlet {
             JsonObject jsonResponse = jsonReader.readObject();
             jsonReader.close();
 
-            if (jsonResponse.containsKey("choices") && !jsonResponse.getJsonArray("choices").isEmpty()) {
-                JsonObject messageObject = jsonResponse.getJsonArray("choices").getJsonObject(0).getJsonObject("message");
-                if (messageObject != null && messageObject.containsKey("content")) {
-                    String content = messageObject.getString("content");
+            if (jsonResponse.containsKey("steps")) {
+                javax.json.JsonArray steps = jsonResponse.getJsonArray("steps");
+                String content = null;
+                for (int i = 0; i < steps.size(); i++) {
+                    JsonObject step = steps.getJsonObject(i);
+                    if ("model_output".equals(step.getString("type", ""))) {
+                        javax.json.JsonArray contentArray = step.getJsonArray("content");
+                        if (contentArray != null && !contentArray.isEmpty()) {
+                            JsonObject contentObj = contentArray.getJsonObject(0);
+                            if ("text".equals(contentObj.getString("type", ""))) {
+                                content = contentObj.getString("text");
+                                break;
+                            }
+                        }
+                    }
+                }
+                
+                if (content != null) {
                     PrintWriter out = response.getWriter();
                     out.print(content);
                     out.flush();
                 } else {
-                    throw new Exception("La respuesta de la API no contiene el campo 'content' esperado");
+                    throw new Exception("No se encontró texto de respuesta en la API. Respuesta: " + apiResponse.body());
                 }
+            } else if (jsonResponse.containsKey("error")) {
+                throw new Exception("Error de Gemini API: " + jsonResponse.getJsonObject("error").getString("message"));
             } else {
-                throw new Exception("La respuesta de la API no contiene el campo 'choices' esperado");
+                throw new Exception("La respuesta de la API no contiene el campo esperado. Respuesta: " + apiResponse.body());
             }
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

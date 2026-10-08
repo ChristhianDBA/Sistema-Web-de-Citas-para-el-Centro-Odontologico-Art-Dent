@@ -1,4 +1,4 @@
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -423,16 +423,16 @@
             <h3 class="text-center text-black mb-4">Métodos de pago</h3>
             <div class="row justify-content-center">
                 <!-- Logo de PayPal -->
-                <div class="col-6 col-md-2 mb-4 d-flex justify-content-center fade-in fade-in-delay-14">
-                    <img src="https://martinvalverde.com/wp-content/uploads/2020/06/PayPal-Logo.png" class="img-fluid" alt="PayPal" style="max-height: 80px; object-fit: contain;">
+                <div class="col-6 col-md-2 mb-4 d-flex justify-content-center align-items-center fade-in fade-in-delay-14">
+                    <img src="${pageContext.request.contextPath}/img/paypal.svg" class="img-fluid" alt="PayPal" style="max-height: 55px; max-width: 140px; object-fit: contain;">
                 </div>
                 <!-- Logo de Visa -->
-                <div class="col-6 col-md-2 mb-4 d-flex justify-content-center fade-in fade-in-delay-15">
-                    <img src="https://1000marcas.net/wp-content/uploads/2019/12/VISA-Logo.png" class="img-fluid" alt="Visa" style="max-height: 80px; object-fit: contain;">
+                <div class="col-6 col-md-2 mb-4 d-flex justify-content-center align-items-center fade-in fade-in-delay-15">
+                    <img src="${pageContext.request.contextPath}/img/visa.svg" class="img-fluid" alt="Visa" style="max-height: 50px; max-width: 140px; object-fit: contain;">
                 </div>
                 <!-- Logo de MasterCard -->
-                <div class="col-6 col-md-2 mb-4 d-flex justify-content-center fade-in fade-in-delay-16">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/MasterCard_Logo.svg/2560px-MasterCard_Logo.svg.png" class="img-fluid" alt="MasterCard" style="max-height: 80px; object-fit: contain;">
+                <div class="col-6 col-md-2 mb-4 d-flex justify-content-center align-items-center fade-in fade-in-delay-16">
+                    <img src="${pageContext.request.contextPath}/img/mastercard.svg" class="img-fluid" alt="MasterCard" style="max-height: 60px; max-width: 140px; object-fit: contain;">
                 </div>
             </div>
         </div>
@@ -478,6 +478,18 @@
 
                 // Mensaje inicial del bot
                 agregarMensajeBot('¡Hola! Soy el asistente virtual de Art Dent. ¿En qué puedo ayudarte hoy? Puedes describir tus síntomas o preocupaciones dentales y te recomendaré el servicio más adecuado.');
+
+                // Enviar mensaje al presionar Enter
+                const preguntaInput = document.getElementById('pregunta');
+                if(preguntaInput){
+                    preguntaInput.addEventListener('keypress', function (e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            enviarPregunta();
+                        }
+                    });
+                }
+
             });
 
             async function enviarPregunta() {
@@ -526,8 +538,7 @@
                 const mensajeDiv = document.createElement('div');
                 mensajeDiv.className = 'message bot-message';
 
-                const mensajeConLinks = convertirUrlsAClickables(mensaje);
-                mensajeDiv.innerHTML = mensajeConLinks;
+                mensajeDiv.innerHTML = mensaje;
 
                 chatBody.appendChild(mensajeDiv);
                 scrollToBottom();

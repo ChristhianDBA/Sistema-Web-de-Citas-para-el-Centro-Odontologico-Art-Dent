@@ -40,6 +40,7 @@ public class GeneradorDeReporte {
             switch (reserva.getEstado()) {
                 case "Completado": // Reprogramada
                     reporte.setReservasCompletadas(reporte.getReservasCompletadas() + 1);
+                    reporte.setTotalIngresos(reporte.getTotalIngresos() + reserva.getImporte());
                     break;
                 case "En espera": // Reprogramada
                     reporte.setReservasEnEspera(reporte.getReservasEnEspera() + 1);
@@ -68,6 +69,7 @@ public class GeneradorDeReporte {
             switch (cita.getEstado()) {
                 case "Completado": // Confirmada
                     reporte.setCitasCompletadas(reporte.getCitasCompletadas() + 1);
+                    reporte.setTotalIngresos(reporte.getTotalIngresos() + cita.getCosto());
                     break;
                 case "En espera": // Reprogramada
                     reporte.setCitasEnEspera(reporte.getCitasEnEspera() + 1);
@@ -105,6 +107,7 @@ public class GeneradorDeReporte {
             switch (reserva.getEstado()) {
                 case "Completado": // Reprogramada
                     reporte.setReservasCompletadas(reporte.getReservasCompletadas() + 1);
+                    reporte.setTotalIngresos(reporte.getTotalIngresos() + reserva.getImporte());
                     break;
                 case "En espera": // Reprogramada
                     reporte.setReservasEnEspera(reporte.getReservasEnEspera() + 1);
@@ -133,6 +136,7 @@ public class GeneradorDeReporte {
             switch (cita.getEstado()) {
                 case "Completado": // Confirmada
                     reporte.setCitasCompletadas(reporte.getCitasCompletadas() + 1);
+                    reporte.setTotalIngresos(reporte.getTotalIngresos() + cita.getCosto());
                     break;
                 case "En espera": // Reprogramada
                     reporte.setCitasEnEspera(reporte.getCitasEnEspera() + 1);

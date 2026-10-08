@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -8,7 +9,7 @@
         <!-- Bootstrap CSS -->
         <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
         <style>
-            /* Cambiar el color de los botones del acorde?n a negro y eliminar el subrayado */
+            /* Cambiar el color de los botones del acordeÃ³n a negro y eliminar el subrayado */
             .accordion-button {
                 color: black !important;
                 text-decoration: none !important;
@@ -23,7 +24,7 @@
                 color: black !important;
             }
 
-            /* Evitar que cambie de color al pasar el rat?n */
+            /* Evitar que cambie de color al pasar el ratÃ³n */
             .accordion-button:hover {
                 color: black !important;
                 background: none !important; /* Sin fondo */
@@ -33,13 +34,13 @@
                 outline: none !important; /* Eliminar el contorno de enfoque */
             }
 
-            /* Transici?n de aparici?n para el fondo */
+            /* TransiciÃ³n de apariciÃ³n para el fondo */
             .fade-in {
                 opacity: 0;
                 animation: fadeInEffect 1.5s ease-in-out forwards;
             }
 
-            /* Transici?n de aparici?n para los encabezados de las preguntas */
+            /* TransiciÃ³n de apariciÃ³n para los encabezados de las preguntas */
             .fade-in-delay-1 {
                 animation-delay: 0.5s;
             }
@@ -60,7 +61,7 @@
                 animation-delay: 2.5s;
             }
 
-            /* Animaci?n para los elementos */
+            /* AnimaciÃ³n para los elementos */
             @keyframes fadeInEffect {
                 from {
                     opacity: 0;
@@ -74,14 +75,14 @@
                 transition: opacity 0.5s ease, transform 0.5s ease;
             }
 
-            /* Transici?n suave para la imagen */
+            /* TransiciÃ³n suave para la imagen */
             .img-transition {
                 transition: transform 0.5s ease-in-out;
             }
 
             /* Efecto de hover en la imagen */
             .img-transition:hover {
-                transform: scale(1.05); /* Aumenta ligeramente el tama?o al pasar el rat?n */
+                transform: scale(1.05); /* Aumenta ligeramente el tamaÃ±o al pasar el ratÃ³n */
             }
             .chat-widget {
                 position: fixed;
@@ -255,17 +256,17 @@
         <div class="position-relative bg-dark text-white fade-in"
              style="background-image: url('https://img.freepik.com/fotos-premium/medicos-pie-pasillo-hospital-brazos-cruzados_958192-31239.jpg');
              background-size: cover; background-position: center; height: 600px;">
-            <!-- Capa de superposici?n oscura -->
+            <!-- Capa de superposiciÃ³n oscura -->
             <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark opacity-50"></div>
 
             <!-- Contenedor del contenido sobre la imagen -->
             <div class="container d-flex flex-column justify-content-center align-items-center h-100 position-relative text-center">
                 <h1 class="display-4 fade-in fade-in-delay-1">FAQ</h1>
-                <p class="text-light fade-in fade-in-delay-2" style="font-size: 25px;">Respondemos a sus preguntas más frecuentes.</p>
+                <p class="text-light fade-in fade-in-delay-2" style="font-size: 25px;">Respondemos a sus preguntas mÃ¡s frecuentes.</p>
             </div>
         </div>
 
-        <!-- Acorde?n de Preguntas Frecuentes -->
+        <!-- AcordeÃ³n de Preguntas Frecuentes -->
         <div class="container mt-5">
             <div class="accordion" id="faqAccordion">
                 <!-- Pregunta 1 -->
@@ -275,17 +276,17 @@
                             <button class="accordion-button btn btn-link btn-block text-left font-weight-bold"
                                     type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true"
                                     aria-controls="collapseOne">
-                                ¿Qué hago si no puedo presentarme a mi cita?
+                                Â¿QuÃ© hago si no puedo presentarme a mi cita?
                             </button>
                         </h2>
                     </div>
                     <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#faqAccordion">
                         <div class="card-body">
-                            Si no puedes presentarte a tu cita, te recomendamos que contactes a la cl?nica o al
+                            Si no puedes presentarte a tu cita, te recomendamos que contactes a la clÃ­nica o al
                             consultorio lo antes posible.
-                            Generalmente, se puede reprogramar la cita sin problema si se avisa con antelaci?n.
+                            Generalmente, se puede reprogramar la cita sin problema si se avisa con antelaciÃ³n.
                             Algunos lugares pueden cobrar
-                            una tarifa por cancelaciones tardeas o ausencias sin previo aviso, por lo que es
+                            una tarifa por cancelaciones tardÃ­as o ausencias sin previo aviso, por lo que es
                             importante comunicarte con ellos
                             para evitar cargos adicionales.
                         </div>
@@ -299,7 +300,7 @@
                             <button class="accordion-button btn btn-link btn-block text-left font-weight-bold collapsed"
                                     type="button" data-toggle="collapse" data-target="#collapseTwo"
                                     aria-expanded="false" aria-controls="collapseTwo">
-                                ¿Cuel es el costo de una consulta?
+                                Â¿CuÃ¡l es el costo de una consulta?
                             </button>
                         </h2>
                     </div>
@@ -308,10 +309,10 @@
                             El costo de una consulta dental puede variar dependiendo del tipo de servicio y del
                             profesional. En general, una
                             consulta inicial puede costar alrededor de S/ 50.00. Este costo generalmente incluye una
-                            evaluación general y
-                            recomendaciones iniciales de tratamiento. Para tratamientos especígficos, como limpiezas
+                            evaluaciÃ³n general y
+                            recomendaciones iniciales de tratamiento. Para tratamientos especÃ­ficos, como limpiezas
                             profundas, empastes o
-                            procedimientos quirurgicos, es posible que se apliquen tarifas adicionales.
+                            procedimientos quirÃºrgicos, es posible que se apliquen tarifas adicionales.
                         </div>
                     </div>
                 </div>
@@ -323,19 +324,19 @@
                             <button class="accordion-button btn btn-link btn-block text-left font-weight-bold collapsed"
                                     type="button" data-toggle="collapse" data-target="#collapseThree"
                                     aria-expanded="false" aria-controls="collapseThree">
-                                ¿Con qué frecuencia debo ir al dentista?
+                                Â¿Con quÃ© frecuencia debo ir al dentista?
                             </button>
                         </h2>
                     </div>
                     <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#faqAccordion">
                         <div class="card-body">
-                            Se recomienda visitar al dentista al menos cada seis meses para una revisión y limpieza
+                            Se recomienda visitar al dentista al menos cada seis meses para una revisiÃ³n y limpieza
                             dental.
-                            Sin embargo, la frecuencia puede variar según las necesidades individuales y la salud
+                            Sin embargo, la frecuencia puede variar segÃºn las necesidades individuales y la salud
                             bucal. Si
-                            tienes problemas dentales específicos, como caries recurrentes o enfermedades de las
-                            enc?as, tu
-                            dentista puede recomendarte visitas más frecuentes.
+                            tienes problemas dentales especÃ­ficos, como caries recurrentes o enfermedades de las
+                            encÃ­as, tu
+                            dentista puede recomendarte visitas mÃ¡s frecuentes.
                         </div>
                     </div>
                 </div>
@@ -347,7 +348,7 @@
                             <button class="accordion-button btn btn-link btn-block text-left font-weight-bold collapsed"
                                     type="button" data-toggle="collapse" data-target="#collapseFour"
                                     aria-expanded="false" aria-controls="collapseFour">
-                                ¿Qué hacer si tengo un dolor de muelas intenso?
+                                Â¿QuÃ© hacer si tengo un dolor de muelas intenso?
                             </button>
                         </h2>
                     </div>
@@ -355,10 +356,10 @@
                         <div class="card-body">
                             Si experimentas un dolor de muelas intenso, debes contactar a tu dentista lo antes
                             posible. Puedes
-                            tomar analgésicos de venta libre para aliviar el dolor temporalmente, pero es
+                            tomar analgÃ©sicos de venta libre para aliviar el dolor temporalmente, pero es
                             fundamental que recibas
-                            atención profesional para tratar la causa subyacente. El dolor intenso puede ser señal
-                            de una infección
+                            atenciÃ³n profesional para tratar la causa subyacente. El dolor intenso puede ser seÃ±al
+                            de una infecciÃ³n
                             o un problema serio que necesita tratamiento inmediato.
                         </div>
                     </div>
@@ -371,7 +372,7 @@
                             <button class="accordion-button btn btn-link btn-block text-left font-weight-bold collapsed"
                                     type="button" data-toggle="collapse" data-target="#collapseFive"
                                     aria-expanded="false" aria-controls="collapseFive">
-                                ¿Qué es el blanqueamiento dental y es seguro?
+                                Â¿QuÃ© es el blanqueamiento dental y es seguro?
                             </button>
                         </h2>
                     </div>
@@ -379,11 +380,11 @@
                         <div class="card-body">
                             El blanqueamiento dental es un procedimiento que utiliza agentes blanqueadores para
                             reducir las manchas y
-                            la decoloración de los dientes. Cuando se realiza bajo la supervisión de un dentista
+                            la decoloraciÃ³n de los dientes. Cuando se realiza bajo la supervisiÃ³n de un dentista
                             calificado,
                             es generalmente seguro y efectivo. Es importante seguir las instrucciones del dentista
                             para evitar
-                            efectos secundarios, como la sensibilidad dental o el dado a las encías.
+                            efectos secundarios, como la sensibilidad dental o el daÃ±o a las encÃ­as.
                         </div>
                     </div>
                 </div>
@@ -397,7 +398,7 @@
                 </button>
             </div>
             <div class="chat-body" id="chat-body">
-                <!-- Los mensajes se agregarán aquí dinámicamente -->
+                <!-- Los mensajes se agregarÃ¡n aquÃ­ dinÃ¡micamente -->
             </div>
             <div class="loading-animation" id="loading-animation">
                 <span></span>
@@ -405,7 +406,7 @@
                 <span></span>
             </div>
             <div class="chat-input">
-                <input type="text" id="pregunta" placeholder="Describe tus síntomas o preocupaciones...">
+                <input type="text" id="pregunta" placeholder="Describe tus sÃ­ntomas o preocupaciones...">
                 <button onclick="enviarPregunta()"><i class="fas fa-paper-plane"></i></button>
             </div>
         </div>
@@ -430,7 +431,19 @@
                 });
 
                 // Mensaje inicial del bot
-                agregarMensajeBot('¡Hola! Soy el asistente virtual de Art Dent. ¿En qué puedo ayudarte hoy? Puedes describir tus síntomas o preocupaciones dentales y te recomendaré el servicio más adecuado.');
+                agregarMensajeBot('Â¡Hola! Soy el asistente virtual de Art Dent. Â¿En quÃ© puedo ayudarte hoy? Puedes describir tus sÃ­ntomas o preocupaciones dentales y te recomendarÃ© el servicio mÃ¡s adecuado.');
+
+                // Enviar mensaje al presionar Enter
+                const preguntaInput = document.getElementById('pregunta');
+                if(preguntaInput){
+                    preguntaInput.addEventListener('keypress', function (e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            enviarPregunta();
+                        }
+                    });
+                }
+
             });
 
             async function enviarPregunta() {
@@ -479,8 +492,7 @@
                 const mensajeDiv = document.createElement('div');
                 mensajeDiv.className = 'message bot-message';
 
-                const mensajeConLinks = convertirUrlsAClickables(mensaje);
-                mensajeDiv.innerHTML = mensajeConLinks;
+                mensajeDiv.innerHTML = mensaje;
 
                 chatBody.appendChild(mensajeDiv);
                 scrollToBottom();

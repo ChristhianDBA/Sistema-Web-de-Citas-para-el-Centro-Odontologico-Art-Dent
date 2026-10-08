@@ -1,9 +1,9 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@page import="java.util.Iterator"%>
 <%@page import="pe.edu.utp.daoImpl.ServicioDaoImpl"%>
 <%@page import="pe.edu.utp.entity.Servicio"%>
 <%@page import="java.util.List"%>
 <%@page import="pe.edu.utp.dao.ServicioDao"%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <!DOCTYPE html>
@@ -206,62 +206,37 @@
                 <%@include file="header.jsp"%>
             </div>
         </nav>
-        <!-- Sección con fondo animado -->
-        <section class="py-5 text-white fade-in fade-in-delay-1" 
-                 style="background-image: url('https://www.aenor.com/PublishingImages/certificacion/sistemas/sistemas-fichas/calidad_sdentales_179001.jpg'); background-size: cover; background-position: center; height: 600px;">
-            <!-- Capa oscura superpuesta -->
-            <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark opacity-50"></div>
+                <!-- Sección con fondo de imagen -->
+        <section class="py-5 text-white fade-in fade-in-delay-1 position-relative" 
+                 style="background-image: url('https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1920&q=80'); background-size: cover; background-position: center; min-height: 420px; display: flex; align-items: center;">
+            <!-- Capa oscura superpuesta para legibilidad -->
+            <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark" style="opacity: 0.55; z-index: 1;"></div>
 
             <!-- Contenido principal -->
-            <div class="container d-flex flex-column justify-content-center h-100 position-relative px-4">
-                <div class="text-start">
-                    <h1 class="display-4 text-center fade-in fade-in-delay-2">Nuestros Servicios</h1>
-                    <p class="lead text-center fade-in fade-in-delay-3">
-                        En nuestra clínica dental, ofrecemos una amplia gama de servicios para cuidar de tu salud bucodental. 
-                        Nuestro equipo de profesionales está comprometido con brindarte la mejor atención en un ambiente cómodo y seguro.
-                    </p>
-                </div>
+            <div class="container position-relative text-center px-4 py-5" style="z-index: 2;">
+                <h1 class="display-4 fw-bold fade-in fade-in-delay-2 text-white mb-3">Nuestros Servicios</h1>
+                <p class="lead fade-in fade-in-delay-3 text-white mx-auto" style="max-width: 850px; font-size: 1.25rem;">
+                    En nuestra clínica dental, ofrecemos una amplia gama de servicios para cuidar de tu salud bucodental. 
+                    Nuestro equipo de profesionales está comprometido con brindarte la mejor atención en un ambiente cómodo y seguro.
+                </p>
             </div>
         </section>
         <!-- Sección de servicios con tarjetas animadas -->
-        <section>
-            <div class="container">
-                <div class="row">
-                    <c:forEach var="servicio" items="${servicios}">
-                        <div class="col-md-6 col-lg-3 mb-4 fade-in fade-in-delay-1">
-                            <div class="card h-100">
-                                <img src="${servicio.linkimagen}" class="card-img-top img-fluid card-image" alt="${servicio.tipoServicio}">
-                                <div class="card-body d-flex flex-column">
-                                    <h5 class="card-title">${servicio.tipoServicio}</h5>
-                                    <p class="card-text">
-                                        <c:choose>
-                                            <c:when test="${fn:length(servicio.descripcion) > 110}">
-                                                ${fn:substring(servicio.descripcion, 0, 110)}...
-                                            </c:when>
-                                            <c:otherwise>
-                                                ${servicio.descripcion}
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </p>
-                                    <a href="ServicioController?accion=cargar&id=${servicio.idServicio}" class="btn btn-primary mt-auto">Leer más</a>
-                                </div>
-                            </div>
-                        </div>
-                    </c:forEach>
-                </div>
-            </div>
-        </section>
-
         <section class="py-5">
             <div class="container">
                 <div class="row">
-                    <c:forEach var="servicio" items="${listServicio}">
-                        <div class="col-md-6 col-lg-3 mb-4">
-                            <div class="card h-100">
-                                <img src="${servicio.linkimagen}" class="card-img-top img-fluid card-image" alt="${servicio.tipoServicio}">
-                                <div class="card-body d-flex flex-column">
-                                    <h5 class="card-title">${servicio.tipoServicio}</h5>
-                                    <p class="card-text">
+                    <c:set var="itemsToDisplay" value="${not empty listServicio ? listServicio : servicios}" />
+                    <c:forEach var="servicio" items="${itemsToDisplay}">
+                        <div class="col-md-6 col-lg-3 mb-4 fade-in fade-in-delay-1">
+                            <div class="card h-100 shadow-sm border-0 rounded-3 overflow-hidden">
+                                <img src="${servicio.linkimagen}" 
+                                     onerror="fallbackDentalImg(this, '${servicio.tipoServicio}');" 
+                                     class="card-img-top img-fluid card-image" 
+                                     style="height: 200px; object-fit: cover; width: 100%;" 
+                                     alt="${servicio.tipoServicio}">
+                                <div class="card-body d-flex flex-column p-4">
+                                    <h5 class="card-title fw-bold text-dark mb-2">${servicio.tipoServicio}</h5>
+                                    <p class="card-text text-muted flex-grow-1">
                                         <c:choose>
                                             <c:when test="${fn:length(servicio.descripcion) > 110}">
                                                 ${fn:substring(servicio.descripcion, 0, 110)}...
@@ -271,15 +246,39 @@
                                             </c:otherwise>
                                         </c:choose>
                                     </p>
-                                    <a href="ServicioController?action=cargar&id=${servicio.idServicio}" class="btn btn-primary mt-auto">Leer más</a>
+                                    <a href="ServicioController?action=cargar&id=${servicio.idServicio}" class="btn btn-primary rounded-pill mt-3 py-2">Leer más</a>
                                 </div>
                             </div>
                         </div>
                     </c:forEach>
-
                 </div>
             </div>
         </section>
+
+        <script>
+        function fallbackDentalImg(img, title) {
+            img.onerror = null;
+            var t = (title || '').toLowerCase();
+            if (t.indexOf('blanqueamiento') !== -1) {
+                img.src = 'https://img.freepik.com/foto-gratis/primer-plano-mujer-dientes-blancos-perfectos_186202-4573.jpg';
+            } else if (t.indexOf('caries') !== -1) {
+                img.src = 'https://img.freepik.com/foto-gratis/dentista-examinando-dientes-paciente-femenino-espejo-bucal_23-2149176709.jpg';
+            } else if (t.indexOf('endodoncia') !== -1) {
+                img.src = 'https://img.freepik.com/foto-gratis/dentista-tratando-paciente-clinica_23-2149176729.jpg';
+            } else if (t.indexOf('prótesis') !== -1 || t.indexOf('protesis') !== -1) {
+                img.src = 'https://img.freepik.com/foto-gratis/dentista-sosteniendo-protesis-dental_23-2149176719.jpg';
+            } else if (t.indexOf('cirug') !== -1) {
+                img.src = 'https://img.freepik.com/foto-gratis/medico-examinando-dientes-paciente-femenino-usando-herramientas-dentales_23-2149176721.jpg';
+            } else if (t.indexOf('ortodoncia') !== -1) {
+                img.src = 'https://img.freepik.com/foto-gratis/paciente-femenina-que-muestra-sus-nuevos-frenillos-dental-clinica_23-2149301072.jpg';
+            } else if (t.indexOf('2.0') !== -1) {
+                img.src = 'https://img.freepik.com/foto-gratis/dentista-realizando-higiene-bucal-paciente_23-2149176715.jpg';
+            } else {
+                img.src = 'https://img.freepik.com/foto-gratis/primer-plano-dentista-limpiando-dientes-paciente_23-2149176713.jpg';
+            }
+        }
+        </script>
+
         <div class="chat-widget collapsed" id="chatWidget">
             <div class="chat-header" id="chatHeader">
                 <span><i class="fas fa-tooth"></i> Asistente Virtual de Art Dent</span>
@@ -322,6 +321,18 @@
 
                 // Mensaje inicial del bot
                 agregarMensajeBot('¡Hola! Soy el asistente virtual de Art Dent. ¿En qué puedo ayudarte hoy? Puedes describir tus síntomas o preocupaciones dentales y te recomendaré el servicio más adecuado.');
+
+                // Enviar mensaje al presionar Enter
+                const preguntaInput = document.getElementById('pregunta');
+                if(preguntaInput){
+                    preguntaInput.addEventListener('keypress', function (e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            enviarPregunta();
+                        }
+                    });
+                }
+
             });
 
             async function enviarPregunta() {
@@ -370,8 +381,7 @@
                 const mensajeDiv = document.createElement('div');
                 mensajeDiv.className = 'message bot-message';
 
-                const mensajeConLinks = convertirUrlsAClickables(mensaje);
-                mensajeDiv.innerHTML = mensajeConLinks;
+                mensajeDiv.innerHTML = mensaje;
 
                 chatBody.appendChild(mensajeDiv);
                 scrollToBottom();

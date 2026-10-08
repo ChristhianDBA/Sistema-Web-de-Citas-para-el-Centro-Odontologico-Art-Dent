@@ -46,4 +46,6 @@ public interface CitaDao {
     List<Cita> listarCitasRecientes();
 
     public int obtenerTotalCitasReservas();
+
+    public String getEmailPacienteByCitaId(int idCita);
 }

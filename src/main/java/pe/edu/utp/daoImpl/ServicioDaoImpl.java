@@ -41,8 +41,8 @@ public class ServicioDaoImpl implements ServicioDao {
                 servicio.setLema(rs.getString("Lema"));
                 servicio.setDescripcion(rs.getString("Descripcion"));
                 servicio.setRespuesta(rs.getString("Respuesta"));
-                servicio.setCosto(rs.getBigDecimal("Costo"));//dsct
-                servicio.setLinkimagen(rs.getString("img"));
+                servicio.setCosto(rs.getBigDecimal("Costo"));// dsct
+                servicio.setLinkimagen(obtenerImagenValida(servicio.getTipoServicio(), rs.getString("img")));
                 lista.add(servicio);
             }
         } catch (SQLException e) {
@@ -54,12 +54,12 @@ public class ServicioDaoImpl implements ServicioDao {
 
     @Override
     public Servicio ListService(int id) {
-        Servicio ser = new Servicio();  // Aquí se crea una nueva instancia de Servicio para cada llamada
+        Servicio ser = new Servicio(); // Aquí se crea una nueva instancia de Servicio para cada llamada
         String SQL = "SELECT * FROM servicio WHERE IdServicio = ?";
         try {
             cx = Conexion.getConection();
             ps = cx.prepareStatement(SQL);
-            ps.setInt(1, id);  // Usar parámetros preparados para evitar SQL Injection
+            ps.setInt(1, id); // Usar parámetros preparados para evitar SQL Injection
             rs = ps.executeQuery();
             if (rs.next()) {
                 ser.setIdServicio(rs.getInt("idServicio"));
@@ -67,12 +67,12 @@ public class ServicioDaoImpl implements ServicioDao {
                 ser.setLema(rs.getString("Lema"));
                 ser.setDescripcion(rs.getString("Descripcion"));
                 ser.setRespuesta(rs.getString("Respuesta"));
-                ser.setLinkimagen(rs.getString("img"));
+                ser.setLinkimagen(obtenerImagenValida(ser.getTipoServicio(), rs.getString("img")));
             }
         } catch (SQLException e) {
             System.out.println("Error al obtener servicio: " + e);
         }
-        return ser;  // Retorna el objeto Servicio encontrado
+        return ser; // Retorna el objeto Servicio encontrado
     }
 
     @Override
@@ -89,7 +89,7 @@ public class ServicioDaoImpl implements ServicioDao {
                 servicio.setIdServicio(rs.getInt("idServicio"));
                 servicio.setTipoServicio(rs.getString("TipoServicio"));
                 servicio.setCosto(rs.getBigDecimal("Costo"));
-                servicio.setLinkimagen(rs.getString("img"));
+                servicio.setLinkimagen(obtenerImagenValida(servicio.getTipoServicio(), rs.getString("img")));
                 servicios.add(servicio);
             }
         } catch (SQLException e) {
@@ -116,7 +116,7 @@ public class ServicioDaoImpl implements ServicioDao {
                 servicio.setDescripcion(rs.getString("Descripcion"));
                 servicio.setRespuesta(rs.getString("Respuesta"));
                 servicio.setCosto(rs.getBigDecimal("Costo"));
-                servicio.setLinkimagen(rs.getString("img"));
+                servicio.setLinkimagen(obtenerImagenValida(servicio.getTipoServicio(), rs.getString("img")));
             }
         } catch (SQLException e) {
             System.out.println("Error al obtener usuario por ID: " + e);
@@ -147,7 +147,7 @@ public class ServicioDaoImpl implements ServicioDao {
     @Override
     public boolean actualizarServicio(Servicio servicio) {
         String SQL = "{call sp_actualizarServicio(?,?,?,?,?,?,?)}";
-         try {
+        try {
             cx = Conexion.getConection();
             ps = cx.prepareStatement(SQL);
             ps.setInt(1, servicio.getIdServicio());
@@ -180,4 +180,33 @@ public class ServicioDaoImpl implements ServicioDao {
         return resultado;
     }
 
+    private String obtenerImagenValida(String tipo, String imgActual) {
+        String t = tipo != null ? tipo.toLowerCase().trim() : "";
+
+        if (t.contains("blanqueamiento")) {
+            return "https://img.freepik.com/foto-gratis/primer-plano-mujer-dientes-blancos-perfectos_186202-4573.jpg";
+        } else if (t.contains("caries")) {
+            return "https://img.freepik.com/foto-gratis/dentista-examinando-dientes-paciente-femenino-espejo-bucal_23-2149176709.jpg";
+        } else if (t.contains("endodoncia")) {
+            return "https://img.freepik.com/foto-gratis/dentista-tratando-paciente-clinica_23-2149176729.jpg";
+        } else if (t.contains("prótesis") || t.contains("protesis")) {
+            return "https://img.freepik.com/foto-gratis/dentista-sosteniendo-protesis-dental_23-2149176719.jpg";
+        } else if (t.contains("cirug")) {
+            return "https://img.freepik.com/foto-gratis/medico-examinando-dientes-paciente-femenino-usando-herramientas-dentales_23-2149176721.jpg";
+        } else if (t.contains("ortodoncia")) {
+            return "https://img.freepik.com/foto-gratis/paciente-femenina-que-muestra-sus-nuevos-frenillos-dental-clinica_23-2149301072.jpg";
+        } else if (t.contains("2.0")) {
+            return "https://img.freepik.com/foto-gratis/dentista-realizando-higiene-bucal-paciente_23-2149176715.jpg";
+        } else if (t.contains("limpieza")) {
+            return "https://img.freepik.com/foto-gratis/primer-plano-dentista-limpiando-dientes-paciente_23-2149176713.jpg";
+        }
+
+        if (imgActual != null && !imgActual.trim().isEmpty() && imgActual.startsWith("http")
+                && !imgActual.contains("aenor.com") && !imgActual.contains("placeholder")
+                && !imgActual.contains("photo-1629909613654")) {
+            return imgActual;
+        }
+
+        return "https://img.freepik.com/foto-gratis/primer-plano-dentista-limpiando-dientes-paciente_23-2149176713.jpg";
+    }
 }

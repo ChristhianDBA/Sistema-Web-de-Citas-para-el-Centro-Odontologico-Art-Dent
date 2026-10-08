@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%//@include file="WEB-INF/template/libreria.jspf" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
@@ -33,7 +34,7 @@
             }
         %>
         <%@include file="NavPanel.jsp" %>        
-        <!-- Contenido de la Página -->
+        <!-- Contenido de la PÃ¡gina -->
         <div class="d-flex flex-grow-1">
             <!-- Sidebar -->
             <div class=" text-white p-4 d-flex flex-column " style="width: 400px; background:#2E3E50;">
@@ -55,7 +56,7 @@
                     </li>
                 </ul>
 
-                <!-- Botón de Salir en la parte inferior -->
+                <!-- BotÃ³n de Salir en la parte inferior -->
                 <a class="nav-link text-white mt-auto border-top p-2 px-4 text-center" href="iniciosesion.html">Salir</a>
             </div>
 
@@ -95,7 +96,7 @@
                                 <td>${VerReserva[0].horaReserva}</td>
                             </tr>
                             <tr>
-                                <th class="text-dark p-3 bg-info-subtle" >Descripción</th>
+                                <th class="text-dark p-3 bg-info-subtle" >DescripciÃ³n</th>
                                 <td>${VerReserva[0].descripcion}</td>
                             </tr>
                             <tr>
@@ -103,7 +104,7 @@
                                 <td>${VerReserva[0].tipoServicio}</td>
                             </tr>
                             <tr>
-                                <th class="text-dark p-3 bg-info-subtle" >Médico Asignado</th>
+                                <th class="text-dark p-3 bg-info-subtle" >MÃ©dico Asignado</th>
                                 <td>${VerReserva[0].nombreUsuario} ${VerReserva[0].apellidoUsuario}</td>
                             </tr>
                             <tr>
