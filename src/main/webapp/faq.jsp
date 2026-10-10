@@ -1,524 +1,284 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preguntas Frecuentes - Art Dent | Respuestas y Orientación</title>
+    <!-- Bootstrap 5.3 & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Roboto:wght@500;700;900&display=swap" rel="stylesheet">
+    <!-- Hoja de Estilos Oficial de Marca Art Dent -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Preguntas Frecuentes</title>
-        <!-- Bootstrap CSS -->
-        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-        <style>
-            /* Cambiar el color de los botones del acordeón a negro y eliminar el subrayado */
-            .accordion-button {
-                color: black !important;
-                text-decoration: none !important;
-                background: none !important; /* Quitar el fondo */
-            }
+    <style>
+        .faq-hero {
+            background-image: linear-gradient(rgba(33, 37, 41, 0.75), rgba(33, 37, 41, 0.85)), 
+                              url('https://img.freepik.com/fotos-premium/medicos-pie-pasillo-hospital-brazos-cruzados_958192-31239.jpg');
+            background-size: cover;
+            background-position: center;
+            min-height: 380px;
+            display: flex;
+            align-items: center;
+        }
 
-            .accordion-button:focus {
-                box-shadow: none !important;
-            }
+        .accordion-item {
+            border: 1px solid var(--artdent-border);
+            border-radius: 12px !important;
+            overflow: hidden;
+            margin-bottom: 1rem;
+            box-shadow: var(--artdent-shadow-sm);
+        }
 
-            .accordion-button:not(.collapsed) {
-                color: black !important;
-            }
+        .accordion-button {
+            font-weight: 700;
+            color: var(--artdent-dark) !important;
+            padding: 1.2rem 1.5rem;
+            background-color: #ffffff;
+            font-size: 1.05rem;
+        }
 
-            /* Evitar que cambie de color al pasar el ratón */
-            .accordion-button:hover {
-                color: black !important;
-                background: none !important; /* Sin fondo */
-            }
+        .accordion-button:not(.collapsed) {
+            background-color: #f0fbfd !important;
+            color: var(--artdent-primary) !important;
+            box-shadow: none;
+            border-bottom: 1px solid var(--artdent-border);
+        }
 
-            .accordion-button:focus {
-                outline: none !important; /* Eliminar el contorno de enfoque */
-            }
+        .accordion-button:focus {
+            box-shadow: none;
+            border-color: var(--artdent-primary);
+        }
 
-            /* Transición de aparición para el fondo */
-            .fade-in {
-                opacity: 0;
-                animation: fadeInEffect 1.5s ease-in-out forwards;
-            }
+        .accordion-body {
+            padding: 1.4rem 1.5rem;
+            line-height: 1.7;
+            color: #495057;
+            background-color: #ffffff;
+        }
+    </style>
+</head>
 
-            /* Transición de aparición para los encabezados de las preguntas */
-            .fade-in-delay-1 {
-                animation-delay: 0.5s;
-            }
+<body>
+    <!-- Navbar Oficial -->
+    <%@include file="header.jsp"%>
 
-            .fade-in-delay-2 {
-                animation-delay: 1s;
-            }
-
-            .fade-in-delay-3 {
-                animation-delay: 1.5s;
-            }
-
-            .fade-in-delay-4 {
-                animation-delay: 2s;
-            }
-
-            .fade-in-delay-5 {
-                animation-delay: 2.5s;
-            }
-
-            /* Animación para los elementos */
-            @keyframes fadeInEffect {
-                from {
-                    opacity: 0;
-                }
-
-                to {
-                    opacity: 1;
-                }
-            }
-            .text-transition {
-                transition: opacity 0.5s ease, transform 0.5s ease;
-            }
-
-            /* Transición suave para la imagen */
-            .img-transition {
-                transition: transform 0.5s ease-in-out;
-            }
-
-            /* Efecto de hover en la imagen */
-            .img-transition:hover {
-                transform: scale(1.05); /* Aumenta ligeramente el tamaño al pasar el ratón */
-            }
-            .chat-widget {
-                position: fixed;
-                bottom: 20px;
-                right: 20px;
-                width: 350px;
-                height: 500px;
-                background: linear-gradient(145deg, #ffffff, #f0f0f0);
-                border-radius: 20px;
-                overflow: hidden;
-                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-                transition: all 0.3s ease;
-                z-index: 1000;
-            }
-
-            .chat-widget.collapsed {
-                height: 60px;
-            }
-
-            /* New styles for expanded state */
-            .chat-widget:not(.collapsed) {
-                width: 400px; /* Increased width when expanded */
-                height: 600px; /* Increased height for better proportion */
-            }
-
-            .chat-header {
-                background: linear-gradient(90deg, #3498db, #2980b9);
-                color: #fff;
-                padding: 15px;
-                cursor: pointer;
-                font-weight: bold;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-            }
-
-            .chat-body {
-                height: calc(100% - 120px);
-                overflow-y: auto;
-                padding: 15px;
-                background-color: #f8f9fa;
-            }
-
-            .chat-input {
-                height: 60px;
-                background-color: #fff;
-                padding: 10px;
-                display: flex;
-                align-items: center;
-            }
-
-            .chat-input input {
-                flex-grow: 1;
-                border: none;
-                background-color: #f1f3f5;
-                color: #333;
-                padding: 10px 15px;
-                border-radius: 20px;
-                margin-right: 10px;
-            }
-
-            .chat-input button {
-                background-color: #3498db;
-                color: #fff;
-                border: none;
-                border-radius: 50%;
-                width: 40px;
-                height: 40px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                cursor: pointer;
-                transition: background-color 0.3s ease;
-            }
-
-            .chat-input button:hover {
-                background-color: #2980b9;
-            }
-
-            .message {
-                margin-bottom: 15px;
-                padding: 10px 15px;
-                border-radius: 20px;
-                max-width: 80%;
-                animation: fadeIn 0.3s ease;
-            }
-
-            @keyframes fadeIn {
-                from {
-                    opacity: 0;
-                    transform: translateY(10px);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-
-            .user-message {
-                background-color: #3498db;
-                color: #fff;
-                align-self: flex-end;
-                margin-left: auto;
-            }
-
-            .bot-message {
-                background-color: #ecf0f1;
-                color: #34495e;
-            }
-
-            .chat-toggle {
-                background: none;
-                border: none;
-                color: #fff;
-                font-size: 1.2em;
-            }
-
-            .loading-animation {
-                display: none;
-                text-align: center;
-                padding: 10px;
-            }
-
-            .loading-animation span {
-                display: inline-block;
-                width: 10px;
-                height: 10px;
-                background-color: #3498db;
-                border-radius: 50%;
-                margin: 0 5px;
-                animation: bounce 1.4s infinite ease-in-out both;
-            }
-
-            .loading-animation span:nth-child(1) {
-                animation-delay: -0.32s;
-            }
-
-            .loading-animation span:nth-child(2) {
-                animation-delay: -0.16s;
-            }
-
-            @keyframes bounce {
-                0%, 80%, 100% {
-                    transform: scale(0);
-                }
-                40% {
-                    transform: scale(1.0);
-                }
-            }
-
-            /* Media query for responsiveness */
-            @media (max-width: 480px) {
-                .chat-widget, .chat-widget:not(.collapsed) {
-                    width: 90%;
-                    right: 5%;
-                    left: 5%;
-                }
-            }
-        </style>
-    </head>
-
-    <body class="m-0 p-0">
-        <!-- Header -->
-        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-            <div class="container-fluid">
-                <%@include file="header.jsp"%>
-            </div>
-        </nav>
-
-        <!-- FAQ Section -->
-        <div class="position-relative bg-dark text-white fade-in"
-             style="background-image: url('https://img.freepik.com/fotos-premium/medicos-pie-pasillo-hospital-brazos-cruzados_958192-31239.jpg');
-             background-size: cover; background-position: center; height: 600px;">
-            <!-- Capa de superposición oscura -->
-            <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark opacity-50"></div>
-
-            <!-- Contenedor del contenido sobre la imagen -->
-            <div class="container d-flex flex-column justify-content-center align-items-center h-100 position-relative text-center">
-                <h1 class="display-4 fade-in fade-in-delay-1">FAQ</h1>
-                <p class="text-light fade-in fade-in-delay-2" style="font-size: 25px;">Respondemos a sus preguntas más frecuentes.</p>
-            </div>
+    <!-- Banner Principal FAQ -->
+    <section class="faq-hero text-white text-center">
+        <div class="container px-4">
+            <span class="badge bg-brand-mint text-dark px-3 py-2 rounded-pill text-uppercase fw-bold mb-3">
+                <i class="bi bi-question-circle-fill me-1"></i> Centro de Ayuda
+            </span>
+            <h1 class="display-4 fw-bold mb-3">Preguntas <span class="text-brand-primary">Frecuentes</span></h1>
+            <p class="lead text-white-50 mx-auto" style="max-width: 750px;">
+                Encuentra respuestas claras y rápidas sobre citas, costos, procedimientos dentales y cuidados preventivos.
+            </p>
         </div>
+    </section>
 
-        <!-- Acordeón de Preguntas Frecuentes -->
-        <div class="container mt-5">
+    <!-- Acordeón de Preguntas Frecuentes -->
+    <section class="py-5 bg-brand-light">
+        <div class="container px-4" style="max-width: 900px;">
             <div class="accordion" id="faqAccordion">
+
                 <!-- Pregunta 1 -->
-                <div class="card mb-3 border-0 rounded-lg fade-in fade-in-delay-3">
-                    <div class="card-header bg-light border-0 rounded-top" id="headingOne">
-                        <h2 class="mb-0">
-                            <button class="accordion-button btn btn-link btn-block text-left font-weight-bold"
-                                    type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true"
-                                    aria-controls="collapseOne">
-                                ¿Qué hago si no puedo presentarme a mi cita?
-                            </button>
-                        </h2>
-                    </div>
-                    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#faqAccordion">
-                        <div class="card-body">
-                            Si no puedes presentarte a tu cita, te recomendamos que contactes a la clínica o al
-                            consultorio lo antes posible.
-                            Generalmente, se puede reprogramar la cita sin problema si se avisa con antelación.
-                            Algunos lugares pueden cobrar
-                            una tarifa por cancelaciones tardías o ausencias sin previo aviso, por lo que es
-                            importante comunicarte con ellos
-                            para evitar cargos adicionales.
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingOne">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" 
+                                data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            <i class="bi bi-calendar-x text-brand-primary me-3 fs-5"></i>
+                            ¿Qué hago si no puedo presentarme a mi cita reservada?
+                        </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Te recomendamos comunicarte con nuestra secretaría con al menos <strong>2 horas de anticipación</strong> al teléfono <strong>(01) 361-3634</strong> o vía WhatsApp. Podrás solicitar una reprogramación sin costo alguno según los horarios disponibles de tu odontólogo de preferencia.
                         </div>
                     </div>
                 </div>
 
                 <!-- Pregunta 2 -->
-                <div class="card mb-3 border-0 rounded-lg fade-in fade-in-delay-4">
-                    <div class="card-header bg-light border-0 rounded-top" id="headingTwo">
-                        <h2 class="mb-0">
-                            <button class="accordion-button btn btn-link btn-block text-left font-weight-bold collapsed"
-                                    type="button" data-toggle="collapse" data-target="#collapseTwo"
-                                    aria-expanded="false" aria-controls="collapseTwo">
-                                ¿Cuál es el costo de una consulta?
-                            </button>
-                        </h2>
-                    </div>
-                    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#faqAccordion">
-                        <div class="card-body">
-                            El costo de una consulta dental puede variar dependiendo del tipo de servicio y del
-                            profesional. En general, una
-                            consulta inicial puede costar alrededor de S/ 50.00. Este costo generalmente incluye una
-                            evaluación general y
-                            recomendaciones iniciales de tratamiento. Para tratamientos específicos, como limpiezas
-                            profundas, empastes o
-                            procedimientos quirúrgicos, es posible que se apliquen tarifas adicionales.
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingTwo">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                            <i class="bi bi-currency-dollar text-brand-accent me-3 fs-5"></i>
+                            ¿Cuál es el costo de una consulta o evaluación diagnóstica?
+                        </button>
+                    </h2>
+                    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            La consulta de evaluación general con odontograma tiene un costo base de <strong>S/ 50.00</strong>. Si inicias un tratamiento el mismo día (profilaxis, curación o endodoncia), dicho monto puede abonarse como parte de pago del procedimiento según las promociones vigentes.
                         </div>
                     </div>
                 </div>
 
                 <!-- Pregunta 3 -->
-                <div class="card mb-3 border-0 rounded-lg fade-in fade-in-delay-5">
-                    <div class="card-header bg-light border-0 rounded-top" id="headingThree">
-                        <h2 class="mb-0">
-                            <button class="accordion-button btn btn-link btn-block text-left font-weight-bold collapsed"
-                                    type="button" data-toggle="collapse" data-target="#collapseThree"
-                                    aria-expanded="false" aria-controls="collapseThree">
-                                ¿Con qué frecuencia debo ir al dentista?
-                            </button>
-                        </h2>
-                    </div>
-                    <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#faqAccordion">
-                        <div class="card-body">
-                            Se recomienda visitar al dentista al menos cada seis meses para una revisión y limpieza
-                            dental.
-                            Sin embargo, la frecuencia puede variar según las necesidades individuales y la salud
-                            bucal. Si
-                            tienes problemas dentales específicos, como caries recurrentes o enfermedades de las
-                            encías, tu
-                            dentista puede recomendarte visitas más frecuentes.
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingThree">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                            <i class="bi bi-clock-history text-brand-primary me-3 fs-5"></i>
+                            ¿Con qué frecuencia debo acudir a revisión dental?
+                        </button>
+                    </h2>
+                    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            La Organización Mundial de la Salud y nuestro equipo médico recomiendan chequeos preventivos cada <strong>6 meses</strong>. Esta frecuencia previene caries avanzadas, gingivitis y permite realizar limpiezas con ultrasonido antes de que el sarro afecte el hueso alveolar.
                         </div>
                     </div>
                 </div>
 
                 <!-- Pregunta 4 -->
-                <div class="card mb-3 border-0 rounded-lg fade-in fade-in-delay-6">
-                    <div class="card-header bg-light border-0 rounded-top" id="headingFour">
-                        <h2 class="mb-0">
-                            <button class="accordion-button btn btn-link btn-block text-left font-weight-bold collapsed"
-                                    type="button" data-toggle="collapse" data-target="#collapseFour"
-                                    aria-expanded="false" aria-controls="collapseFour">
-                                ¿Qué hacer si tengo un dolor de muelas intenso?
-                            </button>
-                        </h2>
-                    </div>
-                    <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#faqAccordion">
-                        <div class="card-body">
-                            Si experimentas un dolor de muelas intenso, debes contactar a tu dentista lo antes
-                            posible. Puedes
-                            tomar analgésicos de venta libre para aliviar el dolor temporalmente, pero es
-                            fundamental que recibas
-                            atención profesional para tratar la causa subyacente. El dolor intenso puede ser señal
-                            de una infección
-                            o un problema serio que necesita tratamiento inmediato.
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingFour">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                            <i class="bi bi-shield-exclamation text-brand-accent me-3 fs-5"></i>
+                            ¿Qué debo hacer si presento dolor dental intenso o una urgencia?
+                        </button>
+                    </h2>
+                    <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Si tienes dolor agudo o inflamación, comunícate inmediatamente a nuestro centro para coordinar una <strong>atención de urgencia presencial</strong>. Evita colocarte pastillas o alcohol directamente sobre la encía, ya que causan quemaduras químicas, y consulta a nuestro asistente virtual para orientación previa.
                         </div>
                     </div>
                 </div>
 
                 <!-- Pregunta 5 -->
-                <div class="card mb-3 border-0 rounded-lg fade-in fade-in-delay-7">
-                    <div class="card-header bg-light border-0 rounded-top" id="headingFive">
-                        <h2 class="mb-0">
-                            <button class="accordion-button btn btn-link btn-block text-left font-weight-bold collapsed"
-                                    type="button" data-toggle="collapse" data-target="#collapseFive"
-                                    aria-expanded="false" aria-controls="collapseFive">
-                                ¿Qué es el blanqueamiento dental y es seguro?
-                            </button>
-                        </h2>
-                    </div>
-                    <div id="collapseFive" class="collapse" aria-labelledby="headingFive" data-parent="#faqAccordion">
-                        <div class="card-body">
-                            El blanqueamiento dental es un procedimiento que utiliza agentes blanqueadores para
-                            reducir las manchas y
-                            la decoloración de los dientes. Cuando se realiza bajo la supervisión de un dentista
-                            calificado,
-                            es generalmente seguro y efectivo. Es importante seguir las instrucciones del dentista
-                            para evitar
-                            efectos secundarios, como la sensibilidad dental o el daño a las encías.
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingFive">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                            <i class="bi bi-stars text-brand-mint me-3 fs-5"></i>
+                            ¿El blanqueamiento dental daña el esmalte de los dientes?
+                        </button>
+                    </h2>
+                    <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            No. Cuando se realiza bajo supervisión odontológica profesional con geles biocompatibles y luz LED certificada, el esmalte conserva intacta su microestructura. Puede presentarse una ligera sensibilidad transitoria de 24 a 48 horas que se controla con cremas desensibilizantes.
                         </div>
                     </div>
                 </div>
+
+            </div>
+
+            <!-- Caja de Consulta Directa -->
+            <div class="card mt-5 p-4 text-center border-0 shadow-sm" style="border-radius: 16px; background: #ffffff;">
+                <h5 class="fw-bold text-brand-dark mb-2">¿Tienes alguna pregunta adicional?</h5>
+                <p class="text-muted small mb-3">Utiliza nuestro asistente virtual con IA o contáctanos directamente a nuestra central telefónica.</p>
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="ServicioController?action=formreservaa" class="btn btn-primary rounded-pill px-4">
+                        <i class="bi bi-calendar-check me-1"></i> Agendar Cita
+                    </a>
+                    <a href="https://wa.me/51987654321" target="_blank" class="btn btn-outline-success rounded-pill px-4">
+                        <i class="bi bi-whatsapp me-1"></i> Chatear por WhatsApp
+                    </a>
+                </div>
             </div>
         </div>
-        <div class="chat-widget collapsed" id="chatWidget">
-            <div class="chat-header" id="chatHeader">
-                <span><i class="fas fa-tooth"></i> Asistente Virtual de Art Dent</span>
-                <button class="chat-toggle" id="chatToggle">
-                    <i class="fas fa-chevron-up"></i>
-                </button>
-            </div>
-            <div class="chat-body" id="chat-body">
-                <!-- Los mensajes se agregarán aquí dinámicamente -->
-            </div>
-            <div class="loading-animation" id="loading-animation">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-            <div class="chat-input">
-                <input type="text" id="pregunta" placeholder="Describe tus síntomas o preocupaciones...">
-                <button onclick="enviarPregunta()"><i class="fas fa-paper-plane"></i></button>
-            </div>
+    </section>
+
+    <!-- Chatbot Widget Oficial -->
+    <div class="chat-widget collapsed" id="chatWidget" style="position: fixed; bottom: 25px; right: 25px; z-index: 1050;">
+        <div class="chat-header" id="chatHeader" style="background: linear-gradient(135deg, var(--artdent-primary), var(--artdent-primary-hover)); color: #fff; padding: 14px 18px; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: space-between;">
+            <span class="d-flex align-items-center gap-2">
+                <i class="bi bi-robot fs-5"></i> 
+                <span>Asistente Virtual Art Dent</span>
+            </span>
+            <button class="btn p-0 text-white" id="chatToggle" aria-label="Toggle chat">
+                <i class="fas fa-chevron-up"></i>
+            </button>
         </div>
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const chatWidget = document.getElementById('chatWidget');
-                const chatHeader = document.getElementById('chatHeader');
-                const chatToggle = document.getElementById('chatToggle');
-                const chatBody = document.getElementById('chat-body');
+        <div class="chat-body" id="chat-body" style="flex: 1; overflow-y: auto; padding: 16px; background-color: #f8fafc; display: flex; flex-direction: column; gap: 10px;"></div>
+        <div class="chat-input" style="height: 64px; background: #fff; padding: 10px 14px; display: flex; align-items: center; gap: 8px; border-top: 1px solid var(--artdent-border);">
+            <input type="text" id="pregunta" placeholder="Escribe tu consulta..." style="flex-grow: 1; border: 1px solid var(--artdent-border); border-radius: 20px; padding: 8px 14px; outline: none;">
+            <button onclick="enviarPregunta()" class="btn btn-success rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                <i class="fas fa-paper-plane text-white"></i>
+            </button>
+        </div>
+    </div>
 
-                function toggleChat() {
-                    chatWidget.classList.toggle('collapsed');
-                    chatToggle.innerHTML = chatWidget.classList.contains('collapsed')
-                            ? '<i class="fas fa-chevron-up"></i>'
-                            : '<i class="fas fa-chevron-down"></i>';
-                }
+    <!-- Scripts Chatbot -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const chatWidget = document.getElementById('chatWidget');
+            const chatHeader = document.getElementById('chatHeader');
+            const chatToggle = document.getElementById('chatToggle');
+            const chatBody = document.getElementById('chat-body');
 
-                chatHeader.addEventListener('click', toggleChat);
-                chatToggle.addEventListener('click', function (e) {
-                    e.stopPropagation();
-                    toggleChat();
-                });
+            function toggleChat() {
+                chatWidget.classList.toggle('collapsed');
+                chatToggle.innerHTML = chatWidget.classList.contains('collapsed')
+                        ? '<i class="fas fa-chevron-up"></i>'
+                        : '<i class="fas fa-chevron-down"></i>';
+            }
 
-                // Mensaje inicial del bot
-                agregarMensajeBot('¡Hola! Soy el asistente virtual de Art Dent. ¿En qué puedo ayudarte hoy? Puedes describir tus síntomas o preocupaciones dentales y te recomendaré el servicio más adecuado.');
-
-                // Enviar mensaje al presionar Enter
-                const preguntaInput = document.getElementById('pregunta');
-                if(preguntaInput){
-                    preguntaInput.addEventListener('keypress', function (e) {
-                        if (e.key === 'Enter') {
-                            e.preventDefault();
-                            enviarPregunta();
-                        }
-                    });
-                }
-
+            chatHeader.addEventListener('click', toggleChat);
+            chatToggle.addEventListener('click', function (e) {
+                e.stopPropagation();
+                toggleChat();
             });
 
-            async function enviarPregunta() {
-                const pregunta = document.getElementById("pregunta").value;
-                if (pregunta.trim() === '')
-                    return;
+            agregarMensajeBot('¡Hola! Si tienes preguntas sobre tratamientos o citas, pregúntame aquí.');
 
-                agregarMensajeUsuario(pregunta);
-                mostrarAnimacion();
+            const preguntaInput = document.getElementById('pregunta');
+            if (preguntaInput) {
+                preguntaInput.addEventListener('keypress', function (e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        enviarPregunta();
+                    }
+                });
+            }
+        });
 
-                const response = await fetch('/ArtDent/api/chatbot', {
+        async function enviarPregunta() {
+            const preguntaInput = document.getElementById("pregunta");
+            const pregunta = preguntaInput.value.trim();
+            if (pregunta === '') return;
+
+            agregarMensajeUsuario(pregunta);
+            preguntaInput.value = '';
+
+            try {
+                const response = await fetch('${pageContext.request.contextPath}/api/chatbot', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: 'pregunta=' + encodeURIComponent(pregunta)
                 });
-
                 const data = await response.text();
-
-                ocultarAnimacion();
                 agregarMensajeBot(data);
-
-                // Limpiar el campo de entrada
-                document.getElementById("pregunta").value = '';
+            } catch (err) {
+                agregarMensajeBot('No fue posible conectar con el asistente. Llámanos al (01) 361-3634.');
             }
+        }
 
-            function agregarMensajeUsuario(mensaje) {
-                const chatBody = document.getElementById('chat-body');
-                const mensajeDiv = document.createElement('div');
-                mensajeDiv.className = 'message user-message';
-                mensajeDiv.textContent = mensaje;
-                chatBody.appendChild(mensajeDiv);
-                scrollToBottom();
-            }
+        function agregarMensajeUsuario(mensaje) {
+            const chatBody = document.getElementById('chat-body');
+            const mensajeDiv = document.createElement('div');
+            mensajeDiv.className = 'message user-message';
+            mensajeDiv.textContent = mensaje;
+            chatBody.appendChild(mensajeDiv);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
 
-            function convertirUrlsAClickables(message) {
-                return message.replace(
-                        /(\bhttps?:\/\/[^\s<>,;!?()]+(?:[\?&=][^\s<>,;!?()]*|[^\s<>,;!?()]*))/g,
-                        '<a href="$1" target="_blank">$1</a>'
-                        );
-            }
+        function agregarMensajeBot(mensaje) {
+            const chatBody = document.getElementById('chat-body');
+            const mensajeDiv = document.createElement('div');
+            mensajeDiv.className = 'message bot-message';
+            mensajeDiv.innerHTML = mensaje;
+            chatBody.appendChild(mensajeDiv);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+    </script>
 
-            function agregarMensajeBot(mensaje) {
-                const chatBody = document.getElementById('chat-body');
-                const mensajeDiv = document.createElement('div');
-                mensajeDiv.className = 'message bot-message';
+    <!-- Footer Oficial -->
+    <%@include file="footer.jsp"%>
 
-                mensajeDiv.innerHTML = mensaje;
-
-                chatBody.appendChild(mensajeDiv);
-                scrollToBottom();
-            }
-
-            function scrollToBottom() {
-                const chatBody = document.getElementById('chat-body');
-                chatBody.scrollTop = chatBody.scrollHeight;
-            }
-
-            function mostrarAnimacion() {
-                document.getElementById('loading-animation').style.display = 'block';
-                scrollToBottom();
-            }
-
-            function ocultarAnimacion() {
-                document.getElementById('loading-animation').style.display = 'none';
-            }
-        </script>
-        <!-- Footer -->
-        <%@include file="footer.jsp"%>
-
-        <!-- Bootstrap JS and dependencies -->
-        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    </body>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>

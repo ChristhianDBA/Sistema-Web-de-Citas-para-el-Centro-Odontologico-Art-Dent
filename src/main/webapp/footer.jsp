@@ -1,56 +1,98 @@
 <%@ page pageEncoding="UTF-8" %>
-<head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-</head>
-
-<body style="font-family: 'Poppins', sans-serif;">
-    <footer class="bg-dark text-light pt-5">
-        <div class="container px-5">
-            <div class="row">
-                <div class="col-6 col-lg-4">
-                    <h3 class="fw-bold">ART DENT</h3>
-                    <a class="pt-2 text-white text-decoration-none" href="nosotros.jsp">Acerca de nosotros</a>
-                    <p class="pt-2">En nuestra Cl&iacute;nica Dental en Lince, te brindamos tratamientos dentales con garant&iacute;a y calidad.</p>
+<!-- Footer Institucional Art Dent -->
+<footer class="bg-brand-dark text-light pt-5 pb-3 mt-auto">
+    <div class="container px-4 px-lg-5">
+        <div class="row g-4 justify-content-between">
+            <!-- Columna 1: Presentación Institucional -->
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <img src="https://logomaker.designfreelogoonline.com/media/productdesigner/logo/resized/0001036_dental_logo_maker_dentist_Logo-02.png" 
+                         alt="Art Dent Logo" width="40" height="40">
+                    <h4 class="fw-bold m-0 text-white">Art <span class="text-brand-primary">Dent</span></h4>
                 </div>
-                <div class="col-6 col-lg-3">
-                    <h4>Contacto</h4>
-                    <ul class="list-unstyled pt-2">
-                        <li class="py-1"><i class="fas fa-map-marker-alt me-2"></i>Jr. Chiclayo 268, Chosica, Per&uacute;</li>
-                        <li class="py-1"><i class="fas fa-map-marker-alt me-2"></i>Las Palmeras 328, Chaclacayo 15472, Per&uacute;</li>
-                        <li class="py-1"><i class="fas fa-phone-alt me-2"></i>(01) 3613634</li>
-                        <li class="py-1"><i class="fas fa-envelope me-2"></i>angelhuaringa@gmail.com</li>
-                        <a class="py-1 text-white text-decoration-none" href="faq.jsp"><i class="fas fa-comment me-2"></i>FAQ</a>
-                    </ul>
-                </div>
-                <div class="col ms-lg-3">
-                    <h4>Tratamientos</h4>
-                    <ul class="list-unstyled pt-2">
-                        <li class="py-1">Limpieza dental</li>
-                        <li class="py-1">Endodoncia</li>
-                        <li class="py-1">Cirug&iacute;a Oral</li>
-                        <li class="py-1">Pr&oacute;tesis dentales</li>
-                    </ul>
-                </div>
-                <div class="col-6 col-lg-3 text-lg-end">
-                    <h4>Redes Sociales</h4>
-                    <div class="social-media pt-2 justify-content-center">
-                        <a href="https://www.facebook.com/artdentsac" class="text-light fs-2 me-3"><i class="bi bi-facebook"></i></a>
-                        <a href="https://www.instagram.com/artdent_peru?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" class="text-light fs-2 me-3"><i class="bi bi-instagram"></i></a>
-                    </div>
-                </div>
-            </div>
-            <hr>
-            <div class="d-sm-flex justify-content-between py-1">
-                <p>2023 - ART DENT.</p>
-                <p>
-                    <a href="nosotros.jsp" class="text-light text-decoration-none pe-4"> Todos los derechos reservados.</a>
-                    <a href="nosotros.jsp" class="text-light text-decoration-none">Pol&iacute;tica de privacidad</a>
+                <p class="text-white-50 small mb-3">
+                    En nuestro Centro Odontol&oacute;gico Art Dent en Chosica y Chaclacayo, brindamos tratamientos odontol&oacute;gicos integrales con garant&iacute;a, tecnolog&iacute;a de vanguardia y calidez humana.
                 </p>
+                <a class="text-brand-mint text-decoration-none small fw-semibold" href="nosotros.jsp">
+                    Conoce más sobre nosotros <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+
+            <!-- Columna 2: Sedes y Contacto -->
+            <div class="col-12 col-md-6 col-lg-3">
+                <h5 class="fw-bold text-white mb-3 border-bottom pb-2" style="border-color: rgba(255,255,255,0.15) !important;">
+                    <i class="bi bi-geo-alt-fill text-brand-primary me-2"></i>Sedes y Contacto
+                </h5>
+                <ul class="list-unstyled small text-white-50 mb-0">
+                    <li class="py-1">
+                        <strong class="text-white">Sede Chosica:</strong> Jr. Chiclayo 268, Chosica, Lima
+                    </li>
+                    <li class="py-1">
+                        <strong class="text-white">Sede Chaclacayo:</strong> Av. Las Palmeras 328, Chaclacayo
+                    </li>
+                    <li class="py-1">
+                        <strong class="text-white">Teléfono:</strong> (01) 361-3634
+                    </li>
+                    <li class="py-1">
+                        <strong class="text-white">Correo:</strong> informes@artdent.pe
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Columna 3: Especialidades -->
+            <div class="col-12 col-md-6 col-lg-2">
+                <h5 class="fw-bold text-white mb-3 border-bottom pb-2" style="border-color: rgba(255,255,255,0.15) !important;">
+                    <i class="bi bi-shield-check text-brand-accent me-2"></i>Servicios
+                </h5>
+                <ul class="list-unstyled small text-white-50 mb-0">
+                    <li class="py-1"><a href="servicios.jsp" class="text-white-50 text-decoration-none hover-primary">Limpieza y Prevención</a></li>
+                    <li class="py-1"><a href="servicios.jsp" class="text-white-50 text-decoration-none hover-primary">Endodoncia</a></li>
+                    <li class="py-1"><a href="servicios.jsp" class="text-white-50 text-decoration-none hover-primary">Cirugía Oral</a></li>
+                    <li class="py-1"><a href="servicios.jsp" class="text-white-50 text-decoration-none hover-primary">Prótesis y Estética</a></li>
+                    <li class="py-1"><a href="faq.jsp" class="text-brand-mint text-decoration-none fw-semibold">Preguntas Frecuentes</a></li>
+                </ul>
+            </div>
+
+            <!-- Columna 4: Horarios y Redes -->
+            <div class="col-12 col-md-6 col-lg-3 text-lg-end">
+                <h5 class="fw-bold text-white mb-3 border-bottom pb-2" style="border-color: rgba(255,255,255,0.15) !important;">
+                    Horario de Atención
+                </h5>
+                <p class="small text-white-50 mb-3">
+                    Lunes a Sábado: 8:00 AM - 8:00 PM<br>
+                    Domingos: Previa Cita
+                </p>
+                <div class="d-flex gap-3 justify-content-lg-end">
+                    <a href="https://www.facebook.com/artdentsac" target="_blank" rel="noopener" 
+                       class="btn btn-outline-light btn-sm rounded-circle d-inline-flex align-items-center justify-content-center" 
+                       style="width: 38px; height: 38px;" title="Facebook">
+                        <i class="bi bi-facebook"></i>
+                    </a>
+                    <a href="https://www.instagram.com/artdent_peru" target="_blank" rel="noopener" 
+                       class="btn btn-outline-light btn-sm rounded-circle d-inline-flex align-items-center justify-content-center" 
+                       style="width: 38px; height: 38px;" title="Instagram">
+                        <i class="bi bi-instagram"></i>
+                    </a>
+                    <a href="https://wa.me/51987654321" target="_blank" rel="noopener" 
+                       class="btn btn-outline-light btn-sm rounded-circle d-inline-flex align-items-center justify-content-center" 
+                       style="width: 38px; height: 38px;" title="WhatsApp">
+                        <i class="bi bi-whatsapp"></i>
+                    </a>
+                </div>
             </div>
         </div>
-    </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+        <hr class="my-4" style="border-color: rgba(255,255,255,0.12);">
+
+        <div class="row align-items-center small text-white-50">
+            <div class="col-12 col-md-6 text-center text-md-start mb-2 mb-md-0">
+                &copy; <%= java.time.Year.now().getValue() %> Centro Odontol&oacute;gico Art Dent. Todos los derechos reservados.
+            </div>
+            <div class="col-12 col-md-6 text-center text-md-end">
+                <a href="nosotros.jsp" class="text-white-50 text-decoration-none me-3">Privacidad</a>
+                <a href="nosotros.jsp" class="text-white-50 text-decoration-none me-3">Términos</a>
+                <a href="faq.jsp" class="text-white-50 text-decoration-none">Ayuda</a>
+            </div>
+        </div>
+    </div>
+</footer>

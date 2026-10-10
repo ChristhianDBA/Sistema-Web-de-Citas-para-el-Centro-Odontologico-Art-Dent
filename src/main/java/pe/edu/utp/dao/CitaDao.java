@@ -48,4 +48,10 @@ public interface CitaDao {
     public int obtenerTotalCitasReservas();
 
     public String getEmailPacienteByCitaId(int idCita);
+
+    public int createReservaWeb(Paciente p, Cita c, double importe, String descripcion);
+
+    public int createCitaPresencial(Paciente p, Cita c, double importe, String descripcion, int idSecretaria);
+
+    public int registrarNotificacion(String asunto, int idEstado, int idCita);
 }

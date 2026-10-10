@@ -81,10 +81,15 @@ public class HistorialController extends HttpServlet {
         request.getRequestDispatcher("PDCHistorial.jsp").forward(request, response);
     }
 
-// Método para listar todas las citas
     private void listarHistorialCi(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
         int idUsuario = (int) request.getSession().getAttribute("idUsuario"); 
         List<VerCita> VerCita = citaDao.listarHistorialCitas(idUsuario); 
+        String pacienteNom = request.getParameter("pacienteNom");
+        if (pacienteNom != null && !pacienteNom.trim().isEmpty() && VerCita != null) {
+            String q = pacienteNom.trim().toLowerCase();
+            VerCita.removeIf(c -> c.getNombrePaciente() == null || !(c.getNombrePaciente() + " " + c.getApellidoPaciente()).toLowerCase().contains(q));
+            request.setAttribute("filtroPaciente", pacienteNom.trim());
+        }
         request.setAttribute("VerCita", VerCita);  
         request.setAttribute("tipoLista", "hisCi"); 
         request.getRequestDispatcher("PDCHistorial.jsp").forward(request, response);

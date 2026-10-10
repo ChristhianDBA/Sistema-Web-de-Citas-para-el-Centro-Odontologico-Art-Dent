@@ -15,6 +15,7 @@ import javax.servlet.http.HttpSession;
 import pe.edu.utp.dao.UsuarioDao;
 import pe.edu.utp.daoImpl.UsuarioDaoImpl;
 import pe.edu.utp.dto.InicioSesionDTO;
+import pe.edu.utp.dto.LoginResultDTO;
 
 /**
  *
@@ -47,24 +48,32 @@ public class InicioSesionController extends HttpServlet {
         }
 
         HttpSession sesion = request.getSession();
-        List<InicioSesionDTO> login = udao.login(dni, clave);
-        if (login != null && !login.isEmpty()) {
-            sesion.setAttribute("idUsuario", login.get(0).getIdUsuario());
-            sesion.setAttribute("Nombre", login.get(0).getNombre());
-            sesion.setAttribute("Apellido", login.get(0).getApellido());
-            sesion.setAttribute("Dni", login.get(0).getDni());
-            sesion.setAttribute("TipoRol", login.get(0).getTipoRol());
-            if ("Administrador".equalsIgnoreCase(login.get(0).getTipoRol())) {
+        LoginResultDTO resultado = udao.autenticar(dni, clave);
+        if (resultado != null && resultado.isExito() && resultado.getUsuario() != null) {
+            InicioSesionDTO user = resultado.getUsuario();
+            sesion.setAttribute("idUsuario", user.getIdUsuario());
+            sesion.setAttribute("Nombre", user.getNombre());
+            sesion.setAttribute("Apellido", user.getApellido());
+            sesion.setAttribute("Dni", user.getDni());
+            sesion.setAttribute("TipoRol", user.getTipoRol());
+            String rol = user.getTipoRol();
+            if ("Administrador".equalsIgnoreCase(rol)) {
                 response.sendRedirect("DashboardController?action=dashboard");
+            } else if ("Odontologo".equalsIgnoreCase(rol)) {
+                response.sendRedirect("ReservaController?accion=listarReservasPorDia");
+            } else if ("Secretaria".equalsIgnoreCase(rol)) {
+                response.sendRedirect("ReservaController?accion=listar");
             } else {
                 response.sendRedirect("ReservaController?accion=listarReservasPorDia");
             }
 
         } else {
+            request.setAttribute("errorMensaje", resultado != null ? resultado.getMensaje() : "Usuario y/o contraseña incorrectos.");
+            request.setAttribute("bloqueado", resultado != null && resultado.isBloqueado());
+            request.setAttribute("intentosRestantes", resultado != null ? resultado.getIntentosRestantes() : 5);
+            request.setAttribute("minutosRestantes", resultado != null ? resultado.getMinutosRestantes() : 0);
             request.getRequestDispatcher("iniciosesionerror.jsp").forward(request, response);
-
         }
-//Terminar redes rapido luego hacer que guarde la sesion de los atribuos en la pagina y luego hacer el crud de citas (miercoles)
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

@@ -1,161 +1,181 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%//@include file="WEB-INF/template/libreria.jspf" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="es">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Detalles</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <title>Detalle de Atención | Centro Odontológico ArtDent</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-        <style>
-            .btn-gold {
-                background-color: #F1D045 !important;
-                color: black !important;
-                border: none !important;
-            }
-
-            .btn-gold:hover {
-                background-color: #e5c100 !important;
-                color: white !important;
-            }
-            .border-gray{
-               border-color: #B4BFCD; 
-            }
-
-        </style>
+        <link rel="stylesheet" href="css/style.css">
     </head>
-    <body class="d-flex flex-column min-vh-100">
-        <%HttpSession misesion = request.getSession();
+    <body class="d-flex flex-column min-vh-100 bg-light">
+        <%
+            HttpSession misesion = request.getSession();
             String usuario = (String) request.getSession().getAttribute("Nombre");
             if (usuario == null) {
                 response.sendRedirect("iniciosesionerror.jsp");
+                return;
             }
         %>
         <%@include file="NavPanel.jsp" %>        
         <!-- Contenido de la Página -->
         <div class="d-flex flex-grow-1">
-            <!-- Sidebar -->
-            <div class=" text-white p-4 d-flex flex-column " style="width: 400px; background:#2E3E50;">
-                <ul class="nav flex-column " style="margin-top: 60px;">
-                    <li class="nav-item mb-2 pt-4 border-bottom">
-                        <a class="nav-link text-white " href="ReservaController?accion=listar">Solicitudes</a>
-                    </li>
-                    <li class="nav-item mb-2 pt-4 border-bottom" style="margin-top: 30px;">
-                        <a class="nav-link text-white " href="PDCCalendario.jsp">Calendario de citas</a>
-                    </li>
-                    <li class="nav-item mb-2 pt-4 border-bottom" style="margin-top: 30px;">
-                        <a class="nav-link text-white " href="HistorialController?accion=ListarHistorialReservas">Historial</a>
-                    </li>
-                    <li class="nav-item mb-2 pt-4 border-bottom" style="margin-top: 30px;">
-                        <a class="nav-link text-white " href="PDCNotificaciones.jsp">Notificaciones</a>
-                    </li>
-                    <li class="nav-item mb-2 pt-4 border-bottom"style="margin-top: 30px;">
-                        <a class="nav-link text-white " href="PDCReportes.jsp">Reportes</a>
-                    </li>
-                </ul>
+            <!-- Sidebar Compartido -->
+            <%@include file="Sidebar.jsp" %>
 
-                <!-- Botón de Salir en la parte inferior -->
-                <a class="nav-link text-white mt-auto border-top p-2 px-4 text-center" href="iniciosesion.html">Salir</a>
-            </div>
+            <!-- Contenido Principal -->
+            <main class="container-fluid p-4 d-flex flex-column flex-grow-1">
+                <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2 border-bottom">
+                    <div>
+                        <h3 class="fw-bold mb-1" style="color: var(--artdent-primary);">
+                            <i class="bi bi-file-earmark-medical me-2" style="color: var(--artdent-accent);"></i>Detalles de la Atención
+                        </h3>
+                        <p class="text-muted small mb-0">Información exhaustiva del registro clínico y asignación de turno.</p>
+                    </div>
 
-            <div class="container p-4 d-flex flex-column flex-grow-1">
-                <br><br>
-                <div>
-                    <h3 style="color: darkblue; font-weight: bold;">Detalles</h3>
+                    <div>
+                        <c:choose>
+                            <c:when test="${tipoLista == 'DetRe'}">
+                                <form action="HistorialController" method="get">
+                                    <input type="hidden" name="accion" value="ListarHistorialReservas" />
+                                    <button class="btn btn-outline-primary d-inline-flex align-items-center gap-1 shadow-sm px-3">
+                                        <i class="bi bi-arrow-left"></i> Volver a Reservas
+                                    </button>
+                                </form>
+                            </c:when>
+                            <c:otherwise>
+                                <form action="HistorialController" method="get">
+                                    <input type="hidden" name="accion" value="ListarHistorialCitas" />
+                                    <button class="btn btn-outline-primary d-inline-flex align-items-center gap-1 shadow-sm px-3">
+                                        <i class="bi bi-arrow-left"></i> Volver a Citas
+                                    </button>
+                                </form>
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
                 </div>
-                <br>
-                <c:choose>
-                    <c:when test="${tipoLista == 'DetRe'}">
-                        <div class="d-flex justify-content-end">
-                            <form action="HistorialController" method="get">
-                                <input type="hidden" name="accion" value="ListarHistorialReservas" />
-                                <button class="btn btn-gold p-2 mb-4" id="edtInfo">Regresar</button>
-                            </form>
-                        </div>
-                        <table class="table table-bordered border-gray table-hover  table-responsive" id="">
-                            <tr>
-                                <th class="text-dark p-3 bg-info-subtle">ID Reserva</th>
-                                <td>${VerReserva[0].idReserva}</td>
-                            </tr>
-                            <tr>
-                                <th class="text-dark p-3 bg-info-subtle">Nombres del Paciente</th>
-                                <td>${VerReserva[0].nombrePaciente}</td>
-                            </tr>
-                            <tr>
-                                <th class="text-dark p-3 bg-info-subtle" >Apellidos del Paciente</th>
-                                <td>${VerReserva[0].apellidoPaciente}</td>
-                            </tr>
-                            <tr>
-                                <th class="text-dark p-3 bg-info-subtle" >Fecha de Reserva</th>
-                                <td>${VerReserva[0].diaReserva}</td>
-                            </tr>
-                            <tr>
-                                <th class="text-dark p-3 bg-info-subtle" >Hora de Reserva</th>
-                                <td>${VerReserva[0].horaReserva}</td>
-                            </tr>
-                            <tr>
-                                <th class="text-dark p-3 bg-info-subtle" >Descripción</th>
-                                <td>${VerReserva[0].descripcion}</td>
-                            </tr>
-                            <tr>
-                                <th class="text-dark p-3 bg-info-subtle" >Servicio</th>
-                                <td>${VerReserva[0].tipoServicio}</td>
-                            </tr>
-                            <tr>
-                                <th class="text-dark p-3 bg-info-subtle" >Médico Asignado</th>
-                                <td>${VerReserva[0].nombreUsuario} ${VerReserva[0].apellidoUsuario}</td>
-                            </tr>
-                            <tr>
-                                <th class="text-dark p-3 bg-info-subtle" style="background-color: #CFE2FF;">Estado de la Reserva</th>
-                                <td>${VerReserva[0].estado}</td>
-                            </tr>
-                        </table>
-                    </c:when>
 
-                    <c:when test="${tipoLista == 'DetCi'}">
-                        <div class="d-flex justify-content-end">
-                            <form action="HistorialController" method="get">
-                                <input type="hidden" name="accion" value="ListarHistorialCitas" />
-                                <button class="btn btn-gold p-2 mb-4" id="edtInfo">Regresar</button>
-                            </form>
+                <div class="row justify-content-center">
+                    <div class="col-12 col-xl-10">
+                        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                            <div class="card-header bg-white py-3 border-bottom d-flex align-items-center justify-content-between">
+                                <span class="fw-bold text-dark">
+                                    <c:choose>
+                                        <c:when test="${tipoLista == 'DetRe'}">Ficha de Reserva Web #RES-${VerReserva[0].idReserva}</c:when>
+                                        <c:otherwise>Ficha de Cita Clínica #CIT-${VerCita[0].idCita}</c:otherwise>
+                                    </c:choose>
+                                </span>
+                                <span class="badge rounded-pill text-dark" style="background-color: var(--artdent-mint);">
+                                    <i class="bi bi-shield-check me-1" style="color: var(--artdent-primary);"></i>Clínica ArtDent
+                                </span>
+                            </div>
+                            <div class="card-body p-0">
+                                <c:choose>
+                                    <c:when test="${tipoLista == 'DetRe'}">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered mb-0 align-middle">
+                                                <tbody>
+                                                    <tr>
+                                                        <th class="ps-4 text-muted py-3" style="width: 35%; background-color: #f8fafc;">ID Reserva</th>
+                                                        <td class="fw-bold text-dark">#RES-${VerReserva[0].idReserva}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="ps-4 text-muted py-3" style="background-color: #f8fafc;">Paciente</th>
+                                                        <td class="fw-bold text-dark">
+                                                            <i class="bi bi-person-fill me-2" style="color: var(--artdent-primary);"></i>${VerReserva[0].nombrePaciente} ${VerReserva[0].apellidoPaciente}
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="ps-4 text-muted py-3" style="background-color: #f8fafc;">Fecha Agendada</th>
+                                                        <td><i class="bi bi-calendar-event me-2 text-muted"></i>${VerReserva[0].diaReserva}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="ps-4 text-muted py-3" style="background-color: #f8fafc;">Hora de Atención</th>
+                                                        <td><i class="bi bi-clock me-2 text-muted"></i>${VerReserva[0].horaReserva}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="ps-4 text-muted py-3" style="background-color: #f8fafc;">Servicio Clínico</th>
+                                                        <td>
+                                                            <span class="badge rounded-pill text-dark" style="background-color: var(--artdent-mint); font-size: 0.9rem;">
+                                                                ${VerReserva[0].tipoServicio}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="ps-4 text-muted py-3" style="background-color: #f8fafc;">Odontólogo Asignado</th>
+                                                        <td class="fw-semibold">
+                                                            <i class="bi bi-person-badge-fill me-2" style="color: var(--artdent-accent);"></i>Dr(a). ${VerReserva[0].nombreUsuario} ${VerReserva[0].apellidoUsuario}
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="ps-4 text-muted py-3" style="background-color: #f8fafc;">Motivo / Descripción</th>
+                                                        <td>${VerReserva[0].descripcion}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="ps-4 text-muted py-3" style="background-color: #f8fafc;">Estado</th>
+                                                        <td>
+                                                            <span class="badge rounded-pill px-3 py-2 ${VerReserva[0].estado == 'Confirmado' || VerReserva[0].estado == 'Completado' ? 'bg-success text-white' : (VerReserva[0].estado == 'Cancelado' || VerReserva[0].estado == 'Rechazado' ? 'bg-danger text-white' : 'bg-warning text-dark')}">
+                                                                ${VerReserva[0].estado}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </c:when>
+
+                                    <c:when test="${tipoLista == 'DetCi'}">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered mb-0 align-middle">
+                                                <tbody>
+                                                    <tr>
+                                                        <th class="ps-4 text-muted py-3" style="width: 35%; background-color: #f8fafc;">ID Cita Médica</th>
+                                                        <td class="fw-bold text-dark">#CIT-${VerCita[0].idCita}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="ps-4 text-muted py-3" style="background-color: #f8fafc;">Paciente</th>
+                                                        <td class="fw-bold text-dark">
+                                                            <i class="bi bi-person-fill me-2" style="color: var(--artdent-primary);"></i>${VerCita[0].nombrePaciente} ${VerCita[0].apellidoPaciente}
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="ps-4 text-muted py-3" style="background-color: #f8fafc;">Fecha de Cita</th>
+                                                        <td><i class="bi bi-calendar-event me-2 text-muted"></i>${VerCita[0].diaReserva}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="ps-4 text-muted py-3" style="background-color: #f8fafc;">Hora de Cita</th>
+                                                        <td><i class="bi bi-clock me-2 text-muted"></i>${VerCita[0].horaReserva}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="ps-4 text-muted py-3" style="background-color: #f8fafc;">Servicio Clínico</th>
+                                                        <td>
+                                                            <span class="badge rounded-pill text-dark" style="background-color: var(--artdent-mint); font-size: 0.9rem;">
+                                                                ${VerCita[0].tipoServicio}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="ps-4 text-muted py-3" style="background-color: #f8fafc;">Estado de la Cita</th>
+                                                        <td>
+                                                            <span class="badge rounded-pill px-3 py-2 ${VerCita[0].estado == 'Confirmado' || VerCita[0].estado == 'Completado' ? 'bg-success text-white' : (VerCita[0].estado == 'Cancelado' || VerCita[0].estado == 'Rechazado' ? 'bg-danger text-white' : 'bg-warning text-dark')}">
+                                                                ${VerCita[0].estado}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </c:when>
+                                </c:choose>
+                            </div>
                         </div>
-                        <table class="table table-hover table-bordered border-gray table-responsive" id="">
-                            <tr>
-                                <th class="text-dark p-3 bg-info-subtle" style="width: 50%;">ID Cita</th>
-                                <td style="width: 50%;">${VerCita[0].idCita}</td>
-                            </tr>
-                            <tr>
-                                <th class="text-dark p-3 bg-info-subtle">Nombres del Paciente</th>
-                                <td>${VerCita[0].nombrePaciente}</td>
-                            </tr>
-                            <tr>
-                                <th class="text-dark p-3 bg-info-subtle">Apellidos del Paciente</th>
-                                <td>${VerCita[0].apellidoPaciente}</td>
-                            </tr>
-                            <tr>
-                                <th class="text-dark p-3 bg-info-subtle">Fecha de Cita</th>
-                                <td>${VerCita[0].diaReserva}</td>
-                            </tr>
-                            <tr>
-                                <th class="text-dark p-3 bg-info-subtle">Hora de Cita</th>
-                                <td>${VerCita[0].horaReserva}</td>
-                            </tr>
-                            <tr>
-                                <th class="text-dark p-3 bg-info-subtle">Servicio</th>
-                                <td>${VerCita[0].tipoServicio}</td>
-                            </tr>
-                            <tr>
-                                <th class="text-dark p-3 bg-info-subtle">Estado de la Cita</th>
-                                <td>${VerCita[0].estado}</td>
-                            </tr>
-                        </table>
-                    </c:when>
-                </c:choose>
-            </div>
+                    </div>
+                </div>
+            </main>
         </div>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    </body>
 
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
 </html>

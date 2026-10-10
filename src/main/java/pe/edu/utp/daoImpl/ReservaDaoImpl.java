@@ -10,10 +10,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import pe.edu.utp.config.Conexion;
 import pe.edu.utp.dao.ReservaDao;
+import pe.edu.utp.entity.Comprobante;
 import pe.edu.utp.entity.Reserva;
 import pe.edu.utp.entity.Paciente;
 import pe.edu.utp.entity.Usuario;
@@ -212,6 +214,37 @@ public class ReservaDaoImpl implements ReservaDao {
     }
 
     @Override
+    public int rechazarReserva(int idReserva) {
+        cx = Conexion.getConection();
+        if (cx == null) {
+            System.out.println("No se pudo establecer conexión con la base de datos.");
+            return 0;
+        }
+        String SQL = "UPDATE cita SET Estado_idEstado = 6 WHERE idCita = ?";
+
+        try {
+            ps = cx.prepareStatement(SQL);
+            ps.setInt(1, idReserva);
+            int result = ps.executeUpdate();
+            return result;
+        } catch (SQLException e) {
+            System.out.println("Error al rechazar la reserva: " + e.getMessage());
+            return 0;
+        } finally {
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+                if (cx != null) {
+                    cx.close();
+                }
+            } catch (SQLException e) {
+                System.out.println("Error al cerrar recursos: " + e.getMessage());
+            }
+        }
+    }
+
+    @Override
     public int deleteReserva(int idReserva) {
         cx = Conexion.getConection();
         if (cx == null) {
@@ -366,6 +399,19 @@ public class ReservaDaoImpl implements ReservaDao {
         }
 
         System.out.println("Total de reservas recuperadas: " + lista.size());
+        try {
+            Map<Integer, Comprobante> mapComp = new PagoDaoImpl().obtenerMapaComprobantesPorCita();
+            for (VerReserva re : lista) {
+                if (mapComp.containsKey(re.getIdReserva())) {
+                    Comprobante c = mapComp.get(re.getIdReserva());
+                    re.setTienePago(true);
+                    re.setCodigoBoleta(c.getCodigoBoletaCompleto());
+                    re.setIdPago(c.getPago_idPago());
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return lista;
     }
 

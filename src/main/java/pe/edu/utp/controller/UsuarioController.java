@@ -6,6 +6,7 @@ package pe.edu.utp.controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -28,6 +29,9 @@ public class UsuarioController extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
+        if (action == null || action.trim().isEmpty()) {
+            action = "list";
+        }
         switch (action) {
             case "list":
                 listUsuarios(request, response);
@@ -41,6 +45,9 @@ public class UsuarioController extends HttpServlet {
             case "delete":
                 deleteUsuario(request, response);
                 break;
+            case "disponibilidad":
+                showDisponibilidadForm(request, response);
+                break;
             default:
                 listUsuarios(request, response);
                 break;
@@ -49,12 +56,18 @@ public class UsuarioController extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
+        if (action == null || action.trim().isEmpty()) {
+            action = "list";
+        }
         switch (action) {
             case "add":
                 addUsuario(request, response);
                 break;
             case "update":
                 updateUsuario(request, response);
+                break;
+            case "guardarDisponibilidad":
+                guardarDisponibilidad(request, response);
                 break;
 
             default:
@@ -125,6 +138,55 @@ public class UsuarioController extends HttpServlet {
         int id = Integer.parseInt(request.getParameter("id"));
         usuarioDAO.eliminarUsuario(id);
         response.sendRedirect("UsuarioController?action=list");
+    }
+
+    private void showDisponibilidadForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String idStr = request.getParameter("id");
+        List<Usuario> odontologos = usuarioDAO.obtenerMedicosDisponibles();
+        request.setAttribute("odontologos", odontologos);
+
+        Usuario odontologoSeleccionado = null;
+        if (idStr != null && !idStr.isEmpty()) {
+            int id = Integer.parseInt(idStr);
+            odontologoSeleccionado = usuarioDAO.obtenerUsuarioPorId(id);
+        } else if (!odontologos.isEmpty()) {
+            odontologoSeleccionado = odontologos.get(0);
+        }
+
+        if (odontologoSeleccionado != null) {
+            request.setAttribute("odontologo", odontologoSeleccionado);
+            request.setAttribute("horariosAsignados", usuarioDAO.obtenerHorariosPorUsuario(odontologoSeleccionado.getIdUsuario()));
+            request.setAttribute("serviciosAsignados", usuarioDAO.obtenerServiciosPorUsuario(odontologoSeleccionado.getIdUsuario()));
+        }
+
+        request.setAttribute("todosHorarios", usuarioDAO.listarHorarios());
+        request.setAttribute("todosServicios", new pe.edu.utp.daoImpl.ServicioDaoImpl().listarTodosLosServicios());
+
+        RequestDispatcher dispatcher = request.getRequestDispatcher("ADMPDisponibilidad.jsp");
+        dispatcher.forward(request, response);
+    }
+
+    private void guardarDisponibilidad(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        int idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
+        String[] horariosArr = request.getParameterValues("horarios");
+        String[] serviciosArr = request.getParameterValues("servicios");
+
+        List<Integer> horariosIds = new ArrayList<>();
+        if (horariosArr != null) {
+            for (String h : horariosArr) {
+                horariosIds.add(Integer.parseInt(h));
+            }
+        }
+
+        List<Integer> serviciosIds = new ArrayList<>();
+        if (serviciosArr != null) {
+            for (String s : serviciosArr) {
+                serviciosIds.add(Integer.parseInt(s));
+            }
+        }
+
+        usuarioDAO.asignarDisponibilidad(idUsuario, horariosIds, serviciosIds);
+        response.sendRedirect("UsuarioController?action=disponibilidad&id=" + idUsuario + "&guardado=ok");
     }
 
 }

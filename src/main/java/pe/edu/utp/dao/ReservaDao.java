@@ -40,6 +40,8 @@ public interface ReservaDao {
     public int updateEstadoCancelado(int idReserva);
     
     public int updateEstadoReserv(int idReserva, String estadoActual);
+
+    public int rechazarReserva(int idReserva);
     
     List<Reserva> listarReservasRecientes();
     

@@ -13,6 +13,9 @@ public class VerCita {
     private double costo;
     private int orden_row;
     private String color;
+    private boolean tienePago;
+    private String codigoBoleta;
+    private int idPago;
     public VerCita() {
     }
 
@@ -126,5 +129,28 @@ public class VerCita {
     public void setCosto(double costo) {
         this.costo = costo;
     }
-    
+
+    public boolean isTienePago() {
+        return tienePago;
+    }
+
+    public void setTienePago(boolean tienePago) {
+        this.tienePago = tienePago;
+    }
+
+    public String getCodigoBoleta() {
+        return codigoBoleta;
+    }
+
+    public void setCodigoBoleta(String codigoBoleta) {
+        this.codigoBoleta = codigoBoleta;
+    }
+
+    public int getIdPago() {
+        return idPago;
+    }
+
+    public void setIdPago(int idPago) {
+        this.idPago = idPago;
+    }
 }

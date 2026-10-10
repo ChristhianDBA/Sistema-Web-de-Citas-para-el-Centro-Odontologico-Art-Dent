@@ -6,9 +6,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import pe.edu.utp.config.Conexion;
 import pe.edu.utp.dao.CitaDao;
 import pe.edu.utp.entity.Cita;
+import pe.edu.utp.entity.Comprobante;
 import pe.edu.utp.entity.Paciente;
 import pe.edu.utp.entity.Venta;
 import pe.edu.utp.entity.VerCita;
@@ -249,6 +251,19 @@ public class CitaDaoImpl implements CitaDao {
         }
 
         System.out.println("Total de reservas recuperadas: " + lista.size());
+        try {
+            Map<Integer, Comprobante> mapComp = new PagoDaoImpl().obtenerMapaComprobantesPorCita();
+            for (VerCita re : lista) {
+                if (mapComp.containsKey(re.getIdCita())) {
+                    Comprobante c = mapComp.get(re.getIdCita());
+                    re.setTienePago(true);
+                    re.setCodigoBoleta(c.getCodigoBoletaCompleto());
+                    re.setIdPago(c.getPago_idPago());
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return lista;
 
     }
@@ -726,5 +741,170 @@ public class CitaDaoImpl implements CitaDao {
             e.printStackTrace();
         }
         return correo;
+    }
+
+    @Override
+    public int createReservaWeb(Paciente p, Cita c, double importe, String descripcion) {
+        Connection conn = null;
+        PreparedStatement psReg = null;
+        PreparedStatement psRes = null;
+        int resultado = 0;
+        try {
+            conn = Conexion.getConection();
+            if (conn == null) {
+                return 0;
+            }
+
+            int pacienteId = verificarExistencia(p.getDni());
+            if (pacienteId == 0) {
+                // Registrar nuevo paciente
+                psReg = conn.prepareStatement("{CALL sp_registrarusuario(?, ?, ?, ?, ?)}");
+                psReg.setString(1, p.getNombre());
+                psReg.setString(2, p.getApellido());
+                psReg.setInt(3, p.getDni());
+                psReg.setInt(4, p.getTelefono());
+                psReg.setString(5, p.getCorreo());
+                psReg.executeUpdate();
+                psReg.close();
+                psReg = null;
+            }
+
+            // Crear reserva web con sp_crearreserva (sin pago forzoso en RF01)
+            psRes = conn.prepareStatement("{CALL sp_crearreserva(?, ?, ?, ?, ?, ?, ?, ?)}");
+            psRes.setString(1, c.getDiaReserva());
+            psRes.setString(2, c.getHoraReserva());
+            psRes.setString(3, (descripcion != null && !descripcion.trim().isEmpty()) ? descripcion : "Reserva Web - En espera");
+            psRes.setDouble(4, importe);
+            psRes.setInt(5, pacienteId); // Pasamos pacienteId si ya existía
+            psRes.setInt(6, 1); // Estado 1: 'En espera'
+            psRes.setInt(7, c.getId_Servicio());
+            psRes.setInt(8, c.getOdontologo_idUsuario());
+
+            int resExec = psRes.executeUpdate();
+            psRes.close();
+            psRes = null;
+
+            if (resExec > 0) {
+                // RF02: Obtener el ID generado de la cita para el código de reserva
+                try (PreparedStatement psId = conn.prepareStatement(
+                        "SELECT idCita FROM Cita WHERE Paciente_idPaciente = " +
+                        "(SELECT idPaciente FROM Paciente WHERE DNI = ?) ORDER BY idCita DESC LIMIT 1")) {
+                    psId.setInt(1, p.getDni());
+                    try (ResultSet rsId = psId.executeQuery()) {
+                        if (rsId.next()) {
+                            resultado = rsId.getInt("idCita");
+                        } else {
+                            resultado = 1;
+                        }
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error en createReservaWeb: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (psReg != null) psReg.close();
+                if (psRes != null) psRes.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return resultado;
+    }
+
+    @Override
+    public int createCitaPresencial(Paciente p, Cita c, double importe, String descripcion, int idSecretaria) {
+        Connection conn = null;
+        PreparedStatement psReg = null;
+        PreparedStatement psCita = null;
+        ResultSet rsKey = null;
+        int idCitaGenerada = 0;
+        try {
+            conn = Conexion.getConection();
+            if (conn == null) {
+                return 0;
+            }
+
+            int pacienteId = verificarExistencia(p.getDni());
+            if (pacienteId == 0) {
+                // Registrar nuevo paciente si no existe
+                psReg = conn.prepareStatement("{CALL sp_registrarusuario(?, ?, ?, ?, ?)}");
+                psReg.setString(1, p.getNombre());
+                psReg.setString(2, p.getApellido());
+                psReg.setInt(3, p.getDni());
+                psReg.setInt(4, p.getTelefono());
+                psReg.setString(5, p.getCorreo());
+                psReg.executeUpdate();
+                psReg.close();
+                psReg = null;
+
+                pacienteId = verificarExistencia(p.getDni());
+            }
+
+            // Insertar en tabla Cita con Origen = 'Presencial' y Estado = 3 ('Confirmado')
+            String sql = "INSERT INTO Cita (FechaCita, HoraCita, Descripcion, Importe, Origen, Usuario_idUsuario, Paciente_idPaciente, Servicio_idServicio, Estado_idEstado, Odontologo_idUsuario) "
+                       + "VALUES (?, ?, ?, ?, 'Presencial', ?, ?, ?, 3, ?)";
+            psCita = conn.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS);
+            psCita.setString(1, c.getDiaReserva());
+            psCita.setString(2, c.getHoraReserva());
+            psCita.setString(3, (descripcion != null && !descripcion.trim().isEmpty()) ? descripcion : "Cita Presencial - Registrada por Secretaría");
+            psCita.setDouble(4, importe);
+            if (idSecretaria > 0) {
+                psCita.setInt(5, idSecretaria);
+            } else {
+                psCita.setNull(5, java.sql.Types.INTEGER);
+            }
+            psCita.setInt(6, pacienteId);
+            psCita.setInt(7, c.getId_Servicio());
+            psCita.setInt(8, c.getOdontologo_idUsuario());
+
+            int resExec = psCita.executeUpdate();
+            if (resExec > 0) {
+                rsKey = psCita.getGeneratedKeys();
+                if (rsKey != null && rsKey.next()) {
+                    idCitaGenerada = rsKey.getInt(1);
+                } else {
+                    // Fallback
+                    try (PreparedStatement psFallback = conn.prepareStatement("SELECT MAX(idCita) AS maxId FROM Cita WHERE Paciente_idPaciente = ?")) {
+                        psFallback.setInt(1, pacienteId);
+                        try (ResultSet rsFb = psFallback.executeQuery()) {
+                            if (rsFb.next()) {
+                                idCitaGenerada = rsFb.getInt("maxId");
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error en createCitaPresencial: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rsKey != null) rsKey.close();
+                if (psReg != null) psReg.close();
+                if (psCita != null) psCita.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return idCitaGenerada;
+    }
+
+    @Override
+    public int registrarNotificacion(String asunto, int idEstado, int idCita) {
+        String sql = "INSERT INTO Notificacion (Asunto, FechaEnvio, Enviado, Estado_idEstado, Cita_idCita) VALUES (?, NOW(), 1, ?, ?)";
+        try (Connection conn = Conexion.getConection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, asunto);
+            ps.setInt(2, idEstado);
+            ps.setInt(3, idCita);
+            return ps.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Error al registrar notificación (RF09): " + e.getMessage());
+            return 0;
+        }
     }
 }

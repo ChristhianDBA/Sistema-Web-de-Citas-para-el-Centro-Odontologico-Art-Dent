@@ -31,14 +31,11 @@ public class CerrarSesionController extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            System.out.println("Llego hast aqui");
-            HttpSession sesion = request.getSession();
+        HttpSession sesion = request.getSession(false);
+        if (sesion != null) {
             sesion.invalidate();
-            request.getRequestDispatcher("index.jsp").forward(request, response);
-            
         }
+        response.sendRedirect(request.getContextPath() + "/index.jsp");
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

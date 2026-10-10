@@ -11,6 +11,7 @@ public class Servicio {
     private String respuesta;
     private BigDecimal costo;
     private String linkimagen;
+    private boolean activo = true;
 
     public Servicio() {
     }
@@ -23,12 +24,33 @@ public class Servicio {
         this.respuesta = respuesta;
         this.costo = costo;
         this.linkimagen = linkimagen;
+        this.activo = true;
+    }
+
+    public Servicio(int idServicio, String tipoServicio, String lema, String descripcion, String respuesta, BigDecimal costo, String linkimagen, boolean activo) {
+        this.idServicio = idServicio;
+        this.tipoServicio = tipoServicio;
+        this.lema = lema;
+        this.descripcion = descripcion;
+        this.respuesta = respuesta;
+        this.costo = costo;
+        this.linkimagen = linkimagen;
+        this.activo = activo;
     }
 
     public Servicio(int id, String tipo, BigDecimal costo) {
         this.idServicio = id;
         this.tipoServicio = tipo;
         this.costo = costo;
+        this.activo = true;
+    }
+
+    public boolean isActivo() {
+        return activo;
+    }
+
+    public void setActivo(boolean activo) {
+        this.activo = activo;
     }
 
     public String getLinkimagen() {

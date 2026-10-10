@@ -78,7 +78,7 @@ public class ServicioDaoImpl implements ServicioDao {
     @Override
     public List<Servicio> listarServicios() {
         List<Servicio> servicios = new ArrayList<>();
-        String SQL = "SELECT idServicio, TipoServicio, Costo, img FROM servicio";
+        String SQL = "SELECT idServicio, TipoServicio, Costo, img FROM servicio WHERE Activo = 1";
 
         try {
             cx = Conexion.getConection();
@@ -90,6 +90,34 @@ public class ServicioDaoImpl implements ServicioDao {
                 servicio.setTipoServicio(rs.getString("TipoServicio"));
                 servicio.setCosto(rs.getBigDecimal("Costo"));
                 servicio.setLinkimagen(obtenerImagenValida(servicio.getTipoServicio(), rs.getString("img")));
+                servicio.setActivo(true);
+                servicios.add(servicio);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return servicios;
+    }
+
+    @Override
+    public List<Servicio> listarTodosLosServicios() {
+        List<Servicio> servicios = new ArrayList<>();
+        String SQL = "SELECT idServicio, TipoServicio, Lema, Descripcion, Respuesta, Costo, img, Activo FROM servicio ORDER BY idServicio ASC";
+
+        try {
+            cx = Conexion.getConection();
+            ps = cx.prepareStatement(SQL);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                Servicio servicio = new Servicio();
+                servicio.setIdServicio(rs.getInt("idServicio"));
+                servicio.setTipoServicio(rs.getString("TipoServicio"));
+                servicio.setLema(rs.getString("Lema"));
+                servicio.setDescripcion(rs.getString("Descripcion"));
+                servicio.setRespuesta(rs.getString("Respuesta"));
+                servicio.setCosto(rs.getBigDecimal("Costo"));
+                servicio.setLinkimagen(obtenerImagenValida(servicio.getTipoServicio(), rs.getString("img")));
+                servicio.setActivo(rs.getInt("Activo") == 1);
                 servicios.add(servicio);
             }
         } catch (SQLException e) {
@@ -117,6 +145,11 @@ public class ServicioDaoImpl implements ServicioDao {
                 servicio.setRespuesta(rs.getString("Respuesta"));
                 servicio.setCosto(rs.getBigDecimal("Costo"));
                 servicio.setLinkimagen(obtenerImagenValida(servicio.getTipoServicio(), rs.getString("img")));
+                try {
+                    servicio.setActivo(rs.getInt("Activo") == 1);
+                } catch (Exception ex) {
+                    servicio.setActivo(true);
+                }
             }
         } catch (SQLException e) {
             System.out.println("Error al obtener usuario por ID: " + e);
@@ -176,6 +209,21 @@ public class ServicioDaoImpl implements ServicioDao {
             resultado = ps.executeUpdate() > 0;
         } catch (SQLException e) {
             System.out.println("Error al eliminar servicio: " + e);
+        }
+        return resultado;
+    }
+
+    @Override
+    public boolean reactivarServicio(int id) {
+        String SQL = "UPDATE servicio SET Activo = 1 WHERE idServicio = ?";
+        boolean resultado = false;
+        try {
+            cx = Conexion.getConection();
+            ps = cx.prepareStatement(SQL);
+            ps.setInt(1, id);
+            resultado = ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.out.println("Error al reactivar servicio: " + e);
         }
         return resultado;
     }

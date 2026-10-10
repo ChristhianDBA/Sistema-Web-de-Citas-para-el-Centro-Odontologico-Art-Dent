@@ -116,9 +116,41 @@ public class ReservaController extends HttpServlet {
         Map<String, List<VerReserva>> reservasPorDia = new HashMap<>();
         Map<String, List<VerCita>> citasPorDia = new HashMap<>();
 
+        String tipoRol = (String) request.getSession().getAttribute("TipoRol");
+        String nombreDoc = (String) request.getSession().getAttribute("Nombre");
+        String apellidoDoc = (String) request.getSession().getAttribute("Apellido");
+        boolean esOdontologo = tipoRol != null && tipoRol.equalsIgnoreCase("Odontologo");
+
         for (String dia : diasSemana) {
             List<VerCita> citas = citaDao.listarCitasPorDiaSemana(dia, semanaActual);
             List<VerReserva> reservas = reservaDao.listarReservasPorDiaSemana(dia, semanaActual);
+
+            if (esOdontologo && nombreDoc != null && apellidoDoc != null) {
+                // RF04: Filtrar estrictamente citas y reservas del odontólogo en sesión
+                final String nDoc = nombreDoc.trim().toLowerCase();
+                final String aDoc = apellidoDoc.trim().toLowerCase();
+
+                List<VerCita> citasFiltradas = new ArrayList<>();
+                for (VerCita c : citas) {
+                    String cNom = (c.getNombreUsuario() != null) ? c.getNombreUsuario().trim().toLowerCase() : "";
+                    String cApe = (c.getApellidoUsuario() != null) ? c.getApellidoUsuario().trim().toLowerCase() : "";
+                    if ((cNom.contains(nDoc) || nDoc.contains(cNom)) && (cApe.contains(aDoc) || aDoc.contains(cApe))) {
+                        citasFiltradas.add(c);
+                    }
+                }
+                citas = citasFiltradas;
+
+                List<VerReserva> reservasFiltradas = new ArrayList<>();
+                for (VerReserva r : reservas) {
+                    String rNom = (r.getNombreUsuario() != null) ? r.getNombreUsuario().trim().toLowerCase() : "";
+                    String rApe = (r.getApellidoUsuario() != null) ? r.getApellidoUsuario().trim().toLowerCase() : "";
+                    if ((rNom.contains(nDoc) || nDoc.contains(rNom)) && (rApe.contains(aDoc) || aDoc.contains(rApe))) {
+                        reservasFiltradas.add(r);
+                    }
+                }
+                reservas = reservasFiltradas;
+            }
+
             citasPorDia.put(dia, citas);
             reservasPorDia.put(dia, reservas);
         }
@@ -148,47 +180,87 @@ public class ReservaController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        //Datos de Usuario
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
+
+        // Datos de Usuario
         String nombre = request.getParameter("nombre");
         String apellido = request.getParameter("apellido");
-        int dni = Integer.parseInt(request.getParameter("dni"));
-        int telefono = Integer.parseInt(request.getParameter("telefono"));
+        String dniStr = request.getParameter("dni");
+        int dni = (dniStr != null && !dniStr.trim().isEmpty()) ? Integer.parseInt(dniStr.trim()) : 0;
+        String telefonoStr = request.getParameter("telefono");
+        int telefono = (telefonoStr != null && !telefonoStr.trim().isEmpty()) ? Integer.parseInt(telefonoStr.trim()) : 0;
         String correo = request.getParameter("correo");
-        double precio_servicio = Double.parseDouble(request.getParameter("precio_consulta"));
-        int idServicio = Integer.parseInt(request.getParameter("idServicio"));
-        int id_odontologo = Integer.parseInt(request.getParameter("medico"));
-        
-        System.out.println("id_odontologo "+id_odontologo);
-        //Datos de Reserva
+        if (correo == null || correo.trim().isEmpty()) {
+            correo = request.getParameter("email");
+        }
+
+        double precio_servicio = 0.0;
+        String precioStr = request.getParameter("precio_consulta");
+        if (precioStr != null && !precioStr.trim().isEmpty()) {
+            try {
+                precio_servicio = Double.parseDouble(precioStr.trim());
+            } catch (NumberFormatException e) {
+                precio_servicio = 0.0;
+            }
+        }
+
+        int idServicio = 1;
+        String idServicioStr = request.getParameter("idServicio");
+        if (idServicioStr != null && !idServicioStr.trim().isEmpty()) {
+            try {
+                idServicio = Integer.parseInt(idServicioStr.trim());
+            } catch (NumberFormatException e) {
+                idServicio = 1;
+            }
+        }
+
+        int id_odontologo = 4;
+        String medicoStr = request.getParameter("medico");
+        if (medicoStr != null && !medicoStr.trim().isEmpty()) {
+            try {
+                id_odontologo = Integer.parseInt(medicoStr.trim());
+            } catch (NumberFormatException e) {
+                id_odontologo = 4;
+            }
+        }
+
+        // Datos de Reserva
         String fecha = request.getParameter("fecha");
         String hora = request.getParameter("hora");
         String descripcion = request.getParameter("descripcion");
-        System.out.println("Precio del servicio: " + precio_servicio);
-        int Usuario_idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
-        System.out.println("IdUsuario: " + request.getParameter("idUsuario"));
+        if (descripcion == null || descripcion.trim().isEmpty()) {
+            descripcion = "Reserva Web - En espera";
+        }
 
+        int Usuario_idUsuario = 0;
+        String idUserStr = request.getParameter("idUsuario");
+        if (idUserStr != null && !idUserStr.trim().isEmpty() && !idUserStr.equals("null")) {
+            try {
+                Usuario_idUsuario = Integer.parseInt(idUserStr.trim());
+            } catch (NumberFormatException e) {
+                Usuario_idUsuario = 0;
+            }
+        }
 
-        /*0
-          p_DiaReserva (DATE)
-          p_HoraReserva (TIME)
-          p_Descripcion (TEXT)
-          p_Importe (DECIMAL(10,2))
-          p_Usuario_idUsuario (INT)
-          p_Estado_idEstado (INT)
-          p_Servicio_idServicio (INT)
-          p_Odontologo_idUsuario (INT)*/
-        int estadoId = 1;  // Asegúrate de que este valor sea válido
+        int estadoId = 1;  // 1: 'En espera'
         Paciente paciente = new Paciente(0, nombre, apellido, dni, telefono, correo);
         Reserva reserva = new Reserva(0, fecha, hora, descripcion, precio_servicio, Usuario_idUsuario, estadoId, idServicio, id_odontologo);
         int x = reservaDao.verificarExistencia(dni);
         if (x == 0) {
-            // Si el paciente no existe, registrar el usuario, la primera cita y la venta
             reservaDao.createReserva(paciente, reserva);
         } else {
-            // Si el paciente ya existe, solo registrar la cita y la venta
+            reserva.setUsuario_idUsuario(x); // Pasamos idPaciente existente
             reservaDao.createReservaPacex(paciente, reserva);
         }
-        
+
+        // Guardar en sesión para el voucher de citareservada.jsp
+        request.getSession().setAttribute("reservaNombre", nombre + " " + apellido);
+        request.getSession().setAttribute("reservaDni", String.valueOf(dni));
+        request.getSession().setAttribute("reservaFecha", fecha);
+        request.getSession().setAttribute("reservaHora", hora);
+        request.getSession().setAttribute("reservaServicio", request.getParameter("motivo"));
+        request.getSession().setAttribute("reservaPrecio", String.format("%.2f", precio_servicio));
 
         response.sendRedirect("citareservada.jsp");
     }

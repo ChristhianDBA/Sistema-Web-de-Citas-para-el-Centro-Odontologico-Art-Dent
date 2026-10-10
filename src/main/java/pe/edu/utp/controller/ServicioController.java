@@ -51,6 +51,9 @@ public class ServicioController extends HttpServlet {
                 case "delete":
                     deleteServicio(request, response);
                     break;
+                case "reactivar":
+                    reactivarServicio(request, response);
+                    break;
                 case "edit":
                     showEditForm(request, response);
                     break;
@@ -120,7 +123,7 @@ private void cargarServicio(HttpServletRequest request, HttpServletResponse resp
     
     private void listServicio(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
-        List<Servicio> listServicio = servicioDao.listarServicios();
+        List<Servicio> listServicio = servicioDao.listarTodosLosServicios();
         request.setAttribute("listServicio", listServicio);
         RequestDispatcher dispatcher = request.getRequestDispatcher("ADMPServicios.jsp");
         dispatcher.forward(request, response);
@@ -174,6 +177,13 @@ private void cargarServicio(HttpServletRequest request, HttpServletResponse resp
             throws SQLException, IOException {
         int id = Integer.parseInt(request.getParameter("id"));
         servicioDao.eliminarServicio(id);
+        response.sendRedirect("ServicioController?action=list");
+    }
+
+    private void reactivarServicio(HttpServletRequest request, HttpServletResponse response)
+            throws SQLException, IOException {
+        int id = Integer.parseInt(request.getParameter("id"));
+        servicioDao.reactivarServicio(id);
         response.sendRedirect("ServicioController?action=list");
     }
 

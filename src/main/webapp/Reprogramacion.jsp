@@ -1,35 +1,23 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%//@include file="WEB-INF/template/libreria.jspf" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="es">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Panel de Control - Clínica</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <title>Reprogramación de Cita | Centro Odontológico ArtDent</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-        <style>
-            .btn-gold {
-                background-color: #F1D045 !important;
-                color: black !important;
-                border: none !important;
-            }
-
-            .btn-gold:hover {
-                background-color: #e5c100 !important;
-                color: white !important;
-            }
-
-        </style>
+        <link rel="stylesheet" href="css/style.css">
     </head>
-    <body class="d-flex flex-column min-vh-100">
-        <%HttpSession misesion = request.getSession();
+    <body class="d-flex flex-column min-vh-100 bg-light">
+        <%
+            HttpSession misesion = request.getSession();
             String usuario = (String) request.getSession().getAttribute("Nombre");
             if (usuario == null) {
                 response.sendRedirect("iniciosesionerror.jsp");
+                return;
             }
-            
         %>
         <%@include file="NavPanel.jsp" %>        
         <!-- Contenido de la Página -->
@@ -37,139 +25,174 @@
             <!-- Sidebar -->
             <%@include file="Sidebar.jsp" %>
 
+            <!-- Contenido Principal -->
+            <main class="container-fluid p-4 d-flex flex-column flex-grow-1">
+                <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2 border-bottom">
+                    <div>
+                        <h3 class="fw-bold mb-1" style="color: var(--artdent-primary);">
+                            <i class="bi bi-calendar2-range-fill me-2" style="color: var(--artdent-accent);"></i>Reprogramación de Cita / Reserva
+                        </h3>
+                        <p class="text-muted small mb-0">Seleccione la nueva fecha y hora para el paciente; el sistema enviará una notificación automática por correo.</p>
+                    </div>
 
-            <div class="container p-3 d-flex flex-column flex-grow-1">
-                <br><br>
-                <div>
-                    <h3 style="color: darkblue; font-weight: bold;">Reprogramar Fecha y Hora</h3>
-                </div>
-                <br>
-                <c:choose>
-                    <c:when test="${tipoLista == 'DetRe'}">
-                        <div class="d-flex justify-content-end">
+                    <c:choose>
+                        <c:when test="${tipoLista == 'DetRe'}">
                             <form action="ReservaController" method="get">
                                 <input type="hidden" name="accion" value="listar" />
-                                <button class="btn btn-gold pt-2 px-4 mb-3" id="edtInfo">Cancelar</button>
+                                <button class="btn btn-outline-secondary d-inline-flex align-items-center gap-1 shadow-sm px-3">
+                                    <i class="bi bi-x-circle"></i> Cancelar
+                                </button>
                             </form>
-                        </div>
-                        <table class="table table-bordered border-gray table-hover  table-responsive" id="">
-                            <tr>
-                                <th class="text-dark p-3 bg-info-subtle">ID Reserva</th>
-                                <td>${VerReserva[0].idReserva}</td>
-                            </tr>
-                            <tr>
-                                <th class="text-dark p-3 bg-info-subtle">Nombres del Paciente</th>
-                                <td>${VerReserva[0].nombrePaciente}</td>
-                            </tr>
-                            <tr>
-                                <th class="text-dark p-3 bg-info-subtle" >Apellidos del Paciente</th>
-                                <td>${VerReserva[0].apellidoPaciente}</td>
-                            </tr>
-                            <tr>
-                                <th class="text-dark p-3 bg-info-subtle" >Fecha de Reserva</th>
-                                <td>${VerReserva[0].diaReserva}</td>
-                            </tr>
-                            <tr>
-                                <th class="text-dark p-3 bg-info-subtle" >Hora de Reserva</th>
-                                <td>${VerReserva[0].horaReserva}</td>
-                            </tr>
-                            <tr>
-                                <th class="text-dark p-3 bg-info-subtle" >Descripción</th>
-                                <td>${VerReserva[0].descripcion}</td>
-                            </tr>
-                            <tr>
-                                <th class="text-dark p-3 bg-info-subtle" >Servicio</th>
-                                <td>${VerReserva[0].tipoServicio}</td>
-                            </tr>
-                            <tr>
-                                <th class="text-dark p-3 bg-info-subtle" >Médico Asignado</th>
-                                <td>${VerReserva[0].nombreUsuario} ${VerReserva[0].apellidoUsuario}</td>
-                            </tr>
-                            <tr>
-                                <th class="text-dark p-3 bg-info-subtle" style="background-color: #CFE2FF;">Estado de la Reserva</th>
-                                <td>${VerReserva[0].estado}</td>
-                            </tr>
-                        </table>
-                        <h3 class="mt-2">Nueva Fecha y Hora:</h3>
-
-                        <form class="d-flex flex-grow-3" method="post" action="ReprogramacionController">
-                            <input type="hidden" name="idReserva" value="${VerReserva[0].idReserva}"> 
-                            <div class="mb-3 d-grid me-4">
-                                <label for="new-date" class="form-label">Nueva Fecha:</label>
-                                <input type="date" class="form-control" id="new-date" name="new-date" required>
-                            </div>
-
-                            <div class="mb-3 me-4">
-                                <label for="new-time" class="form-label">Nueva Hora:</label>
-                                <input type="time" class="form-control" id="new-time" name="new-time" required>
-                            </div>
-                            <div>
-                                <button type="submit" class="btn btn-success mt-4" name="accion" value="UpdateReserva">Confirmar reprogramación</button>
-                            </div>
-                        </form>
-
-
-                    </c:when>
-
-                    <c:when test="${tipoLista == 'DetCi'}">
-                        <div class="d-flex justify-content-end">
+                        </c:when>
+                        <c:otherwise>
                             <form action="ReservaController" method="get">
                                 <input type="hidden" name="accion" value="listarCitas" />
-                                <button class="btn btn-gold p-2 px-4 mb-4" id="edtInfo">Cancelar</button>
+                                <button class="btn btn-outline-secondary d-inline-flex align-items-center gap-1 shadow-sm px-3">
+                                    <i class="bi bi-x-circle"></i> Cancelar
+                                </button>
                             </form>
-                        </div>
-                        <table class="table table-hover table-bordered border-gray table-responsive" id="">
-                            <tr>
-                                <th class="text-dark p-3 bg-info-subtle" style="width: 50%;">ID Cita</th>
-                                <td style="width: 50%;">${VerCita[0].idCita}</td>
-                            </tr>
-                            <tr>
-                                <th class="text-dark p-3 bg-info-subtle">Nombres del Paciente</th>
-                                <td>${VerCita[0].nombrePaciente}</td>
-                            </tr>
-                            <tr>
-                                <th class="text-dark p-3 bg-info-subtle">Apellidos del Paciente</th>
-                                <td>${VerCita[0].apellidoPaciente}</td>
-                            </tr>
-                            <tr>
-                                <th class="text-dark p-3 bg-info-subtle">Fecha de Cita</th>
-                                <td>${VerCita[0].diaReserva}</td>
-                            </tr>
-                            <tr>
-                                <th class="text-dark p-3 bg-info-subtle">Hora de Cita</th>
-                                <td>${VerCita[0].horaReserva}</td>
-                            </tr>
-                            <tr>
-                                <th class="text-dark p-3 bg-info-subtle">Servicio</th>
-                                <td>${VerCita[0].tipoServicio}</td>
-                            </tr>
-                            <tr>
-                                <th class="text-dark p-3 bg-info-subtle">Estado de la Cita</th>
-                                <td>${VerCita[0].estado}</td>
-                            </tr>
-                        </table>
-                        <h3 class="mt-2">Nueva Fecha y Hora:</h3>
+                        </c:otherwise>
+                    </c:choose>
+                </div>
 
-                        <form class="d-flex flex-grow-3" method="post" action="ReprogramacionController">
-                            <input type="hidden" name="idCita" value="${VerCita[0].idCita}"> 
-                            <div class="mb-3 d-grid me-4">
-                                <label for="new-date" class="form-label">Nueva Fecha:</label>
-                                <input type="date" class="form-control" id="new-date" name="new-date" required>
-                            </div>
+                <div class="row justify-content-center">
+                    <div class="col-12 col-xl-10">
+                        <c:choose>
+                            <c:when test="${tipoLista == 'DetRe'}">
+                                <!-- Tarjeta de Datos de la Reserva -->
+                                <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+                                    <div class="card-header bg-white py-3 border-bottom d-flex align-items-center justify-content-between">
+                                        <span class="fw-bold text-dark">
+                                            <i class="bi bi-info-circle me-2" style="color: var(--artdent-primary);"></i>Datos Actuales de la Reserva #RES-${VerReserva[0].idReserva}
+                                        </span>
+                                        <span class="badge rounded-pill text-dark" style="background-color: var(--artdent-mint);">
+                                            Reserva Web
+                                        </span>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered mb-0 align-middle">
+                                                <tbody>
+                                                    <tr>
+                                                        <th class="ps-4 text-muted py-2" style="width: 35%; background-color: #f8fafc;">Paciente</th>
+                                                        <td class="fw-bold text-dark">${VerReserva[0].nombrePaciente} ${VerReserva[0].apellidoPaciente}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="ps-4 text-muted py-2" style="background-color: #f8fafc;">Fecha y Hora Actual</th>
+                                                        <td><i class="bi bi-calendar-event me-2 text-muted"></i>${VerReserva[0].diaReserva} a las ${VerReserva[0].horaReserva}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="ps-4 text-muted py-2" style="background-color: #f8fafc;">Servicio Clínico</th>
+                                                        <td><span class="badge rounded-pill text-dark" style="background-color: var(--artdent-mint);">${VerReserva[0].tipoServicio}</span></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="ps-4 text-muted py-2" style="background-color: #f8fafc;">Médico Asignado</th>
+                                                        <td>Dr(a). ${VerReserva[0].nombreUsuario} ${VerReserva[0].apellidoUsuario}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="ps-4 text-muted py-2" style="background-color: #f8fafc;">Motivo Original</th>
+                                                        <td>${VerReserva[0].descripcion}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
 
-                            <div class="mb-3 me-4">
-                                <label for="new-time" class="form-label">Nueva Hora:</label>
-                                <input type="time" class="form-control" id="new-time" name="new-time" required>
-                            </div>
-                            <div>
-                                <button type="submit" class="btn btn-success mt-4" name="accion" value="UpdateCita">Confirmar reprogramación</button>
-                            </div>
-                        </form>
+                                <!-- Formulario de Nueva Fecha y Hora -->
+                                <div class="card border-0 shadow-sm rounded-4 p-4" style="border-top: 4px solid var(--artdent-primary) !important;">
+                                    <h5 class="fw-bold mb-3" style="color: var(--artdent-primary);">
+                                        <i class="bi bi-clock-history me-2"></i>Asignar Nueva Fecha y Hora
+                                    </h5>
+                                    <form method="post" action="ReprogramacionController" class="row g-3 align-items-end">
+                                        <input type="hidden" name="idReserva" value="${VerReserva[0].idReserva}"> 
+                                        <div class="col-md-5">
+                                            <label for="new-date" class="form-label fw-semibold">Nueva Fecha <span class="text-danger">*</span></label>
+                                            <input type="date" class="form-control" id="new-date" name="new-date" required>
+                                        </div>
 
-                    </c:when>
-                </c:choose>
-            </div>
+                                        <div class="col-md-4">
+                                            <label for="new-time" class="form-label fw-semibold">Nueva Hora <span class="text-danger">*</span></label>
+                                            <input type="time" class="form-control" id="new-time" name="new-time" required>
+                                        </div>
+
+                                        <div class="col-md-3">
+                                            <button type="submit" class="btn btn-success w-100 py-2 shadow-sm fw-semibold" name="accion" value="UpdateReserva">
+                                                <i class="bi bi-check-circle me-1"></i> Confirmar
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </c:when>
+
+                            <c:when test="${tipoLista == 'DetCi'}">
+                                <!-- Tarjeta de Datos de la Cita Médica -->
+                                <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+                                    <div class="card-header bg-white py-3 border-bottom d-flex align-items-center justify-content-between">
+                                        <span class="fw-bold text-dark">
+                                            <i class="bi bi-info-circle me-2" style="color: var(--artdent-primary);"></i>Datos Actuales de la Cita #CIT-${VerCita[0].idCita}
+                                        </span>
+                                        <span class="badge rounded-pill text-dark" style="background-color: var(--artdent-mint);">
+                                            Cita Médica
+                                        </span>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered mb-0 align-middle">
+                                                <tbody>
+                                                    <tr>
+                                                        <th class="ps-4 text-muted py-2" style="width: 35%; background-color: #f8fafc;">Paciente</th>
+                                                        <td class="fw-bold text-dark">${VerCita[0].nombrePaciente} ${VerCita[0].apellidoPaciente}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="ps-4 text-muted py-2" style="background-color: #f8fafc;">Fecha y Hora Actual</th>
+                                                        <td><i class="bi bi-calendar-event me-2 text-muted"></i>${VerCita[0].diaReserva} a las ${VerCita[0].horaReserva}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="ps-4 text-muted py-2" style="background-color: #f8fafc;">Servicio Clínico</th>
+                                                        <td><span class="badge rounded-pill text-dark" style="background-color: var(--artdent-mint);">${VerCita[0].tipoServicio}</span></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="ps-4 text-muted py-2" style="background-color: #f8fafc;">Estado Actual</th>
+                                                        <td><span class="badge bg-secondary">${VerCita[0].estado}</span></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Formulario de Nueva Fecha y Hora -->
+                                <div class="card border-0 shadow-sm rounded-4 p-4" style="border-top: 4px solid var(--artdent-primary) !important;">
+                                    <h5 class="fw-bold mb-3" style="color: var(--artdent-primary);">
+                                        <i class="bi bi-clock-history me-2"></i>Asignar Nueva Fecha y Hora
+                                    </h5>
+                                    <form method="post" action="ReprogramacionController" class="row g-3 align-items-end">
+                                        <input type="hidden" name="idCita" value="${VerCita[0].idCita}"> 
+                                        <div class="col-md-5">
+                                            <label for="new-date" class="form-label fw-semibold">Nueva Fecha <span class="text-danger">*</span></label>
+                                            <input type="date" class="form-control" id="new-date" name="new-date" required>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <label for="new-time" class="form-label fw-semibold">Nueva Hora <span class="text-danger">*</span></label>
+                                            <input type="time" class="form-control" id="new-time" name="new-time" required>
+                                        </div>
+
+                                        <div class="col-md-3">
+                                            <button type="submit" class="btn btn-success w-100 py-2 shadow-sm fw-semibold" name="accion" value="UpdateCita">
+                                                <i class="bi bi-check-circle me-1"></i> Confirmar
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </c:when>
+                        </c:choose>
+                    </div>
+                </div>
+            </main>
         </div>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     </body>
 </html>

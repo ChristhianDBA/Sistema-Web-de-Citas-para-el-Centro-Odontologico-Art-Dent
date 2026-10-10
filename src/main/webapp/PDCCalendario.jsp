@@ -37,6 +37,7 @@
         <title>Panel de Control - Clínica</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css">
+        <link rel="stylesheet" href="css/style.css">
         <style>
             /* Estilos CSS */
             .calendar-wrap {
@@ -195,7 +196,33 @@
             <%@include file="Sidebar.jsp" %>
 
             <div class="content container-fluid p-4">
-                <h3 style="color: darkblue; font-weight: bold;">Calendario de Citas</h3>
+                <%
+                    String rolCal = (session.getAttribute("TipoRol") != null) ? session.getAttribute("TipoRol").toString() : "";
+                    String docNom = (session.getAttribute("Nombre") != null) ? session.getAttribute("Nombre").toString() : "";
+                    String docApe = (session.getAttribute("Apellido") != null) ? session.getAttribute("Apellido").toString() : "";
+                    boolean esDocCal = rolCal.equalsIgnoreCase("Odontologo");
+                %>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                        <h3 class="mb-1 fw-bold text-brand-primary">
+                            <%= esDocCal ? "Agenda Semanal Personalizada" : "Calendario General de Citas" %>
+                        </h3>
+                        <% if (esDocCal) { %>
+                            <span class="badge bg-mint text-dark px-3 py-2 fs-6">
+                                <i class="bi bi-person-badge-fill text-brand-primary me-1"></i>Dr(a). <%= docNom %> <%= docApe %> &bull; Odontología
+                            </span>
+                            <span class="text-secondary ms-2 small">Visualizando exclusivamente las citas y pacientes asignados a su agenda médica.</span>
+                        <% } else { %>
+                            <span class="text-secondary small">Visualización integral de citas presenciales y reservas web del centro odontológico.</span>
+                        <% } %>
+                    </div>
+                </div>
+                <% if ("completadoOk".equals(request.getParameter("msg"))) { %>
+                    <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+                        <i class="bi bi-check-circle-fill me-2"></i><strong>¡Atención Finalizada!</strong> La cita ha sido marcada como <strong>Completada</strong> con éxito.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <% } %>
                 <div class="calendar-controls d-flex justify-content-between align-items-center pb-4 pt-2">
                     <div>
                         <span class="fs-5 fw-bold text-primary">Semana <%= semanaActual%></span><br>
@@ -328,8 +355,16 @@
                                 <p><strong>Importe:</strong> <span id="reservaImporte"></span></p>
                                 <p><strong>Descripción:</strong> <span id="reservaDescripcion"></span></p>
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            <div class="modal-footer d-flex justify-content-between">
+                                <form id="formCompletarReserva" action="ReprogramacionController" method="post" style="display: none; margin: 0;">
+                                    <input type="hidden" name="idReserva" id="btnIdReserva" value="" />
+                                    <input type="hidden" name="estado" id="btnEstadoReserva" value="Confirmado" />
+                                    <input type="hidden" name="accion" value="updateEstadoCompletado" />
+                                    <button class="btn btn-success fw-bold" type="submit">
+                                        <i class="bi bi-check2-circle me-1"></i>Finalizar Atención (Marcar Completado)
+                                    </button>
+                                </form>
+                                <button type="button" class="btn btn-secondary ms-auto" data-bs-dismiss="modal">Cerrar</button>
                             </div>
                         </div>
                     </div>
@@ -352,8 +387,16 @@
                                 <p><strong>Estado:</strong> <span id="citaEstado"></span></p>
                                 <p><strong>Importe:</strong> <span id="citaCosto"></span></p>
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            <div class="modal-footer d-flex justify-content-between">
+                                <form id="formCompletarCita" action="ReprogramacionController" method="post" style="display: none; margin: 0;">
+                                    <input type="hidden" name="idCita" id="btnIdCita" value="" />
+                                    <input type="hidden" name="estado" id="btnEstadoCita" value="Confirmado" />
+                                    <input type="hidden" name="accion" value="updateEstadoCompletadoCita" />
+                                    <button class="btn btn-success fw-bold" type="submit">
+                                        <i class="bi bi-check2-circle me-1"></i>Finalizar Atención (Marcar Completado)
+                                    </button>
+                                </form>
+                                <button type="button" class="btn btn-secondary ms-auto" data-bs-dismiss="modal">Cerrar</button>
                             </div>
                         </div>
                     </div>
@@ -375,6 +418,16 @@
                         modal.querySelector('#reservaEstado').textContent = this.dataset.estado;
                         modal.querySelector('#reservaImporte').textContent = this.dataset.importe;
                         modal.querySelector('#reservaDescripcion').textContent = this.dataset.descripcion;
+
+                        var formComp = modal.querySelector('#formCompletarReserva');
+                        if (formComp) {
+                            if (this.dataset.estado && this.dataset.estado.trim() === 'Confirmado') {
+                                formComp.style.display = 'block';
+                                modal.querySelector('#btnIdReserva').value = this.dataset.id;
+                            } else {
+                                formComp.style.display = 'none';
+                            }
+                        }
                     });
                 });
 
@@ -389,6 +442,16 @@
                         modal.querySelector('#citaOdontologo').textContent = this.dataset.odontologo;
                         modal.querySelector('#citaEstado').textContent = this.dataset.estado;
                         modal.querySelector('#citaCosto').textContent = this.dataset.costo;
+
+                        var formComp = modal.querySelector('#formCompletarCita');
+                        if (formComp) {
+                            if (this.dataset.estado && this.dataset.estado.trim() === 'Confirmado') {
+                                formComp.style.display = 'block';
+                                modal.querySelector('#btnIdCita').value = this.dataset.id;
+                            } else {
+                                formComp.style.display = 'none';
+                            }
+                        }
                     });
                 });
             });

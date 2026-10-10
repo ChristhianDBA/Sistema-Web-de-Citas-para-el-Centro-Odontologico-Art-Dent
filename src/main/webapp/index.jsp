@@ -1,506 +1,484 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio - Art Dent | Centro Odontológico</title>
+    <!-- Bootstrap 5.3 & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Roboto:wght@500;700;900&display=swap" rel="stylesheet">
+    <!-- Hoja de Estilos Oficial de Marca Art Dent -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&family=Open+Sans:wght@400&display=swap"
-              rel="stylesheet">
-        <link rel="stylesheet" href="/css/style.css">
-        <title>Inicio - Art Dent</title>
-    </head>
+    <style>
+        @keyframes fadeInEffect {
+            0% { opacity: 0; transform: translateY(12px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
 
-    <body>
+        .hero-banner {
+            background-image: linear-gradient(rgba(33, 37, 41, 0.65), rgba(33, 37, 41, 0.75)), 
+                              url('https://www.clinicadentalsonriemaslima.com/wp-content/themes/Sonriemas/img/slider2.jpg');
+            background-size: cover;
+            background-position: center;
+            min-height: 560px;
+            display: flex;
+            align-items: center;
+        }
 
-        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-            <div class="container-fluid">
-                <%@include file="header.jsp"%>
-            </div>
-        </nav>
+        .section-title {
+            position: relative;
+            display: inline-block;
+            font-weight: 800;
+            color: var(--artdent-dark);
+            margin-bottom: 1.5rem;
+        }
 
-        <div class="bg-dark text-white position-relative" 
-             style="background-image: url('https://www.clinicadentalsonriemaslima.com/wp-content/themes/Sonriemas/img/slider2.jpg'); background-size: cover; background-position: center; height: 600px; opacity: 0;
-             animation: fadeInEffect 1.5s ease-in-out forwards;">
-            <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark opacity-50"></div>
-            <div class="container d-flex flex-column justify-content-center h-100 position-relative px-4">
-                <div class="container text-start">
-                    <div class="row">
-                        <div class="col-12">
-                            <h1 class="display-4" 
-                                style="opacity: 0; animation: fadeInEffect 1s ease-in-out forwards 0.5s;">Art Dent</h1>
-                            <h2 class="mb-4" 
-                                style="opacity: 0; animation: fadeInEffect 1s ease-in-out forwards 1s;">Ayudándote a sonreír</h2>
-                            <p class="lead" 
-                               style="opacity: 0; animation: fadeInEffect 1s ease-in-out forwards 1.3s;">Art Dent es una clínica dental que ofrece servicios de odontología general, ortodoncia,
-                                cirugía oral y estética dental. Nuestro equipo de profesionales está comprometido con la salud bucal
-                                y la satisfacción de nuestros pacientes, y trabaja para ofrecer tratamientos de calidad y resultados
-                                duraderos. En Art Dent encontrarás un ambiente cálido y acogedor, donde te sentirás cómodo y seguro
-                                durante tu visita. ¡Ven a conocernos y descubre la diferencia de sonreír con Art Dent!</p>
-                            <a href="ServicioController?action=formreservaa" class="btn btn-success btn-lg" 
-                               style="opacity: 0; animation: fadeInEffect 1s ease-in-out forwards 1.5s;">Reserva tu cita aquí</a>
-                        </div>
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background-color: var(--artdent-primary);
+            border-radius: 2px;
+        }
+
+        .doctor-card {
+            border: 1px solid var(--artdent-border);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            background: #fff;
+        }
+
+        .doctor-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 24px rgba(48, 164, 198, 0.15);
+            border-color: var(--artdent-primary);
+        }
+
+        .sede-card {
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--artdent-border);
+            box-shadow: var(--artdent-shadow-sm);
+        }
+
+        /* --- Chatbot Widget Integrado con Colores de Marca --- */
+        .chat-widget {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 380px;
+            max-width: 90vw;
+            height: 540px;
+            background: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 12px 36px rgba(33, 37, 41, 0.22);
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1050;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--artdent-border);
+        }
+
+        .chat-widget.collapsed {
+            height: 54px;
+            width: 320px;
+            border-radius: 27px;
+            box-shadow: 0 6px 20px rgba(48, 164, 198, 0.35);
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, var(--artdent-primary), var(--artdent-primary-hover));
+            color: #ffffff;
+            padding: 14px 18px;
+            cursor: pointer;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            user-select: none;
+        }
+
+        .chat-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            background-color: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .chat-input {
+            height: 64px;
+            background-color: #ffffff;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-top: 1px solid var(--artdent-border);
+        }
+
+        .chat-input input {
+            flex-grow: 1;
+            border: 1px solid var(--artdent-border);
+            background-color: #f1f5f9;
+            color: var(--artdent-dark);
+            padding: 9px 14px;
+            border-radius: 20px;
+            outline: none;
+            font-size: 0.9rem;
+        }
+
+        .chat-input input:focus {
+            border-color: var(--artdent-primary);
+            background-color: #ffffff;
+        }
+
+        .chat-input button {
+            background-color: var(--artdent-accent);
+            color: #ffffff;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .chat-input button:hover {
+            background-color: var(--artdent-accent-hover);
+            transform: scale(1.06);
+        }
+
+        .message {
+            padding: 10px 14px;
+            border-radius: 14px;
+            max-width: 82%;
+            font-size: 0.92rem;
+            line-height: 1.45;
+            animation: fadeInEffect 0.3s ease;
+        }
+
+        .user-message {
+            background-color: var(--artdent-primary);
+            color: #ffffff;
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+            box-shadow: 0 2px 6px rgba(48, 164, 198, 0.25);
+        }
+
+        .bot-message {
+            background-color: #ffffff;
+            color: var(--artdent-dark);
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+            box-shadow: 0 2px 6px rgba(33, 37, 41, 0.06);
+            border-left: 3px solid var(--artdent-primary);
+        }
+
+        .loading-animation {
+            display: none;
+            padding: 8px 12px;
+            align-self: flex-start;
+        }
+
+        .loading-animation span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: var(--artdent-primary);
+            border-radius: 50%;
+            margin: 0 3px;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .loading-animation span:nth-child(1) { animation-delay: -0.32s; }
+        .loading-animation span:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1.0); }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar Oficial -->
+    <%@include file="header.jsp"%>
+
+    <!-- Hero Banner Principal -->
+    <section class="hero-banner text-white">
+        <div class="container px-4">
+            <div class="row align-items-center">
+                <div class="col-12 col-lg-8" style="animation: fadeInEffect 1s ease-in-out forwards;">
+                    <span class="badge bg-brand-accent text-white px-3 py-2 rounded-pill text-uppercase fw-bold mb-3">
+                        <i class="bi bi-star-fill me-1"></i> Excelencia en Odontología Integral
+                    </span>
+                    <h1 class="display-3 fw-bold mb-2">Art <span class="text-brand-primary">Dent</span></h1>
+                    <h2 class="h2 fw-semibold mb-4 text-light">Ayudándote a sonreír con confianza</h2>
+                    <p class="lead mb-4 text-white-50" style="max-width: 680px;">
+                        Somos una clínica odontológica moderna comprometida con tu salud bucal. Brindamos atención personalizada en 
+                        odontología preventiva, endodoncia, ortodoncia, cirugía bucal e implantes con especialistas certificados.
+                    </p>
+                    <div class="d-flex flex-wrap gap-3">
+                        <a href="ServicioController?action=formreservaa" class="btn btn-success btn-lg px-4 py-3 rounded-pill shadow">
+                            <i class="bi bi-calendar-check me-2"></i> Reserva tu cita aquí
+                        </a>
+                        <a href="ServicioController?action=listar" class="btn btn-outline-light btn-lg px-4 py-3 rounded-pill">
+                            <i class="bi bi-info-circle me-2"></i> Conoce nuestros servicios
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
+    </section>
 
-        <!-- Sección de empresas que respaldan -->
-        <div class="container my-5 py-5">
-            <h3 class="text-center text-black mb-4 fade-in fade-in-delay-1">Empresas que nos respaldan</h3><br>
-            <div class="row justify-content-center">
-                <!-- Logo de Colgate -->
-                <div class="col-6 col-md-2 mb-4 d-flex justify-content-center fade-in fade-in-delay-2">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/3/3f/Colgate.svg" class="img-fluid" alt="Colgate" style="max-height: 80px; object-fit: contain;">
-                </div>
-                <!-- Logo de Nestlé -->
-                <div class="col-6 col-md-2 mb-4 d-flex justify-content-center fade-in fade-in-delay-3">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSVfCmOuGgT9LsJlj-ZbzhIBZdjK6UZrq7Ap87lo-mFoQcHsuCNYDhdGDPmZmFDcPCqQ" class="img-fluid" alt="Nestlé" style="max-height: 80px; object-fit: contain;">
-                </div>
-                <!-- Logo de Sensodyne -->
-                <div class="col-6 col-md-2 mb-4 d-flex justify-content-center fade-in fade-in-delay-4">
-                    <img src="https://assets.boots.com/content/dam/boots/brands/brand---s/sensodyne/sensodyne_bt/sensodyne_bt_2021-05/2021-05_sensodyne_brand-treatment_horizontal-nav_sensodyne.dam.ts%3D1626850968239.jpg" class="img-fluid" alt="Sensodyne" style="max-height: 80px; object-fit: contain;">
-                </div>
-                <!-- Logo adicional -->
-                <div class="col-6 col-md-2 mb-4 d-flex justify-content-center fade-in fade-in-delay-5">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQByTHpMwmvqMIdQ-GLSxd6rx6fls7MkQ__KA&s" class="img-fluid" alt="Logo adicional" style="max-height: 80px; object-fit: contain;">
-                </div>
+    <!-- Marcas y Aliados que Respaldan -->
+    <section class="container my-5 py-4">
+        <div class="text-center mb-4">
+            <h3 class="section-title">Tecnología y Respaldos</h3>
+            <p class="text-muted small">Trabajamos con insumos dentales de los laboratorios líderes a nivel mundial</p>
+        </div>
+        <div class="row justify-content-center align-items-center g-4 text-center">
+            <div class="col-6 col-md-3">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/3/3f/Colgate.svg" class="img-fluid p-2" alt="Colgate" style="max-height: 55px; filter: grayscale(20%);">
+            </div>
+            <div class="col-6 col-md-3">
+                <img src="https://assets.boots.com/content/dam/boots/brands/brand---s/sensodyne/sensodyne_bt/sensodyne_bt_2021-05/2021-05_sensodyne_brand-treatment_horizontal-nav_sensodyne.dam.ts%3D1626850968239.jpg" class="img-fluid p-2" alt="Sensodyne" style="max-height: 55px; filter: grayscale(20%);">
+            </div>
+            <div class="col-6 col-md-3">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSVfCmOuGgT9LsJlj-ZbzhIBZdjK6UZrq7Ap87lo-mFoQcHsuCNYDhdGDPmZmFDcPCqQ" class="img-fluid p-2" alt="Nestlé Healthcare" style="max-height: 55px; filter: grayscale(20%);">
+            </div>
+            <div class="col-6 col-md-3">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQByTHpMwmvqMIdQ-GLSxd6rx6fls7MkQ__KA&s" class="img-fluid p-2" alt="Aliado Clínico" style="max-height: 55px; filter: grayscale(20%);">
             </div>
         </div>
+    </section>
 
-        <style>
-            @keyframes fadeInEffect {
-                0% {
-                    opacity: 0;
-                }
-                100% {
-                    opacity: 1;
-                }
-            }
-
-            .fade-in {
-                opacity: 0;
-                animation: fadeInEffect 1s ease-in-out forwards;
-            }
-
-            .fade-in-delay-1 {
-                animation-delay: 1s;
-            }
-
-            .fade-in-delay-2 {
-                animation-delay: 1.5s;
-            }
-
-            .fade-in-delay-3 {
-                animation-delay: 2s;
-            }
-
-            .fade-in-delay-4 {
-                animation-delay: 2.5s;
-            }
-
-            .fade-in-delay-5 {
-                animation-delay: 3s;
-            }
-
-            .fade-in-delay-6 {
-                animation-delay: 3.5s;
-            }
-
-            .fade-in-delay-7 {
-                animation-delay: 4s;
-            }
-
-            .fade-in-delay-8 {
-                animation-delay: 4.5s;
-            }
-            .fade-in-delay-9 {
-                animation-delay: 5s;
-            }
-            .fade-in-delay-10 {
-                animation-delay: 5.5s;
-            }
-            .fade-in-delay-11 {
-                animation-delay: 6s;
-            }
-            .fade-in-delay-12 {
-                animation-delay: 6.5s;
-            }
-            .fade-in-delay-13 {
-                animation-delay: 7s;
-            }
-            .fade-in-delay-14 {
-                animation-delay: 7.5s;
-            }
-            .fade-in-delay-15 {
-                animation-delay: 8s;
-            }
-            .fade-in-delay-16 {
-                animation-delay: 8.5s;
-            }
-            .chat-widget {
-                position: fixed;
-                bottom: 20px;
-                right: 20px;
-                width: 350px;
-                height: 500px;
-                background: linear-gradient(145deg, #ffffff, #f0f0f0);
-                border-radius: 20px;
-                overflow: hidden;
-                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-                transition: all 0.3s ease;
-                z-index: 1000;
-            }
-
-            .chat-widget.collapsed {
-                height: 60px;
-            }
-
-            /* New styles for expanded state */
-            .chat-widget:not(.collapsed) {
-                width: 400px; /* Increased width when expanded */
-                height: 600px; /* Increased height for better proportion */
-            }
-
-            .chat-header {
-                background: linear-gradient(90deg, #3498db, #2980b9);
-                color: #fff;
-                padding: 15px;
-                cursor: pointer;
-                font-weight: bold;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-            }
-
-            .chat-body {
-                height: calc(100% - 120px);
-                overflow-y: auto;
-                padding: 15px;
-                background-color: #f8f9fa;
-            }
-
-            .chat-input {
-                height: 60px;
-                background-color: #fff;
-                padding: 10px;
-                display: flex;
-                align-items: center;
-            }
-
-            .chat-input input {
-                flex-grow: 1;
-                border: none;
-                background-color: #f1f3f5;
-                color: #333;
-                padding: 10px 15px;
-                border-radius: 20px;
-                margin-right: 10px;
-            }
-
-            .chat-input button {
-                background-color: #3498db;
-                color: #fff;
-                border: none;
-                border-radius: 50%;
-                width: 40px;
-                height: 40px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                cursor: pointer;
-                transition: background-color 0.3s ease;
-            }
-
-            .chat-input button:hover {
-                background-color: #2980b9;
-            }
-
-            .message {
-                margin-bottom: 15px;
-                padding: 10px 15px;
-                border-radius: 20px;
-                max-width: 80%;
-                animation: fadeIn 0.3s ease;
-            }
-
-            @keyframes fadeIn {
-                from {
-                    opacity: 0;
-                    transform: translateY(10px);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-
-            .user-message {
-                background-color: #3498db;
-                color: #fff;
-                align-self: flex-end;
-                margin-left: auto;
-            }
-
-            .bot-message {
-                background-color: #ecf0f1;
-                color: #34495e;
-            }
-
-            .chat-toggle {
-                background: none;
-                border: none;
-                color: #fff;
-                font-size: 1.2em;
-            }
-
-            .loading-animation {
-                display: none;
-                text-align: center;
-                padding: 10px;
-            }
-
-            .loading-animation span {
-                display: inline-block;
-                width: 10px;
-                height: 10px;
-                background-color: #3498db;
-                border-radius: 50%;
-                margin: 0 5px;
-                animation: bounce 1.4s infinite ease-in-out both;
-            }
-
-            .loading-animation span:nth-child(1) {
-                animation-delay: -0.32s;
-            }
-
-            .loading-animation span:nth-child(2) {
-                animation-delay: -0.16s;
-            }
-
-            @keyframes bounce {
-                0%, 80%, 100% {
-                    transform: scale(0);
-                }
-                40% {
-                    transform: scale(1.0);
-                }
-            }
-
-            /* Media query for responsiveness */
-            @media (max-width: 480px) {
-                .chat-widget, .chat-widget:not(.collapsed) {
-                    width: 90%;
-                    right: 5%;
-                    left: 5%;
-                }
-            }
-        </style>
-
-        <div style="height: 40px;"></div> <!-- Este es el espacio de separación entre las imágenes -->
-        <div class="text-center fade-in fade-in-delay-6">
-            <h2>Nuestras Sedes</h2>
+    <!-- Nuestras Sedes -->
+    <section class="container my-5 py-4">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Nuestras Sedes</h2>
+            <p class="text-muted">Ubicados estratégicamente en Chosica y Chaclacayo para brindarte una atención rápida y cómoda</p>
         </div>
-        <br>
-        <div class="d-flex justify-content-start align-items-start fade-in fade-in-delay-7" style="min-height: 10vh; background-color: white;">
-            <div class="card mb-3" style="max-width: 10000px; height: 500px; margin-left: 20px; border-radius: 20px;">
-                <div class="row g-0">
-                    <!-- Sección del mapa -->
-                    <div class="col-md-7" style="flex: 0 0 60%; display: flex; justify-content: center; align-items: center;">
+
+        <div class="row g-4">
+            <!-- Sede Chosica -->
+            <div class="col-12 col-lg-6">
+                <div class="card sede-card h-100">
+                    <div class="ratio ratio-16x9">
                         <iframe 
                             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4915.00775618888!2d-76.69852092397075!3d-11.936868239866305!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9105ef0f5e97b5df%3A0xaa9268a039fb2297!2sCentro%20Odontologico%20Integral%20Art%20Dent%20SAC!5e1!3m2!1ses-419!2spe!4v1733294849910!5m2!1ses-419!2spe"
-                            width="1300px" 
-                            height="500px" 
-                            style="border: 0; border-radius: 20px;" 
-                            allowfullscreen="" 
-                            loading="lazy" 
-                            referrerpolicy="no-referrer-when-downgrade">
+                            style="border: 0;" allowfullscreen="" loading="lazy">
                         </iframe>
                     </div>
-                    <!-- Sección del texto -->
-                    <div class="col-md-5" style="flex: 0 0 40%; padding-left: 20px;">
-                        <div class="card-body d-flex flex-column justify-content-center fade-in fade-in-delay-8" style="opacity: 0; animation: fadeInEffect 3s ease-in-out forwards 2s;">
-                            <h5 class="card-title text-bolder">Sede Chosica</h5>
-                            <p class="card-text"><small class="text-body-secondary">Jr. Chiclayo 268, Chosica, Perú</small></p>
-                            <p class="card-text"><strong>Teléfono</strong></p>
-                            <p class="card-text"><small class="text-body-secondary">(01) 3613634</small></p>
-                            <p class="card-text"><strong>Horarios</strong></p>
-                            <p class="card-text"><small class="text-body-secondary">
-                                    Lunes: 8:00 a. m. - 7:00 p. m.<br>
-                                    Martes: 8:00 a. m. - 7:00 p. m.<br>
-                                    Miércoles: 8:00 a. m. - 7:00 p. m.<br>
-                                    Jueves: 8:00 a. m. - 7:00 p. m.<br>
-                                    Viernes: 8:00 a. m. - 7:00 p. m.<br>
-                                    Sábado: 8:00 a. m. - 7:00 p. m.<br>
-                                    Domingo: <strong>CERRADO</strong>
-                                </small></p>
+                    <div class="card-body p-4">
+                        <h4 class="card-title fw-bold text-brand-dark mb-2">
+                            <i class="bi bi-geo-alt-fill text-brand-primary me-2"></i>Sede Chosica
+                        </h4>
+                        <p class="text-muted mb-2"><i class="bi bi-pin-map me-1"></i> Jr. Chiclayo 268, Chosica, Lima</p>
+                        <p class="text-muted mb-3"><i class="bi bi-telephone-fill me-1"></i> Central: <strong>(01) 361-3634</strong></p>
+                        <div class="bg-light p-3 rounded-3 small">
+                            <strong class="text-brand-dark d-block mb-1"><i class="bi bi-clock me-1"></i> Horarios de Atención:</strong>
+                            <span class="d-block text-muted">Lunes a Sábado: 8:00 AM - 7:00 PM</span>
+                            <span class="d-block text-danger fw-semibold">Domingo: Cerrado</span>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <br>
-
-        <div class="d-flex justify-content-end align-items-end fade-in fade-in-delay-9" style="min-height: 10vh; background-color: white;">
-            <div class="card mb-3" style="max-width: 10000px; height: 500px; margin-left: 20px; border-radius: 20px;">
-                <div class="row g-0">
-                    <!-- Sección del texto -->
-                    <div class="col-md-5" style="flex: 0 0 40%; padding-left: 20px;">
-                        <div class="card-body d-flex flex-column justify-content-center fade-in fade-in-delay-10"><br><br>
-                            <h5 class="card-title text-bolder">Sede Chaclacayo</h5>
-                            <p class="card-text"><small class="text-body-secondary">Las Palmeras 328, Chaclacayo 15472, Perú</small></p>
-                            <p class="card-text"><strong>Teléfono</strong></p>
-                            <p class="card-text"><small class="text-body-secondary">(01) 3613634</small></p>
-                            <p class="card-text"><strong>Horarios</strong></p>
-                            <p class="card-text"><small class="text-body-secondary">
-                                    Lunes: 8:00 a. m. - 7:00 p. m.<br>
-                                    Martes: 8:00 a. m. - 7:00 p. m.<br>
-                                    Miércoles: 8:00 a. m. - 7:00 p. m.<br>
-                                    Jueves: 8:00 a. m. - 7:00 p. m.<br>
-                                    Viernes: 8:00 a. m. - 7:00 p. m.<br>
-                                    Sábado: 8:00 a. m. - 7:00 p. m.<br>
-                                    Domingo: <strong>CERRADO</strong>
-                                </small></p>
-                        </div>
-                    </div>
-                    <!-- Sección del mapa -->
-                    <div class="col-md-7" style="flex: 0 0 60%; display: flex; justify-content: center; align-items: center;">
+            <!-- Sede Chaclacayo -->
+            <div class="col-12 col-lg-6">
+                <div class="card sede-card h-100">
+                    <div class="ratio ratio-16x9">
                         <iframe 
                             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4915.00775618888!2d-76.69852092397075!3d-11.936868239866305!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9105ef0f5e97b5df%3A0xaa9268a039fb2297!2sCentro%20Odontologico%20Integral%20Art%20Dent%20SAC!5e1!3m2!1ses-419!2spe!4v1733294849910!5m2!1ses-419!2spe"
-                            width="1300px" 
-                            height="500px" 
-                            style="border: 0; border-radius: 20px;" 
-                            allowfullscreen="" 
-                            loading="lazy" 
-                            referrerpolicy="no-referrer-when-downgrade">
+                            style="border: 0;" allowfullscreen="" loading="lazy">
                         </iframe>
+                    </div>
+                    <div class="card-body p-4">
+                        <h4 class="card-title fw-bold text-brand-dark mb-2">
+                            <i class="bi bi-geo-alt-fill text-brand-primary me-2"></i>Sede Chaclacayo
+                        </h4>
+                        <p class="text-muted mb-2"><i class="bi bi-pin-map me-1"></i> Av. Las Palmeras 328, Chaclacayo, Lima</p>
+                        <p class="text-muted mb-3"><i class="bi bi-telephone-fill me-1"></i> Central: <strong>(01) 361-3634</strong></p>
+                        <div class="bg-light p-3 rounded-3 small">
+                            <strong class="text-brand-dark d-block mb-1"><i class="bi bi-clock me-1"></i> Horarios de Atención:</strong>
+                            <span class="d-block text-muted">Lunes a Sábado: 8:00 AM - 7:00 PM</span>
+                            <span class="d-block text-danger fw-semibold">Domingo: Cerrado</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+    </section>
 
-
-        <br><br>
-
-        <div class="text-center fade-in">
-            <h2>Nuestros Doctores</h2>
+    <!-- Nuestro Equipo Médico -->
+    <section class="container my-5 py-4">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Especialistas Odontológicos</h2>
+            <p class="text-muted">Profesionales de amplia trayectoria dedicados al cuidado de tu salud bucal</p>
         </div>
 
-        <br><br>
+        <div class="row g-4 justify-content-center">
+            <!-- Doctor 1 -->
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card doctor-card h-100">
+                    <img src="https://saluddata.com/wp-content/uploads/2024/07/Odontologo-Profesional-p.webp" 
+                         class="card-img-top" alt="Dr. Luis Miguel Martínez" style="height: 250px; object-fit: cover;">
+                    <div class="card-body text-center p-4">
+                        <h5 class="fw-bold text-brand-dark mb-1">Dr. Luis Miguel Martínez</h5>
+                        <span class="badge bg-mint text-dark mb-3">Especialista en Endodoncia</span>
+                        <p class="text-muted small mb-0">
+                            Más de 10 años de experiencia clínica en tratamientos de conducto, maestría en Odontología Restauradora y microcirugía apical.
+                        </p>
+                    </div>
+                </div>
+            </div>
 
-        <div class="d-flex justify-content-center gap-4">
-            <div class="card fade-in fade-in-delay-11" style="width: 22rem; height: 30rem;">
-                <img src="https://saluddata.com/wp-content/uploads/2024/07/Odontologo-Profesional-p.webp" class="card-img-top" alt="..." style="height: 15.5rem; object-fit: cover;">
-                <div class="card-body d-flex flex-column justify-content-between">
-                    <p class="card-text text-center"><strong> Luis Miguel Martinez Lozano </strong></p>
-                    <p class="card-text text-center"><small class="text-body-secondary"> Odontólogo </small></p>
-                    <p class="card-text text-center"><small class="text-body-secondary"> Dr. Luis Miguel es un odontólogo con 10 años de experiencia. Especializado en endodoncia, con una maestría de la Universidad Nacional de Salud.</small></p>
+            <!-- Doctor 2 -->
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card doctor-card h-100">
+                    <img src="https://colderechomedico.com/wp-content/uploads/2020/06/Cual-es-la-importancia-del-secreto-profesional-en-odontologia_colderecho.jpg" 
+                         class="card-img-top" alt="Dr. Rubén Cuadros" style="height: 250px; object-fit: cover;">
+                    <div class="card-body text-center p-4">
+                        <h5 class="fw-bold text-brand-dark mb-1">Dr. Rubén Cuadros</h5>
+                        <span class="badge bg-brand-primary text-white mb-3">Odontología Integral y Cirugía</span>
+                        <p class="text-muted small mb-0">
+                            Especialista apasionado por la odontología preventiva, rehabilitación oral y diseño digital de sonrisas para pacientes de todas las edades.
+                        </p>
+                    </div>
                 </div>
             </div>
-            <div class="card fade-in fade-in-delay-12" style="width: 22rem; height: 30rem;">
-                <img src="https://colderechomedico.com/wp-content/uploads/2020/06/Cual-es-la-importancia-del-secreto-profesional-en-odontologia_colderecho.jpg" class="card-img-top" alt="..." style="height: 15.5rem; object-fit: cover;">
-                <div class="card-body d-flex flex-column justify-content-between">
-                    <p class="card-text text-center"><strong> Rubén Cuadros </strong></p>
-                    <p class="card-text text-center"><small class="text-body-secondary"> Odontólogo </small></p>
-                    <p class="card-text text-center"><small class="text-body-secondary"> Dr. Rubén Cuadros es un odontólogo apasionado, con una vasta experiencia en el tratamiento de enfermedades dentales y en la promoción de la salud bucal preventiva.</small></p>
-                </div>
-            </div>
-            <div class="card fade-in fade-in-delay-13" style="width: 22rem; height: 30rem;">
-                <img src="https://img.freepik.com/fotos-premium/retrato-hombre-dentista-pulgares-arriba-sonrisa-cuidado-bucal-especialista-felicidad-profesional-cara-hombre-o-empleado-higiene-dental-sector-salud-apoyo-revision_590464-191475.jpg" class="card-img-top" alt="..." style="height: 15.5rem; object-fit: cover;">
-                <div class="card-body d-flex flex-column justify-content-between">
-                    <p class="card-text text-center"><strong> Juan Gómez </strong></p>
-                    <p class="card-text text-center"><small class="text-body-secondary"> Odontólogo </small></p>
-                    <p class="card-text text-center"><small class="text-body-secondary"> El Dr. Juan Gómez es un odontólogo que ha desarrollado una habilidad especial para realizar tratamientos que restauran tanto la función como la belleza de la sonrisa.</small></p>
+
+            <!-- Doctor 3 -->
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card doctor-card h-100">
+                    <img src="https://img.freepik.com/fotos-premium/retrato-hombre-dentista-pulgares-arriba-sonrisa-cuidado-bucal-especialista-felicidad-profesional-cara-hombre-o-empleado-higiene-dental-sector-salud-apoyo-revision_590464-191475.jpg" 
+                         class="card-img-top" alt="Dr. Juan Gómez" style="height: 250px; object-fit: cover;">
+                    <div class="card-body text-center p-4">
+                        <h5 class="fw-bold text-brand-dark mb-1">Dr. Juan Gómez</h5>
+                        <span class="badge bg-mint text-dark mb-3">Estética y Rehabilitación</span>
+                        <p class="text-muted small mb-0">
+                            Enfocado en devolver la función masticatoria y la armonía estética a través de prótesis fijas, carillas y blanqueamiento dental.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
+    </section>
 
-        <br><br><br>
-
-        <div class="container my-5 py-5">
-            <h3 class="text-center text-black mb-4">Métodos de pago</h3>
-            <div class="row justify-content-center">
-                <!-- Logo de PayPal -->
-                <div class="col-6 col-md-2 mb-4 d-flex justify-content-center align-items-center fade-in fade-in-delay-14">
-                    <img src="${pageContext.request.contextPath}/img/paypal.svg" class="img-fluid" alt="PayPal" style="max-height: 55px; max-width: 140px; object-fit: contain;">
-                </div>
-                <!-- Logo de Visa -->
-                <div class="col-6 col-md-2 mb-4 d-flex justify-content-center align-items-center fade-in fade-in-delay-15">
-                    <img src="${pageContext.request.contextPath}/img/visa.svg" class="img-fluid" alt="Visa" style="max-height: 50px; max-width: 140px; object-fit: contain;">
-                </div>
-                <!-- Logo de MasterCard -->
-                <div class="col-6 col-md-2 mb-4 d-flex justify-content-center align-items-center fade-in fade-in-delay-16">
-                    <img src="${pageContext.request.contextPath}/img/mastercard.svg" class="img-fluid" alt="MasterCard" style="max-height: 60px; max-width: 140px; object-fit: contain;">
+    <!-- Métodos de Pago Seguros -->
+    <section class="container my-5 py-4 border-top">
+        <div class="text-center mb-4 pt-3">
+            <h4 class="fw-bold text-brand-dark">Medios de Pago Aceptados</h4>
+            <p class="text-muted small">Flexibilidad en ventanilla física y pasarela de pago digital segura</p>
+        </div>
+        <div class="row justify-content-center align-items-center g-4 text-center">
+            <div class="col-4 col-md-2">
+                <img src="${pageContext.request.contextPath}/img/visa.svg" class="img-fluid" alt="Visa" style="max-height: 40px;">
+            </div>
+            <div class="col-4 col-md-2">
+                <img src="${pageContext.request.contextPath}/img/mastercard.svg" class="img-fluid" alt="MasterCard" style="max-height: 44px;">
+            </div>
+            <div class="col-4 col-md-2">
+                <img src="${pageContext.request.contextPath}/img/paypal.svg" class="img-fluid" alt="PayPal" style="max-height: 40px;">
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="p-2 border rounded-pill bg-light small fw-bold text-brand-dark">
+                    <i class="bi bi-cash-stack text-brand-accent me-1"></i> Efectivo en Ventanilla
                 </div>
             </div>
         </div>
-        <div class="chat-widget collapsed" id="chatWidget">
-            <div class="chat-header" id="chatHeader">
-                <span><i class="fas fa-tooth"></i> Asistente Virtual de Art Dent</span>
-                <button class="chat-toggle" id="chatToggle">
-                    <i class="fas fa-chevron-up"></i>
-                </button>
-            </div>
-            <div class="chat-body" id="chat-body">
-                <!-- Los mensajes se agregarán aquí dinámicamente -->
-            </div>
-            <div class="loading-animation" id="loading-animation">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-            <div class="chat-input">
-                <input type="text" id="pregunta" placeholder="Describe tus síntomas o preocupaciones...">
-                <button onclick="enviarPregunta()"><i class="fas fa-paper-plane"></i></button>
-            </div>
+    </section>
+
+    <!-- Asistente Virtual Inteligente (Chatbot Art Dent) -->
+    <div class="chat-widget collapsed" id="chatWidget">
+        <div class="chat-header" id="chatHeader">
+            <span class="d-flex align-items-center gap-2">
+                <i class="bi bi-robot fs-5 text-white"></i> 
+                <span>Asistente Virtual Art Dent</span>
+            </span>
+            <button class="chat-toggle btn p-0 text-white" id="chatToggle" aria-label="Minimizar o expandir chat">
+                <i class="fas fa-chevron-up"></i>
+            </button>
         </div>
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const chatWidget = document.getElementById('chatWidget');
-                const chatHeader = document.getElementById('chatHeader');
-                const chatToggle = document.getElementById('chatToggle');
-                const chatBody = document.getElementById('chat-body');
+        <div class="chat-body" id="chat-body">
+            <!-- Mensajes dinámicos -->
+        </div>
+        <div class="loading-animation" id="loading-animation">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="pregunta" placeholder="Describe tus síntomas o dudas...">
+            <button onclick="enviarPregunta()" title="Enviar mensaje">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
 
-                function toggleChat() {
-                    chatWidget.classList.toggle('collapsed');
-                    chatToggle.innerHTML = chatWidget.classList.contains('collapsed')
-                            ? '<i class="fas fa-chevron-up"></i>'
-                            : '<i class="fas fa-chevron-down"></i>';
-                }
+    <!-- Scripts de Interacción del Asistente Virtual -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const chatWidget = document.getElementById('chatWidget');
+            const chatHeader = document.getElementById('chatHeader');
+            const chatToggle = document.getElementById('chatToggle');
+            const chatBody = document.getElementById('chat-body');
 
-                chatHeader.addEventListener('click', toggleChat);
-                chatToggle.addEventListener('click', function (e) {
-                    e.stopPropagation();
-                    toggleChat();
-                });
+            function toggleChat() {
+                chatWidget.classList.toggle('collapsed');
+                chatToggle.innerHTML = chatWidget.classList.contains('collapsed')
+                        ? '<i class="fas fa-chevron-up"></i>'
+                        : '<i class="fas fa-chevron-down"></i>';
+            }
 
-                // Mensaje inicial del bot
-                agregarMensajeBot('¡Hola! Soy el asistente virtual de Art Dent. ¿En qué puedo ayudarte hoy? Puedes describir tus síntomas o preocupaciones dentales y te recomendaré el servicio más adecuado.');
-
-                // Enviar mensaje al presionar Enter
-                const preguntaInput = document.getElementById('pregunta');
-                if(preguntaInput){
-                    preguntaInput.addEventListener('keypress', function (e) {
-                        if (e.key === 'Enter') {
-                            e.preventDefault();
-                            enviarPregunta();
-                        }
-                    });
-                }
-
+            chatHeader.addEventListener('click', toggleChat);
+            chatToggle.addEventListener('click', function (e) {
+                e.stopPropagation();
+                toggleChat();
             });
 
-            async function enviarPregunta() {
-                const pregunta = document.getElementById("pregunta").value;
-                if (pregunta.trim() === '')
-                    return;
+            // Mensaje de bienvenida institucional
+            agregarMensajeBot('¡Hola! Soy el asistente virtual de Art Dent. ¿En qué puedo ayudarte hoy? Cuéntame tus síntomas o lo que necesitas y te recomendaré el tratamiento ideal.');
 
-                agregarMensajeUsuario(pregunta);
-                mostrarAnimacion();
+            const preguntaInput = document.getElementById('pregunta');
+            if (preguntaInput) {
+                preguntaInput.addEventListener('keypress', function (e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        enviarPregunta();
+                    }
+                });
+            }
+        });
 
-                const response = await fetch('/ArtDent/api/chatbot', {
+        async function enviarPregunta() {
+            const preguntaInput = document.getElementById("pregunta");
+            const pregunta = preguntaInput.value.trim();
+            if (pregunta === '') return;
+
+            agregarMensajeUsuario(pregunta);
+            preguntaInput.value = '';
+            mostrarAnimacion();
+
+            try {
+                const response = await fetch('${pageContext.request.contextPath}/api/chatbot', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
@@ -509,62 +487,50 @@
                 });
 
                 const data = await response.text();
-
                 ocultarAnimacion();
                 agregarMensajeBot(data);
-
-                // Limpiar el campo de entrada
-                document.getElementById("pregunta").value = '';
+            } catch (err) {
+                ocultarAnimacion();
+                agregarMensajeBot('Lo sentimos, hubo un inconveniente al conectar con el asistente. Por favor, comunícate al (01) 361-3634 o reserva directamente en el menú de Servicios.');
             }
+        }
 
-            function agregarMensajeUsuario(mensaje) {
-                const chatBody = document.getElementById('chat-body');
-                const mensajeDiv = document.createElement('div');
-                mensajeDiv.className = 'message user-message';
-                mensajeDiv.textContent = mensaje;
-                chatBody.appendChild(mensajeDiv);
-                scrollToBottom();
-            }
+        function agregarMensajeUsuario(mensaje) {
+            const chatBody = document.getElementById('chat-body');
+            const mensajeDiv = document.createElement('div');
+            mensajeDiv.className = 'message user-message';
+            mensajeDiv.textContent = mensaje;
+            chatBody.appendChild(mensajeDiv);
+            scrollToBottom();
+        }
 
-            function convertirUrlsAClickables(message) {
-                return message.replace(
-                        /(\bhttps?:\/\/[^\s<>,;!?()]+(?:[\?&=][^\s<>,;!?()]*|[^\s<>,;!?()]*))/g,
-                        '<a href="$1" target="_blank">$1</a>'
-                        );
-            }
+        function agregarMensajeBot(mensaje) {
+            const chatBody = document.getElementById('chat-body');
+            const mensajeDiv = document.createElement('div');
+            mensajeDiv.className = 'message bot-message';
+            mensajeDiv.innerHTML = mensaje;
+            chatBody.appendChild(mensajeDiv);
+            scrollToBottom();
+        }
 
-            function agregarMensajeBot(mensaje) {
-                const chatBody = document.getElementById('chat-body');
-                const mensajeDiv = document.createElement('div');
-                mensajeDiv.className = 'message bot-message';
+        function scrollToBottom() {
+            const chatBody = document.getElementById('chat-body');
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
 
-                mensajeDiv.innerHTML = mensaje;
+        function mostrarAnimacion() {
+            document.getElementById('loading-animation').style.display = 'block';
+            scrollToBottom();
+        }
 
-                chatBody.appendChild(mensajeDiv);
-                scrollToBottom();
-            }
+        function ocultarAnimacion() {
+            document.getElementById('loading-animation').style.display = 'none';
+        }
+    </script>
 
-            function scrollToBottom() {
-                const chatBody = document.getElementById('chat-body');
-                chatBody.scrollTop = chatBody.scrollHeight;
-            }
+    <!-- Footer Institucional -->
+    <%@include file="footer.jsp"%>
 
-            function mostrarAnimacion() {
-                document.getElementById('loading-animation').style.display = 'block';
-                scrollToBottom();
-            }
-
-            function ocultarAnimacion() {
-                document.getElementById('loading-animation').style.display = 'none';
-            }
-        </script>
-        <!-- Espacio para agregar otra imagen -->
-        <div style="height: 1px;"></div> <!-- Este es el espacio de separación entre las imágenes -->
-
-
-        <%@include file="footer.jsp"%>
-
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    </body>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>

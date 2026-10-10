@@ -32,42 +32,61 @@ public class ReporteController extends HttpServlet {
             throws ServletException, IOException {
 
         String accion = request.getParameter("accion");
+        javax.servlet.http.HttpSession ss = request.getSession();
+        String rol = (ss != null && ss.getAttribute("TipoRol") != null) ? ss.getAttribute("TipoRol").toString() : "";
 
         try {
-            if ("reporte".equals(accion)) {
-                generarReporteMensual(request, response); // Nuevo método para generar el reporte mensual
-
-            } else if ("reportead".equals(accion)) {
-                generarReporteMensualAdmin(request, response); // Nuevo método para generar el reporte mensual
-
-            }  else {
-                request.getRequestDispatcher("PDCReportes.jsp").forward(request, response); // Página principal
+            if ("reportead".equals(accion) || (accion == null && rol.equalsIgnoreCase("Administrador"))) {
+                generarReporteMensualAdmin(request, response);
+            } else if ("reporte".equals(accion) || (accion == null && rol.equalsIgnoreCase("Secretaria"))) {
+                generarReporteMensual(request, response);
+            } else {
+                generarReporteMensualAdmin(request, response);
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
-            request.setAttribute("error", "Error al listar notificaciones: " + e.getMessage());
+            request.setAttribute("error", "Error al generar reportes: " + e.getMessage());
             request.getRequestDispatcher("error.jsp").forward(request, response);
         }
 
     }
 
-    // Nuevo método para generar el reporte mensual
+    private void calcularKpis(HttpServletRequest request, List<ReporteMensual> reporteMensual) {
+        double totalIngresos = 0;
+        int totalCompletadas = 0;
+        int totalCanceladas = 0;
+        int totalCitasGeneral = 0;
+        if (reporteMensual != null) {
+            for (ReporteMensual rm : reporteMensual) {
+                totalIngresos += rm.getTotalIngresos();
+                totalCompletadas += (rm.getCitasCompletadas() + rm.getReservasCompletadas());
+                totalCanceladas += (rm.getCitasCanceladas() + rm.getReservasCanceladas());
+                totalCitasGeneral += (rm.getTotalCitas() + rm.getTotalReservas());
+            }
+        }
+        request.setAttribute("kpiIngresos", totalIngresos);
+        request.setAttribute("kpiCompletadas", totalCompletadas);
+        request.setAttribute("kpiCanceladas", totalCanceladas);
+        request.setAttribute("kpiTotal", totalCitasGeneral);
+    }
+
     private void generarReporteMensual(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, ServletException, IOException {
-        int idUsuario = (int) request.getSession().getAttribute("idUsuario"); // Obtener ID del usuario desde la sesión
-        // Generar el reporte
+        Object idObj = request.getSession().getAttribute("idUsuario");
+        int idUsuario = idObj != null ? (int) idObj : 1;
         List<ReporteMensual> reporteMensual = generadorDeReporte.generarReporte(idUsuario);
-        request.setAttribute("reporteMensual", reporteMensual); // Enviar el reporte a la JSP
-        request.getRequestDispatcher("PDCReportes.jsp").forward(request, response); // Redirigir a la vista del reporte
+        calcularKpis(request, reporteMensual);
+        request.setAttribute("reporteMensual", reporteMensual);
+        request.getRequestDispatcher("PDCReportes.jsp").forward(request, response);
     }
 
     private void generarReporteMensualAdmin(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, ServletException, IOException {
-        // Generar el reporte
         List<ReporteMensual> reporteMensual = generadorDeReporte.generarReporteAd();
-        request.setAttribute("reporteMensual", reporteMensual); // Enviar el reporte a la JSP
-        request.getRequestDispatcher("PDCReportes.jsp").forward(request, response); // Redirigir a la vista del reporte
+        calcularKpis(request, reporteMensual);
+        request.setAttribute("reporteMensual", reporteMensual);
+        request.getRequestDispatcher("PDCReportes.jsp").forward(request, response);
     }
     
     @Override

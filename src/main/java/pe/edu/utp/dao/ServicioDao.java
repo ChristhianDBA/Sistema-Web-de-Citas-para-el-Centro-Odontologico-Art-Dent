@@ -26,4 +26,8 @@ public interface ServicioDao {
     boolean actualizarServicio(Servicio servicio);
 
     boolean eliminarServicio(int id);
+
+    boolean reactivarServicio(int id);
+
+    List<Servicio> listarTodosLosServicios();
 }

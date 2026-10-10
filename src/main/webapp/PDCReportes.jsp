@@ -1,26 +1,24 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%//@include file="WEB-INF/template/libreria.jspf" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-
 <!DOCTYPE html>
 <html lang="es">
-
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Panel de Control - Clínica</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-              integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <title>Reportes y Estadísticas | Centro Odontológico ArtDent</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+        <link rel="stylesheet" href="css/style.css">
     </head>
-
-    <body class="d-flex flex-column min-vh-100">
-        <%HttpSession misesion = request.getSession();
+    <body class="d-flex flex-column min-vh-100 bg-light">
+        <%
+            HttpSession misesion = request.getSession();
             String usuario = (String) request.getSession().getAttribute("Nombre");
             if (usuario == null) {
                 response.sendRedirect("iniciosesionerror.jsp");
+                return;
             }
-            %>
+        %>
 
         <%@include file="NavPanel.jsp" %>
 
@@ -30,107 +28,195 @@
             <%@include file="Sidebar.jsp" %>
 
             <!-- Contenido Principal -->
-            <div class="container-fluid p-4 d-flex flex-column flex-grow-1">
-                <br><br>
-                <div>
-                    <h3 style="color: darkblue; font-weight: bold;">Reportes</h3>
+            <main class="container-fluid p-4 d-flex flex-column flex-grow-1">
+                <div class="mb-4 pb-2 border-bottom">
+                    <h3 class="fw-bold mb-1" style="color: var(--artdent-primary);">
+                        <i class="bi bi-bar-chart-line-fill me-2" style="color: var(--artdent-accent);"></i>Reportes y Estadísticas
+                    </h3>
+                    <p class="text-muted small mb-0">Métricas analíticas de rendimiento clínico, volumen de pacientes e ingresos consolidados.</p>
                 </div>
-                <br>
-                <!-- Tabla de Reservas -->
+
+                <!-- KPI Summary Cards -->
+                <div class="row g-3 mb-4">
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="card border-0 shadow-sm rounded-4 text-white p-3 h-100" style="background: linear-gradient(135deg, #30a4c6 0%, #268da9 100%);">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="text-white-50 small text-uppercase fw-bold">Total Ingresos</div>
+                                    <h3 class="mb-0 fw-bold mt-1">S/ ${kpiIngresos != null ? kpiIngresos : '0.00'}</h3>
+                                </div>
+                                <div class="p-3 rounded-circle bg-white bg-opacity-25 fs-3 d-flex align-items-center justify-content-center" style="width: 54px; height: 54px;">
+                                    <i class="bi bi-cash-coin"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="card border-0 shadow-sm rounded-4 text-white p-3 h-100" style="background: linear-gradient(135deg, #9fcc3a 0%, #8bb532 100%);">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="text-white-50 small text-uppercase fw-bold">Citas Completadas</div>
+                                    <h3 class="mb-0 fw-bold mt-1">${kpiCompletadas != null ? kpiCompletadas : 0}</h3>
+                                </div>
+                                <div class="p-3 rounded-circle bg-white bg-opacity-25 fs-3 d-flex align-items-center justify-content-center" style="width: 54px; height: 54px;">
+                                    <i class="bi bi-check-circle-fill"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="card border-0 shadow-sm rounded-4 text-white p-3 h-100" style="background: linear-gradient(135deg, #212529 0%, #343a40 100%);">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="text-white-50 small text-uppercase fw-bold">Total Gestionadas</div>
+                                    <h3 class="mb-0 fw-bold mt-1">${kpiTotal != null ? kpiTotal : 0}</h3>
+                                </div>
+                                <div class="p-3 rounded-circle bg-white bg-opacity-25 fs-3 d-flex align-items-center justify-content-center" style="width: 54px; height: 54px;">
+                                    <i class="bi bi-calendar-event-fill"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="card border-0 shadow-sm rounded-4 text-white p-3 h-100" style="background: linear-gradient(135deg, #e05d5d 0%, #c93b3b 100%);">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="text-white-50 small text-uppercase fw-bold">Canceladas</div>
+                                    <h3 class="mb-0 fw-bold mt-1">${kpiCanceladas != null ? kpiCanceladas : 0}</h3>
+                                </div>
+                                <div class="p-3 rounded-circle bg-white bg-opacity-25 fs-3 d-flex align-items-center justify-content-center" style="width: 54px; height: 54px;">
+                                    <i class="bi bi-x-circle-fill"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Botón para mostrar u ocultar la tabla -->
-                <button id="toggleButton" class="btn btn-primary mb-3">Mostrar/Ocultar Reportes</button>
+                <div class="mb-3">
+                    <button id="toggleButton" class="btn btn-outline-primary rounded-pill px-4 shadow-sm">
+                        <i class="bi bi-table me-2"></i>Mostrar / Ocultar Matriz Mensual Detallada
+                    </button>
+                </div>
 
                 <!-- Div que contiene la tabla -->
-                <div id="tablaDiv" class="table-responsive flex-grow-1" style="display: none;">
-                    <table class="table table-bordered p-4 text-center">
-                        <thead class="table-primary text-center align-middle">
-                            <tr>
-                                <th>Mes</th>
-                                <th>Reservas Completadas</th>
-                                <th>Reservas En Espera</th>
-                                <th>Reservas Reprogramadas</th>
-                                <th>Reservas Confirmadas</th>
-                                <th>Reservas Canceladas</th>
-                                <th>Total de Reservas</th>
-                                <th>Citas Completadas</th>                                 
-                                <th>Citas En Espera</th>
-                                <th>Citas Reprogramadas</th>
-                                <th>Citas Confirmadas</th>
-                                <th>Citas Canceladas</th>
-                                <th>Total Citas</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <c:forEach var="reporte" items="${reporteMensual}"> 
+                <div id="tablaDiv" class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4" style="display: none;">
+                    <div class="card-header bg-white py-3 border-bottom">
+                        <span class="fw-bold text-dark"><i class="bi bi-calendar3 me-2" style="color: var(--artdent-primary);"></i>Desglose Numérico por Periodo Mensual</span>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0 text-center">
+                            <thead style="background-color: #edf7fa; color: var(--artdent-dark);">
                                 <tr>
-                                    <td>${reporte.mes}</td>
-                                    <td>${reporte.reservasCompletadas}</td>
-                                    <td>${reporte.reservasEnEspera}</td>
-                                    <td>${reporte.reservasReprogramadas}</td>
-                                    <td>${reporte.reservasConfirmadas}</td>
-                                    <td>${reporte.reservasCanceladas}</td>
-                                    <td style="font-weight: bold;">${reporte.totalReservas}</td>
-                                    <td>${reporte.citasCompletadas}</td>
-                                    <td>${reporte.citasEnEspera}</td>
-                                    <td>${reporte.citasReprogramadas}</td>
-                                    <td>${reporte.citasConfirmadas}</td>
-                                    <td>${reporte.citasCanceladas}</td>
-                                    <td style="font-weight: bold;">${reporte.totalCitas}</td>
+                                    <th class="py-3">Mes</th>
+                                    <th>Res. Completadas</th>
+                                    <th>Res. En Espera</th>
+                                    <th>Res. Reprogramadas</th>
+                                    <th>Res. Confirmadas</th>
+                                    <th>Res. Canceladas</th>
+                                    <th class="fw-bold">Total Reservas</th>
+                                    <th>Citas Completadas</th>                                 
+                                    <th>Citas En Espera</th>
+                                    <th>Citas Reprogramadas</th>
+                                    <th>Citas Confirmadas</th>
+                                    <th>Citas Canceladas</th>
+                                    <th class="fw-bold">Total Citas</th>
+                                    <th class="text-end pe-4">Ingresos (S/)</th>
                                 </tr>
-                            </c:forEach>
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                <c:forEach var="reporte" items="${reporteMensual}"> 
+                                    <tr>
+                                        <td class="fw-bold text-dark">${reporte.mes}</td>
+                                        <td>${reporte.reservasCompletadas}</td>
+                                        <td>${reporte.reservasEnEspera}</td>
+                                        <td>${reporte.reservasReprogramadas}</td>
+                                        <td>${reporte.reservasConfirmadas}</td>
+                                        <td>${reporte.reservasCanceladas}</td>
+                                        <td class="fw-bold text-primary">${reporte.totalReservas}</td>
+                                        <td>${reporte.citasCompletadas}</td>
+                                        <td>${reporte.citasEnEspera}</td>
+                                        <td>${reporte.citasReprogramadas}</td>
+                                        <td>${reporte.citasConfirmadas}</td>
+                                        <td>${reporte.citasCanceladas}</td>
+                                        <td class="fw-bold text-primary">${reporte.totalCitas}</td>
+                                        <td class="text-end pe-4 fw-bold" style="color: #278829;">S/ ${reporte.totalIngresos}</td>
+                                    </tr>
+                                </c:forEach>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <div class="container mt-5">
-                    <h5 class="text-center">Gráficos de Reservas y Citas</h5>
-                    <div class="d-flex justify-content-around">
-                        <!-- Gráfico de Barras -->
-                        <div style="width: 45%;">
-                            <h6 class="text-center">Gráfico de Barras - Total de Reservas y Citas</h6>
-                            <canvas id="barChart"></canvas>
+
+                <!-- Gráficos Principales -->
+                <div class="row g-4 mb-4">
+                    <!-- Gráfico de Barras -->
+                    <div class="col-lg-6">
+                        <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+                            <h6 class="fw-bold mb-3 text-dark d-flex align-items-center">
+                                <i class="bi bi-bar-chart-fill me-2" style="color: var(--artdent-primary);"></i>Volumen de Reservas Web vs Citas Presenciales
+                            </h6>
+                            <div class="flex-grow-1" style="min-height: 280px;">
+                                <canvas id="barChart"></canvas>
+                            </div>
                         </div>
-                        <!-- Gráfico Lineal -->
-                        <div style="width: 45%;">
-                            <h6 class="text-center">Gráfico Lineal - Comparación de Reservas y Citas</h6>
-                            <canvas id="lineChart"></canvas>
+                    </div>
+                    <!-- Gráfico Lineal -->
+                    <div class="col-lg-6">
+                        <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+                            <h6 class="fw-bold mb-3 text-dark d-flex align-items-center">
+                                <i class="bi bi-graph-up me-2" style="color: var(--artdent-accent);"></i>Curva Comparativa Temporal
+                            </h6>
+                            <div class="flex-grow-1" style="min-height: 280px;">
+                                <canvas id="lineChart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="container mt-5">
-                    <h5 class="text-center">Gráfico de Atención al Cliente</h5>
-                    <div class="d-flex justify-content-around">
-                        <!-- Gráfico Circular -->
-                        <div style="width: 45%;">
-                            <h6 class="text-center">Proporción de Citas Atendidas y No Atendidas</h6>
-                            <canvas id="pieChart"></canvas>
-                        </div>
-                        <!-- Gráfico de Línea para Citas -->
-                        <div style="width: 45%;">
-                            <h6 class="text-center">Tendencias de Citas</h6>
-                            <canvas id="trendLineChart"></canvas>
+                <div class="row g-4 mb-4">
+                    <!-- Gráfico Circular -->
+                    <div class="col-lg-4">
+                        <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+                            <h6 class="fw-bold mb-3 text-dark d-flex align-items-center">
+                                <i class="bi bi-pie-chart-fill me-2" style="color: var(--artdent-primary);"></i>Efectividad de Atención
+                            </h6>
+                            <div class="flex-grow-1" style="min-height: 240px;">
+                                <canvas id="pieChart"></canvas>
+                            </div>
                         </div>
                     </div>
-                    
-                    <div class="d-flex justify-content-around align-items-center mt-5">
-                        <div style="width: 80%;">
-                            <h6 class="text-center">Ingresos Mensuales (S/.)</h6>
-                            <canvas id="ingresosChart"></canvas>
+                    <!-- Gráfico de Línea para Citas -->
+                    <div class="col-lg-4">
+                        <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+                            <h6 class="fw-bold mb-3 text-dark d-flex align-items-center">
+                                <i class="bi bi-activity me-2" style="color: var(--artdent-accent);"></i>Tendencia Completadas vs Canceladas
+                            </h6>
+                            <div class="flex-grow-1" style="min-height: 240px;">
+                                <canvas id="trendLineChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Gráfico de Ingresos -->
+                    <div class="col-lg-4">
+                        <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+                            <h6 class="fw-bold mb-3 text-dark d-flex align-items-center">
+                                <i class="bi bi-currency-dollar me-2" style="color: #28a745;"></i>Evolución de Ingresos (S/)
+                            </h6>
+                            <div class="flex-grow-1" style="min-height: 240px;">
+                                <canvas id="ingresosChart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-
-
-
-
-            </div>
+            </main>
         </div>
 
-
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-                integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script>
             // Datos dinámicos desde el servidor
@@ -138,281 +224,171 @@
             const totalReservas = [];
             const totalCitas = [];
             const totalIngresos = [];
+            const citasCompletadas = [];
+            const citasNoAtendidas = [];
+            const citasCanceladas = [];
 
             <c:forEach var="reporte" items="${reporteMensual}">
             meses.push("${reporte.mes}");
             totalReservas.push(${reporte.totalReservas});
             totalCitas.push(${reporte.totalCitas});
             totalIngresos.push(${reporte.totalIngresos});
-            </c:forEach>;
+            citasCompletadas.push(${reporte.citasCompletadas + reporte.reservasCompletadas});
+            citasCanceladas.push(${reporte.citasCanceladas + reporte.reservasCanceladas});
+            citasNoAtendidas.push(${reporte.totalCitas + reporte.totalReservas - (reporte.citasCompletadas + reporte.reservasCompletadas)});
+            </c:forEach>
 
-            console.log("a:", meses);
-            console.log("b:", totalReservas);
-            console.log("c:", totalCitas);
-
-
-
-            // Gráfico de Barras
-            const ctxBar = document.getElementById('barChart').getContext('2d');
-            new Chart(ctxBar, {
-                type: 'bar',
-                data: {
-                    labels: meses,
-                    datasets: [{
-                            label: 'Total de Reservas',
+            // Gráfico de Barras con colores de ArtDent
+            const elBar = document.getElementById('barChart');
+            if (elBar) {
+                new Chart(elBar.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: meses,
+                        datasets: [{
+                            label: 'Reservas Web',
                             data: totalReservas,
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            borderWidth: 1
+                            backgroundColor: 'rgba(48, 164, 198, 0.75)',
+                            borderColor: '#30a4c6',
+                            borderWidth: 1.5,
+                            borderRadius: 6
                         }, {
-                            label: 'Total de Citas',
+                            label: 'Citas Presenciales',
                             data: totalCitas,
-                            backgroundColor: 'rgba(153, 102, 255, 0.2)',
-                            borderColor: 'rgba(153, 102, 255, 1)',
-                            borderWidth: 1
+                            backgroundColor: 'rgba(159, 204, 58, 0.75)',
+                            borderColor: '#9fcc3a',
+                            borderWidth: 1.5,
+                            borderRadius: 6
                         }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: { y: { beginAtZero: true } }
                     }
-                }
-            });
+                });
+            }
 
-            // Gráfico Lineal
-            const ctxLine = document.getElementById('lineChart').getContext('2d');
-            new Chart(ctxLine, {
-                type: 'line',
-                data: {
-                    labels: meses,
-                    datasets: [{
-                            label: 'Total de Reservas',
+            // Gráfico Lineal con colores de ArtDent
+            const elLine = document.getElementById('lineChart');
+            if (elLine) {
+                new Chart(elLine.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: meses,
+                        datasets: [{
+                            label: 'Reservas Web',
                             data: totalReservas,
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            fill: false
+                            borderColor: '#30a4c6',
+                            backgroundColor: 'rgba(48, 164, 198, 0.15)',
+                            tension: 0.3,
+                            fill: true
                         }, {
-                            label: 'Total de Citas',
+                            label: 'Citas Presenciales',
                             data: totalCitas,
-                            borderColor: 'rgba(153, 102, 255, 1)',
-                            fill: false
+                            borderColor: '#9fcc3a',
+                            backgroundColor: 'rgba(159, 204, 58, 0.15)',
+                            tension: 0.3,
+                            fill: true
                         }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: { y: { beginAtZero: true } }
                     }
-                }
-            });
+                });
+            }
 
-            // Datos adicionales desde el servidor
-            const citasCompletadas = [];
-            const citasNoAtendidas = []; // Total de citas - Completadas
-            const citasCanceladas = [];
-
-            <c:forEach var="reporte" items="${reporteMensual}">
-            citasCompletadas.push(${reporte.citasCompletadas});
-            citasCanceladas.push(${reporte.citasCanceladas});
-            citasNoAtendidas.push(${reporte.totalCitas} - ${reporte.citasCompletadas});
-            </c:forEach>;
-
-// Gráfico Circular (Pie Chart)
-            const ctxPie = document.getElementById('pieChart').getContext('2d');
-            new Chart(ctxPie, {
-                type: 'pie',
-                data: {
-                    labels: ['Citas Atendidas', 'Citas No Atendidas'],
-                    datasets: [{
-                            data: [
-                                citasCompletadas.reduce((a, b) => a + b, 0),
-                                citasNoAtendidas.reduce((a, b) => a + b, 0)
-                            ],
-                            backgroundColor: ['rgba(75, 192, 192, 0.7)', 'rgba(255, 99, 132, 0.7)'],
-                            hoverBackgroundColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)']
+            // Gráfico Circular (Pie Chart) con paleta ArtDent
+            const elPie = document.getElementById('pieChart');
+            if (elPie) {
+                const totalComp = citasCompletadas.reduce((a, b) => a + b, 0);
+                const totalNoAt = citasNoAtendidas.reduce((a, b) => a + b, 0);
+                new Chart(elPie.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Completadas', 'Pendientes / Otras'],
+                        datasets: [{
+                            data: [totalComp, totalNoAt],
+                            backgroundColor: ['#9fcc3a', '#b4ddc2'],
+                            borderColor: ['#ffffff', '#ffffff'],
+                            borderWidth: 2
                         }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom' } }
                     }
-                }
-            });
+                });
+            }
 
-// Gráfico de Línea para Tendencias
-            const ctxTrendLine = document.getElementById('trendLineChart').getContext('2d');
-            new Chart(ctxTrendLine, {
-                type: 'line',
-                data: {
-                    labels: meses,
-                    datasets: [
-                        {
-                            label: 'Citas Atendidas',
+            // Gráfico de Línea para Tendencias
+            const elTrend = document.getElementById('trendLineChart');
+            if (elTrend) {
+                new Chart(elTrend.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: meses,
+                        datasets: [{
+                            label: 'Completadas',
                             data: citasCompletadas,
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            fill: false
-                        },
-                        {
-                            label: 'Citas No Atendidas',
-                            data: citasNoAtendidas,
-                            borderColor: 'rgba(255, 99, 132, 1)',
-                            fill: false
-                        },
-                        {
-                            label: 'Citas Canceladas',
+                            borderColor: '#9fcc3a',
+                            backgroundColor: '#9fcc3a',
+                            tension: 0.2
+                        }, {
+                            label: 'Canceladas',
                             data: citasCanceladas,
-                            borderColor: 'rgba(255, 206, 86, 1)',
-                            fill: false
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
+                            borderColor: '#e05d5d',
+                            backgroundColor: '#e05d5d',
+                            tension: 0.2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: { y: { beginAtZero: true } }
                     }
-                }
-            });
+                });
+            }
 
             // Gráfico de Ingresos
-            const ctxIngresos = document.getElementById('ingresosChart').getContext('2d');
-            new Chart(ctxIngresos, {
-                type: 'bar',
-                data: {
-                    labels: meses,
-                    datasets: [
-                        {
-                            label: 'Ingresos Mensuales (S/.)',
+            const elIngresos = document.getElementById('ingresosChart');
+            if (elIngresos) {
+                new Chart(elIngresos.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: meses,
+                        datasets: [{
+                            label: 'Ingresos (S/)',
                             data: totalIngresos,
-                            backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            borderWidth: 1
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-
-            // Datos dinámicos desde la base de datos
-            const razones = [];
-            const frecuencia = [];
-
-            <c:forEach var="razon" items="${reporteNoCompletadas}">
-            razones.push("${razon.descripcion}");
-            frecuencia.push(${razon.cantidad});
-            </c:forEach>;
-
-
-// Gráfico de Razones para Servicios No Completados
-            const ctxReason = document.getElementById('reasonChart').getContext('2d');
-            new Chart(ctxReason, {
-                type: 'bar',
-                data: {
-                    labels: razones,
-                    datasets: [{
-                            label: 'Frecuencia de No Asistencia',
-                            data: frecuencia,
-                            backgroundColor: 'rgba(255, 99, 132, 0.7)',
-                            borderColor: 'rgba(255, 99, 132, 1)',
-                            borderWidth: 1
+                            backgroundColor: 'rgba(48, 164, 198, 0.75)',
+                            borderColor: '#30a4c6',
+                            borderWidth: 1.5,
+                            borderRadius: 6
                         }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        title: {
-                            display: true,
-                            text: 'Razones para Servicios No Completados'
-                        }
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: { y: { beginAtZero: true } }
                     }
-                }
-            });
+                });
+            }
 
-            // Datos dinámicos de estados desde el servidor
-            const estados = ['Completadas', 'Canceladas', 'En Espera', 'Reprogramadas', 'No Asistieron'];
-            const metricas = [
-            ${reporteEstados.completadas},
-            ${reporteEstados.canceladas},
-            ${reporteEstados.enEspera},
-            ${reporteEstados.reprogramadas},
-            ${reporteEstados.noAsistieron}
-            ];
-
-// Gráfico de Métricas Clave (Circular)
-            const ctxMetrics = document.getElementById('keyMetricsChart').getContext('2d');
-            new Chart(ctxMetrics, {
-                type: 'pie',
-                data: {
-                    labels: estados,
-                    datasets: [{
-                            data: metricas,
-                            backgroundColor: [
-                                'rgba(75, 192, 192, 0.7)',
-                                'rgba(255, 99, 132, 0.7)',
-                                'rgba(255, 206, 86, 0.7)',
-                                'rgba(153, 102, 255, 0.7)',
-                                'rgba(54, 162, 235, 0.7)'
-                            ],
-                            hoverBackgroundColor: [
-                                'rgba(75, 192, 192, 1)',
-                                'rgba(255, 99, 132, 1)',
-                                'rgba(255, 206, 86, 1)',
-                                'rgba(153, 102, 255, 1)',
-                                'rgba(54, 162, 235, 1)'
-                            ]
-                        }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        },
-                        title: {
-                            display: true,
-                            text: 'Distribución de Estados de Citas'
-                        }
-                    }
-                }
-            });
-            // Función para alternar la visibilidad
-
-
-        </script>
-        <script>const toggleButton = document.getElementById("toggleButton");
+            // Toggle para tabla
+            const toggleButton = document.getElementById("toggleButton");
             const tablaDiv = document.getElementById("tablaDiv");
-
-            toggleButton.addEventListener("click", function () {
-                if (tablaDiv.style.display === "none") {
-                    tablaDiv.style.display = "block"; // Mostrar la tabla
-                } else {
-                    tablaDiv.style.display = "none"; // Ocultar la tabla
-                }
-            });</script>
+            if (toggleButton && tablaDiv) {
+                toggleButton.addEventListener("click", function () {
+                    if (tablaDiv.style.display === "none") {
+                        tablaDiv.style.display = "block";
+                    } else {
+                        tablaDiv.style.display = "none";
+                    }
+                });
+            }
+        </script>
     </body>
-
 </html>

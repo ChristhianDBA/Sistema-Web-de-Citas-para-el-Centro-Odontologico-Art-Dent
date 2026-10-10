@@ -53,7 +53,9 @@ public class ChatbotServlet extends HttpServlet {
 
         String apiKey = pe.edu.utp.utils.ConfigLoader.getProperty("gemini.api.key");
 
-        HttpClient client = HttpClient.newHttpClient();
+        HttpClient client = HttpClient.newBuilder()
+                .connectTimeout(java.time.Duration.ofSeconds(3))
+                .build();
         String body = String.format(
                 "{ \"model\": \"gemini-3.7-flash\", "
                 + "\"input\": \"%s\" }",
@@ -63,8 +65,9 @@ public class ChatbotServlet extends HttpServlet {
         HttpRequest requestApi = HttpRequest.newBuilder()
                 .uri(URI.create("https://generativelanguage.googleapis.com/v1beta/interactions"))
                 .header("Content-Type", "application/json")
-                .header("x-goog-api-key", apiKey)
+                .header("x-goog-api-key", apiKey != null ? apiKey : "")
                 .header("Api-Revision", "2026-05-20")
+                .timeout(java.time.Duration.ofSeconds(4))
                 .POST(HttpRequest.BodyPublishers.ofString(body))
                 .build();
 
@@ -96,19 +99,86 @@ public class ChatbotServlet extends HttpServlet {
                     PrintWriter out = response.getWriter();
                     out.print(content);
                     out.flush();
-                } else {
-                    throw new Exception("No se encontró texto de respuesta en la API. Respuesta: " + apiResponse.body());
+                    return;
                 }
-            } else if (jsonResponse.containsKey("error")) {
-                throw new Exception("Error de Gemini API: " + jsonResponse.getJsonObject("error").getString("message"));
-            } else {
-                throw new Exception("La respuesta de la API no contiene el campo esperado. Respuesta: " + apiResponse.body());
             }
+            
+            // Si la API respondió con error o formato diferente, usar motor de recomendación clínico
+            String fallback = generarRecomendacionSintomas(pregunta, baseUrl);
+            PrintWriter out = response.getWriter();
+            out.print(fallback);
+            out.flush();
+
         } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write("Error en la consulta a la API: " + e.getMessage());
-            e.printStackTrace();
+            System.out.println("Aviso: Gemini API no disponible (" + e.getMessage() + "), activando recomendador inteligente local de ArtDent.");
+            String fallback = generarRecomendacionSintomas(pregunta, baseUrl);
+            PrintWriter out = response.getWriter();
+            out.print(fallback);
+            out.flush();
         }
+    }
+
+    private String generarRecomendacionSintomas(String pregunta, String baseUrl) {
+        String p = pregunta != null ? pregunta.toLowerCase() : "";
+        java.util.List<pe.edu.utp.entity.Servicio> servicios = new pe.edu.utp.daoImpl.ServicioDaoImpl().listarServicios();
+        
+        pe.edu.utp.entity.Servicio recomendado = null;
+        String explicacion = "";
+
+        if (p.contains("bracket") || p.contains("chuec") || p.contains("torcid") || p.contains("alinea") || p.contains("mordid") || p.contains("frenill")) {
+            recomendado = buscarServicio(servicios, "ortodoncia");
+            explicacion = "Para corregir la alineación dental y mejorar tanto la función masticatoria como la estética facial.";
+        } else if (p.contains("blanque") || p.contains("amarill") || p.contains("mancha") || p.contains("estetic") || p.contains("aclarar")) {
+            recomendado = buscarServicio(servicios, "blanqueamiento");
+            explicacion = "Para mejorar el tono y remover manchas del esmalte dental, devolviendo el brillo natural a tu sonrisa.";
+        } else if (p.contains("caries") || p.contains("curaci") || p.contains("picad") || p.contains("agujero") || p.contains("cavidad") || (p.contains("hueco") && !p.contains("chuec")) || p.contains("sensib")) {
+            recomendado = buscarServicio(servicios, "curación");
+            if (recomendado == null) recomendado = buscarServicio(servicios, "caries");
+            explicacion = "Para remover el tejido dañado y restaurar la pieza con resina estética de alta durabilidad.";
+        } else if (p.contains("dolor") || p.contains("puls") || p.contains("intenso") || p.contains("nervio") || p.contains("inflam") || p.contains("no aguanto") || p.contains("muela")) {
+            recomendado = buscarServicio(servicios, "endodoncia");
+            explicacion = "Cuando el dolor es agudo o compromete el nervio dental, una endodoncia permite salvar la pieza dental eliminando la infección y el dolor.";
+        } else if (p.contains("sangr") || p.contains("enci") || p.contains("limpieza") || p.contains("sarro") || p.contains("aliento") || p.contains("placa")) {
+            recomendado = buscarServicio(servicios, "limpieza");
+            explicacion = "Una profilaxis profunda elimina el sarro acumulado y la placa bacteriana, previniendo gingivitis y mal aliento.";
+        } else if (p.contains("sacar") || p.contains("extra") || p.contains("juicio") || p.contains("cordal") || p.contains("cirug")) {
+            recomendado = buscarServicio(servicios, "cirug");
+            if (recomendado == null) recomendado = buscarServicio(servicios, "extrac");
+            explicacion = "Extracción segura realizada por cirujanos con anestesia local para solucionar problemas de terceros molares o piezas no viables.";
+        } else if (p.contains("falta") || p.contains("perdi") || p.contains("protesis") || p.contains("corona") || p.contains("implante")) {
+            recomendado = buscarServicio(servicios, "prótesis");
+            if (recomendado == null) recomendado = buscarServicio(servicios, "protesis");
+            explicacion = "Rehabilitación oral para devolver la estética y función dental completa tras la pérdida de una o más piezas.";
+        }
+
+        if (recomendado == null && !servicios.isEmpty()) {
+            recomendado = servicios.get(0);
+            explicacion = "Te sugerimos iniciar con una evaluación odontológica integral para analizar a detalle tu salud bucal.";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("¡Hola! Gracias por consultar con el <b>Asistente Virtual de Art Dent</b>.<br><br>");
+        if (recomendado != null) {
+            sb.append("De acuerdo con los síntomas que describes (<i>\"").append(pregunta.trim()).append("\"</i>), te recomendamos agendar una evaluación para nuestro servicio de:<br><br>");
+            sb.append("🦷 <b><a href='").append(baseUrl).append("/ServicioController?action=cargar&id=").append(recomendado.getIdServicio()).append("' class='text-primary text-decoration-none'>")
+              .append(recomendado.getTipoServicio()).append("</a></b><br>");
+            sb.append("💰 <b>Costo base:</b> S/ ").append(recomendado.getCosto()).append("<br><br>");
+            sb.append("💡 <b>¿Por qué este tratamiento?</b> ").append(explicacion).append("<br><br>");
+            sb.append("📅 Puedes reservar tu cita ahora mismo sin registrarte desde nuestra plataforma web.");
+        } else {
+            sb.append("Te recomendamos agendar una consulta odontológica para evaluar tus síntomas con uno de nuestros especialistas.");
+        }
+        return sb.toString();
+    }
+
+    private pe.edu.utp.entity.Servicio buscarServicio(java.util.List<pe.edu.utp.entity.Servicio> servicios, String termino) {
+        String t = termino.toLowerCase();
+        for (pe.edu.utp.entity.Servicio s : servicios) {
+            if (s.getTipoServicio() != null && s.getTipoServicio().toLowerCase().contains(t)) {
+                return s;
+            }
+        }
+        return null;
     }
 
     private String obtenerServiciosDeBaseDeDatos() {

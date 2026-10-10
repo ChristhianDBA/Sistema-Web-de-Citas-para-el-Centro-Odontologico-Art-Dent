@@ -19,8 +19,9 @@ import pe.edu.utp.daoImpl.ReservaDaoImpl;
 import pe.edu.utp.entity.Cita;
 import pe.edu.utp.entity.VerCita;
 import pe.edu.utp.entity.VerReserva;
+import pe.edu.utp.dao.PagoDao;
+import pe.edu.utp.daoImpl.PagoDaoImpl;
 import pe.edu.utp.utils.EmailService;
-import static sun.jvm.hotspot.HelloWorld.e;
 
 /**
  *
@@ -113,6 +114,8 @@ public class ReprogramacionController extends HttpServlet {
                 DeleteReserva(request, response);
             } else if ("deleteCita".equals(accion)) {
                 DeleteCita(request, response);
+            } else if ("rechazarReservaWeb".equals(accion)) {
+                RechazarReservaWeb(request, response);
             } else {
                 request.getRequestDispatcher("PDCCalendario.jsp").forward(request, response);
             }
@@ -136,6 +139,9 @@ public class ReprogramacionController extends HttpServlet {
         int resultado = citaDao.updateCita(idCita, nuevaFecha, nuevaHora);
 
         if (resultado > 0) {
+            // RF03 / RF09: Registrar notificación de reprogramación
+            citaDao.registrarNotificacion("Cita Reprogramada", 4, idCita);
+
             String correo = citaDao.getEmailPacienteByCitaId(idCita);
             if (correo != null && !correo.isEmpty()) {
                 EmailService.sendEmail(correo, "Cita Reprogramada - ArtDent", 
@@ -175,15 +181,67 @@ public class ReprogramacionController extends HttpServlet {
         String estadoActual = request.getParameter("estado");
         System.out.println("id " + idReserva);
         System.out.println("estado " + estadoActual);
+
+        // RF14: Solo puede aprobar una reserva web que tenga un pago registrado previamente
+        if ("En espera".equalsIgnoreCase(estadoActual)) {
+            PagoDao pagoDao = new PagoDaoImpl();
+            if (!pagoDao.tienePago(idReserva)) {
+                response.sendRedirect("ReservaController?accion=listar&error=sinPago");
+                return;
+            }
+        }
+
         ReservaDao reservaDao = new ReservaDaoImpl();
         int resultado = reservaDao.updateEstadoReserv(idReserva, estadoActual);
         if (resultado > 0) {
+            // RF09: Registrar notificación de aprobación si venía de En espera
+            CitaDao citaDao = new CitaDaoImpl();
+            if ("En espera".equalsIgnoreCase(estadoActual)) {
+                citaDao.registrarNotificacion("Reserva Web Aprobada", 3, idReserva);
+            }
             String correo = reservaDao.getEmailPacienteByReservaId(idReserva);
             if (correo != null && !correo.isEmpty()) {
-                EmailService.sendEmail(correo, "Actualización de Reserva - ArtDent", 
-                    "Estimado paciente, el estado de su reserva ha cambiado a: " + estadoActual + ".");
+                String asunto = "En espera".equalsIgnoreCase(estadoActual) 
+                    ? "Reserva Web Confirmada - ArtDent" 
+                    : "Actualización de Reserva - ArtDent";
+                String mensaje = "En espera".equalsIgnoreCase(estadoActual)
+                    ? "Estimado paciente, su reserva web ha sido APROBADA y confirmada por la secretaría tras verificar su pago."
+                    : "Estimado paciente, el estado de su reserva ha cambiado a: " + estadoActual + ".";
+                EmailService.sendEmail(correo, asunto, mensaje);
             }
-            response.sendRedirect("ReservaController?accion=listar");
+            String rol = (request.getSession() != null && request.getSession().getAttribute("TipoRol") != null) 
+                    ? request.getSession().getAttribute("TipoRol").toString() : "";
+            if (rol.equalsIgnoreCase("Odontologo")) {
+                response.sendRedirect("ReservaController?accion=listarReservasPorDia&msg=completadoOk");
+            } else {
+                response.sendRedirect("ReservaController?accion=listar&msg=aprobadoOk");
+            }
+        } else {
+            request.getRequestDispatcher("error.jsp").forward(request, response);
+        }
+    }
+
+    private void RechazarReservaWeb(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
+        int idReserva = Integer.parseInt(request.getParameter("idReserva"));
+        String motivo = request.getParameter("motivo");
+        if (motivo == null || motivo.trim().isEmpty()) {
+            motivo = "No especificado";
+        }
+        motivo = motivo.trim();
+
+        ReservaDao reservaDao = new ReservaDaoImpl();
+        int resultado = reservaDao.rechazarReserva(idReserva);
+        if (resultado > 0) {
+            // RF09: Notificación automática registrada en tabla Notificacion (estado 6 = Rechazado)
+            CitaDao citaDao = new CitaDaoImpl();
+            citaDao.registrarNotificacion("Reserva Rechazada: " + motivo, 6, idReserva);
+
+            String correo = reservaDao.getEmailPacienteByReservaId(idReserva);
+            if (correo != null && !correo.isEmpty()) {
+                EmailService.sendEmail(correo, "Reserva Rechazada - ArtDent", 
+                    "Estimado paciente, lamentamos informarle que su reserva web ha sido rechazada por el siguiente motivo: " + motivo + ".");
+            }
+            response.sendRedirect("ReservaController?accion=listar&msg=rechazadoOk");
         } else {
             request.getRequestDispatcher("error.jsp").forward(request, response);
         }
@@ -197,12 +255,20 @@ public class ReprogramacionController extends HttpServlet {
         CitaDao CitaDao = new CitaDaoImpl();
         int resultado = CitaDao.updateEstadoCita(idCita, estadoActual);
         if (resultado > 0) {
+            int nuevoEstado = "Confirmado".equalsIgnoreCase(estadoActual) ? 2 : 3;
+            CitaDao.registrarNotificacion("Actualización de Cita: " + estadoActual, nuevoEstado, idCita);
             String correo = CitaDao.getEmailPacienteByCitaId(idCita);
             if (correo != null && !correo.isEmpty()) {
                 EmailService.sendEmail(correo, "Actualización de Cita - ArtDent", 
                     "Estimado paciente, el estado de su cita ha cambiado a: " + estadoActual + ".");
             }
-            response.sendRedirect("ReservaController?accion=listar");
+            String rol = (request.getSession() != null && request.getSession().getAttribute("TipoRol") != null) 
+                    ? request.getSession().getAttribute("TipoRol").toString() : "";
+            if (rol.equalsIgnoreCase("Odontologo")) {
+                response.sendRedirect("ReservaController?accion=listarReservasPorDia&msg=completadoOk");
+            } else {
+                response.sendRedirect("ReservaController?accion=listar");
+            }
         } else {
             request.getRequestDispatcher("error.jsp").forward(request, response);
         }
@@ -231,6 +297,9 @@ public class ReprogramacionController extends HttpServlet {
         CitaDao CitaDao = new CitaDaoImpl();
         int resultado = CitaDao.updateEstadoCitaCancelado(idCita);
         if (resultado > 0) {
+            // RF03 / RF09: Registrar notificación de cancelación
+            CitaDao.registrarNotificacion("Cita Cancelada", 5, idCita);
+
             String correo = CitaDao.getEmailPacienteByCitaId(idCita);
             if (correo != null && !correo.isEmpty()) {
                 EmailService.sendEmail(correo, "Cita Cancelada - ArtDent", 
