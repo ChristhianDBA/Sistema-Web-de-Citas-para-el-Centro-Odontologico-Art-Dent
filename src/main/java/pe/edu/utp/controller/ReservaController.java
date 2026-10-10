@@ -108,7 +108,7 @@ public class ReservaController extends HttpServlet {
             throws SQLException, ServletException, IOException {
         Integer semanaActual = (Integer) request.getSession().getAttribute("semanaActual");
         if (semanaActual == null) {
-            semanaActual = LocalDate.now().get(WeekFields.of(Locale.getDefault()).weekOfYear());
+            semanaActual = LocalDate.now().get(WeekFields.ISO.weekOfYear());
             request.getSession().setAttribute("semanaActual", semanaActual);
         }
 

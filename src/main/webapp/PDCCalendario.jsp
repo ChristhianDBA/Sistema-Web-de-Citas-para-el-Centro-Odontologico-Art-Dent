@@ -46,7 +46,7 @@
 
             .calendar {
                 --dayHeaderHeight: 75px;
-                --hourHeight: 50px;
+                --hourHeight: 58px;
 
                 display: flex;
 
@@ -87,7 +87,7 @@
                         flex: 1;
                         padding-inline: 0.75rem;
                         display: grid;
-                        grid-template-rows: var(--dayHeaderHeight) repeat(48, calc(var(--hourHeight) / 4)); /* 30 minutos */
+                        grid-template-rows: var(--dayHeaderHeight) repeat(60, calc(var(--hourHeight) / 4));
                         grid-template-columns: 1fr;
                         border-inline-end: 1px solid var(--gray);
 
@@ -97,11 +97,21 @@
                     }
 
                     .event {
-                        --gray: #555;
-                        grid-row: var(--row) / span var(--span, 1);
+                        --gray: rgba(0,0,0,0.08);
+                        grid-row: var(--row) / span var(--span, 4);
                         border: 1px solid var(--gray);
-                        border-radius: 3px;
-                        padding: 0.5rem;
+                        border-radius: 6px;
+                        padding: 0.25rem 0.45rem;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.12);
+                        overflow: hidden;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: space-between;
+                        transition: transform 0.15s ease, box-shadow 0.15s ease;
+                    }
+                    .event:hover {
+                        transform: translateY(-2px);
+                        box-shadow: 0 4px 8px rgba(0,0,0,0.22);
                     }
                 }
             }
@@ -284,7 +294,7 @@
                                             <c:set var="horaReserva" value="${reserva.horaReserva}" />
                                             <c:set var="row" value="${reserva.orden_row}" />
                                             <c:set var="color" value="${reserva.color}" />
-                                            <dd class="event reserva-event" style="--row: ${row}; --span: 7; background-color: ${color}; color: white; font-weight: bold; cursor: pointer;"
+                                            <dd class="event reserva-event" style="--row: ${row}; --span: 5; background-color: ${color}; color: white; cursor: pointer;"
                                                 data-bs-toggle="modal" data-bs-target="#reservaModal"
                                                 data-id="${reserva.idReserva}"
                                                 data-tipo="reserva"
@@ -295,8 +305,12 @@
                                                 data-estado="${reserva.estado}"
                                                 data-importe="${reserva.importe}"
                                                 data-descripcion="${reserva.descripcion}">
-                                                <time>${horaReserva}</time>
-                                                <div class="event-title">${reserva.tipoServicio}</div>
+                                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                                    <time class="fw-bold" style="font-size: 0.75rem;"><i class="bi bi-clock me-1"></i>${fn:substring(horaReserva, 0, 5)}</time>
+                                                    <span class="badge bg-white text-dark py-0 px-1" style="font-size: 0.62rem; font-weight: 600;">Web</span>
+                                                </div>
+                                                <div class="event-title fw-bold text-truncate" style="font-size: 0.82rem; line-height: 1.2;">${reserva.tipoServicio}</div>
+                                                <div class="text-truncate opacity-90 mt-1" style="font-size: 0.72rem;"><i class="bi bi-person-fill me-1"></i>${reserva.nombrePaciente} ${reserva.apellidoPaciente}</div>
                                             </dd>
                                         </c:forEach>
                                     </c:if>
@@ -307,7 +321,7 @@
                                             <c:set var="horaCita" value="${cita.horaReserva}" />
                                             <c:set var="row" value="${cita.orden_row}" />
                                             <c:set var="color" value="${cita.color}" />
-                                            <dd class="event cita-event" style="--row: ${row}; --span: 7; background-color: ${color}; color: white; font-weight: bold; cursor: pointer;"
+                                            <dd class="event cita-event" style="--row: ${row}; --span: 5; background-color: ${color}; color: white; cursor: pointer;"
                                                 data-bs-toggle="modal" data-bs-target="#citaModal"
                                                 data-id="${cita.idCita}"
                                                 data-tipo="cita"
@@ -317,8 +331,12 @@
                                                 data-odontologo="${cita.nombreUsuario} ${cita.apellidoUsuario}"
                                                 data-estado="${cita.estado}"
                                                 data-costo="${cita.costo}">
-                                                <time>${horaCita}</time>
-                                                <div class="event-title">${cita.tipoServicio}</div>
+                                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                                    <time class="fw-bold" style="font-size: 0.75rem;"><i class="bi bi-clock me-1"></i>${fn:substring(horaCita, 0, 5)}</time>
+                                                    <span class="badge bg-white text-dark py-0 px-1" style="font-size: 0.62rem; font-weight: 600;">Presencial</span>
+                                                </div>
+                                                <div class="event-title fw-bold text-truncate" style="font-size: 0.82rem; line-height: 1.2;">${cita.tipoServicio}</div>
+                                                <div class="text-truncate opacity-90 mt-1" style="font-size: 0.72rem;"><i class="bi bi-person-fill me-1"></i>${cita.nombrePaciente} ${cita.apellidoPaciente}</div>
                                             </dd>
                                         </c:forEach>
                                     </c:if>
@@ -416,7 +434,8 @@
                         modal.querySelector('#reservaPaciente').textContent = this.dataset.paciente;
                         modal.querySelector('#reservaOdontologo').textContent = this.dataset.odontologo;
                         modal.querySelector('#reservaEstado').textContent = this.dataset.estado;
-                        modal.querySelector('#reservaImporte').textContent = this.dataset.importe;
+                        var importeVal = parseFloat(this.dataset.importe);
+                        modal.querySelector('#reservaImporte').textContent = (!isNaN(importeVal)) ? ('S/ ' + importeVal.toFixed(2)) : (this.dataset.importe || 'S/ 0.00');
                         modal.querySelector('#reservaDescripcion').textContent = this.dataset.descripcion;
 
                         var formComp = modal.querySelector('#formCompletarReserva');
@@ -441,7 +460,8 @@
                         modal.querySelector('#citaPaciente').textContent = this.dataset.paciente;
                         modal.querySelector('#citaOdontologo').textContent = this.dataset.odontologo;
                         modal.querySelector('#citaEstado').textContent = this.dataset.estado;
-                        modal.querySelector('#citaCosto').textContent = this.dataset.costo;
+                        var costoVal = parseFloat(this.dataset.costo);
+                        modal.querySelector('#citaCosto').textContent = (!isNaN(costoVal)) ? ('S/ ' + costoVal.toFixed(2)) : (this.dataset.costo || 'S/ 0.00');
 
                         var formComp = modal.querySelector('#formCompletarCita');
                         if (formComp) {

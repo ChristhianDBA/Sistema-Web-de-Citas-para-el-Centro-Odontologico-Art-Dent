@@ -139,13 +139,6 @@ public class ReservaDaoImpl implements ReservaDao {
 
     @Override
     public int updateEstadoReserv(int idReserva, String estadoActual) {
-        // Obtener conexión
-        cx = Conexion.getConection();
-        if (cx == null) {
-            System.out.println("No se pudo establecer conexión con la base de datos.");
-            return 0;
-        }
-        String SQL = "UPDATE reserva SET Estado_idEstado = ? WHERE idReserva = ?";
         int nuevoEstado;
         if ("Reprogramado".equalsIgnoreCase(estadoActual)) {
             nuevoEstado = 3;
@@ -157,28 +150,31 @@ public class ReservaDaoImpl implements ReservaDao {
             System.out.println("El estado actual no es válido para la actualización.");
             return 0;
         }
-        try {
-            ps = cx.prepareStatement(SQL);
-            ps.setInt(1, nuevoEstado);
-            ps.setInt(2, idReserva);
-            int result = ps.executeUpdate();
 
-            return result;
+        int resultCita = 0;
+        int resultRes = 0;
+
+        try (Connection conn = Conexion.getConection()) {
+            if (conn == null) {
+                System.out.println("No se pudo establecer conexión con la base de datos.");
+                return 0;
+            }
+            try (PreparedStatement psCita = conn.prepareStatement("UPDATE Cita SET Estado_idEstado = ? WHERE idCita = ?")) {
+                psCita.setInt(1, nuevoEstado);
+                psCita.setInt(2, idReserva);
+                resultCita = psCita.executeUpdate();
+            }
+            try (PreparedStatement psRes = conn.prepareStatement("UPDATE reserva SET Estado_idEstado = ? WHERE idReserva = ?")) {
+                psRes.setInt(1, nuevoEstado);
+                psRes.setInt(2, idReserva);
+                resultRes = psRes.executeUpdate();
+            }
         } catch (SQLException e) {
             System.out.println("Error al actualizar el estado de la reserva: " + e.getMessage());
             return 0;
-        } finally {
-            try {
-                if (ps != null) {
-                    ps.close();
-                }
-                if (cx != null) {
-                    cx.close();
-                }
-            } catch (SQLException e) {
-                System.out.println("Error al cerrar recursos: " + e.getMessage());
-            }
         }
+
+        return Math.max(resultCita, resultRes);
     }
 
     @Override
@@ -580,50 +576,50 @@ public class ReservaDaoImpl implements ReservaDao {
     @Override
     public List<VerReserva> listarReservasPorDia(String dia_semana) {
         List<VerReserva> lista = new ArrayList<>();
-        String SQL = "{call ListarReservasSemanaActual(?)}";  // Procedimiento almacenado
+        String SQL = "{call ListarReservasSemanaActual(?)}";
 
-        try {
-            cx = Conexion.getConection();
-            ps = cx.prepareStatement(SQL);
-            ps.setString(1, dia_semana);
+        try (Connection conn = Conexion.getConection();
+             PreparedStatement st = conn.prepareStatement(SQL)) {
+            st.setString(1, dia_semana);
+            try (ResultSet res = st.executeQuery()) {
+                while (res.next()) {
+                    VerReserva re = new VerReserva();
+                    re.setIdReserva(res.getInt("idReserva"));
+                    re.setDiaReserva(res.getString("DiaReserva"));
+                    re.setHoraReserva(res.getString("HoraReserva"));
+                    re.setNombrePaciente(res.getString("NombrePaciente"));
+                    re.setApellidoPaciente(res.getString("ApellidoPaciente"));
+                    re.setEstado(res.getString("EstadoReserva"));
+                    re.setTipoServicio(res.getString("TipoServicio"));
+                    re.setNombreUsuario(res.getString("NombreOdontologo"));
+                    re.setApellidoUsuario(res.getString("ApellidoOdontologo"));
+                    re.setOrden_row(res.getInt("orden_row"));
+                    re.setColor(res.getString("color"));
 
-            rs = ps.executeQuery();
-
-            while (rs.next()) {
-                VerReserva re = new VerReserva();
-                re.setIdReserva(rs.getInt("idReserva"));
-                re.setDiaReserva(rs.getString("DiaReserva"));
-                re.setHoraReserva(rs.getString("HoraReserva"));
-                re.setDescripcion(rs.getString("Descripcion"));
-                re.setImporte(rs.getDouble("Importe"));
-                re.setNombrePaciente(rs.getString("NombrePaciente"));
-                re.setApellidoPaciente(rs.getString("ApellidoPaciente"));
-                re.setEstado(rs.getString("EstadoReserva"));
-                re.setTipoServicio(rs.getString("TipoServicio"));
-                re.setNombreUsuario(rs.getString("NombreOdontologo"));
-                re.setApellidoUsuario(rs.getString("ApellidoOdontologo"));
-                re.setDia_semana(rs.getString("dia_semana"));
-                re.setOrden_row(rs.getInt("orden_row"));
-                re.setColor(rs.getString("color"));
-                lista.add(re);
+                    try {
+                        re.setDescripcion(res.getString("Descripcion"));
+                    } catch (Exception e) {
+                        re.setDescripcion("");
+                    }
+                    try {
+                        re.setImporte(res.getDouble("Importe"));
+                    } catch (Exception e) {
+                        try {
+                            re.setImporte(res.getDouble("Costo"));
+                        } catch (Exception ex) {
+                            re.setImporte(0.0);
+                        }
+                    }
+                    try {
+                        re.setDia_semana(res.getString("dia_semana"));
+                    } catch (Exception e) {
+                        re.setDia_semana("");
+                    }
+                    lista.add(re);
+                }
             }
         } catch (SQLException e) {
-            System.out.println("Error al obtener reservas: " + e.getMessage());
-        } finally {
-            // Cerrar recursos (ResultSet, PreparedStatement, Connection)
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (ps != null) {
-                    ps.close();
-                }
-                if (cx != null) {
-                    cx.close();
-                }
-            } catch (SQLException e) {
-                System.out.println("Error al cerrar recursos: " + e.getMessage());
-            }
+            System.out.println("Error al obtener reservas por dia: " + e.getMessage());
         }
 
         System.out.println("Total de reservas recuperadas: " + lista.size());
@@ -635,49 +631,50 @@ public class ReservaDaoImpl implements ReservaDao {
         List<VerReserva> lista = new ArrayList<>();
         String SQL = "{call ListarReservasPorDiaSemana(?, ?)}";
 
-        try {
-            cx = Conexion.getConection();
-            ps = cx.prepareStatement(SQL);
-            ps.setString(1, dia_semana);
-            ps.setInt(2, semanaActual);
+        try (Connection conn = Conexion.getConection();
+             PreparedStatement st = conn.prepareStatement(SQL)) {
+            st.setString(1, dia_semana);
+            st.setInt(2, semanaActual);
             System.out.println("dia: " + dia_semana + " semana:" + semanaActual);
-            rs = ps.executeQuery();
+            try (ResultSet res = st.executeQuery()) {
+                while (res.next()) {
+                    VerReserva re = new VerReserva();
+                    re.setIdReserva(res.getInt("idReserva"));
+                    re.setDiaReserva(res.getString("DiaReserva"));
+                    re.setHoraReserva(res.getString("HoraReserva"));
+                    re.setNombrePaciente(res.getString("NombrePaciente"));
+                    re.setApellidoPaciente(res.getString("ApellidoPaciente"));
+                    re.setEstado(res.getString("EstadoReserva"));
+                    re.setTipoServicio(res.getString("TipoServicio"));
+                    re.setNombreUsuario(res.getString("NombreOdontologo"));
+                    re.setApellidoUsuario(res.getString("ApellidoOdontologo"));
+                    re.setOrden_row(res.getInt("orden_row"));
+                    re.setColor(res.getString("color"));
 
-            while (rs.next()) {
-                VerReserva re = new VerReserva();
-                re.setIdReserva(rs.getInt("idReserva"));
-                re.setDiaReserva(rs.getString("DiaReserva"));
-                re.setHoraReserva(rs.getString("HoraReserva"));
-                re.setDescripcion(rs.getString("Descripcion"));
-                re.setImporte(rs.getDouble("Importe"));
-                re.setNombrePaciente(rs.getString("NombrePaciente"));
-                re.setApellidoPaciente(rs.getString("ApellidoPaciente"));
-                re.setEstado(rs.getString("EstadoReserva"));
-                re.setTipoServicio(rs.getString("TipoServicio"));
-                re.setNombreUsuario(rs.getString("NombreOdontologo"));
-                re.setApellidoUsuario(rs.getString("ApellidoOdontologo"));
-                re.setDia_semana(rs.getString("dia_semana"));
-                re.setOrden_row(rs.getInt("orden_row"));
-                re.setColor(rs.getString("color"));
-                lista.add(re);
+                    try {
+                        re.setDescripcion(res.getString("Descripcion"));
+                    } catch (Exception e) {
+                        re.setDescripcion("");
+                    }
+                    try {
+                        re.setImporte(res.getDouble("Importe"));
+                    } catch (Exception e) {
+                        try {
+                            re.setImporte(res.getDouble("Costo"));
+                        } catch (Exception ex) {
+                            re.setImporte(0.0);
+                        }
+                    }
+                    try {
+                        re.setDia_semana(res.getString("dia_semana"));
+                    } catch (Exception e) {
+                        re.setDia_semana("");
+                    }
+                    lista.add(re);
+                }
             }
         } catch (SQLException e) {
-            System.out.println("Error al obtener reservas: " + e.getMessage());
-        } finally {
-            // Cerrar recursos (ResultSet, PreparedStatement, Connection)
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (ps != null) {
-                    ps.close();
-                }
-                if (cx != null) {
-                    cx.close();
-                }
-            } catch (SQLException e) {
-                System.out.println("Error al cerrar recursos: " + e.getMessage());
-            }
+            System.out.println("Error al obtener reservas por dia semana: " + e.getMessage());
         }
 
         System.out.println("Total de reservas recuperadas: " + lista.size());

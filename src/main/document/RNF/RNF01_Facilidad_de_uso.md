@@ -135,3 +135,41 @@ graph TD
    - `audit_reportes_kpi.png`: Reportes analíticos y gráficos temáticos.
    - `audit_reservapresencial.png`: Formulario de recepción presencial sin etiquetas técnicas.
    - `audit_boleta_venta.png`: Boleta correlativa B001 con identidad legal y cálculo tributario.
+   - `audit_calendario_semana41_v3.png`: Agenda médica semanal interactiva con citas completadas y confirmadas.
+   - `audit_calendario_semana42_v3.png`: Agenda semanal con reservas web identificadas por badge.
+   - `audit_calendario_modal_cita16.png`: Modal interactivo de cita presencial con acción de atención clínica y moneda `S/ 50.00`.
+   - `audit_calendario_modal_reserva15.png`: Modal interactivo de reserva web con importes y descripción completa.
+   - `audit_calendario_secretaria_semana41.png`: Vista global multi-médico del calendario para el rol de Secretaría.
+
+---
+
+## 6. Diagnóstico y Corrección Integral del Calendario de Citas Clínicas
+
+### 6.1 Problema Identificado
+Al acceder a `http://localhost:8080/ArtDent/ReservaController?accion=listarReservasPorDia`, el calendario se visualizaba completamente vacío (sin citas ni reservas), impidiendo la gestión operativa y visual de la agenda médica.
+
+### 6.2 Causas Raíz Diagnosticadas
+1. **Fallo de Columna en DAO (`SQLException: Column 'Descripcion' not found`):**
+   - En `ReservaDaoImpl.listarReservasPorDiaSemana`, el código Java intentaba extraer `rs.getString("Descripcion")` e `Importe`, pero el procedimiento almacenado en MySQL no retornaba dichas columnas. La excepción provocaba que el método retornara listas vacías `[]` para todos los días de la semana.
+2. **Filtro Restrictivo de Estados en Stored Procedures:**
+   - Los procedimientos `ListarCitasPorDiaSemana` y `ListarReservasPorDiaSemana` filtraban estrictamente por `c.Estado_idEstado IN (3)` (únicamente Confirmado), descartando citas ya atendidas (`Completado = 2`) y citas reprogramadas (`Reprogramado = 4`).
+3. **Violación de Identidad de Marca:**
+   - Los procedimientos almacenados generaban colores hexadecimales aleatorios (`RAND()`), violando RNF01.
+4. **Grid CSS Desfasado:**
+   - En `PDCCalendario.jsp`, el grid CSS estaba configurado con `repeat(48, ...)`, cubriendo solo 12 horas y truncando citas nocturnas de 8:00 p.m. a 11:00 p.m.
+
+### 6.3 Solución Técnica Aplicada
+1. **Procedimientos Almacenados Actualizados (`db_artdent_apf2` y SQL Maestro):**
+   - Se modificaron `ListarCitasPorDiaSemana`, `ListarReservasPorDiaSemana`, `ListarCitasSemanaActual` y `ListarReservasSemanaActual`.
+   - Incluyen estados `IN (2, 3, 4)` (Completado, Confirmado, Reprogramado).
+   - Retornan `Descripcion`, `Costo` e `Importe` (`COALESCE(c.Importe, s.Costo)`).
+   - Asignan colores institucionales: `#9fcc3a` (Completado), `#30a4c6` (Confirmado), `#212529` (Reprogramado).
+2. **Capa DAO Segura:**
+   - `ReservaDaoImpl.java`: Implementación defensiva mediante lectura segura de columnas y bloques *try-with-resources* contra fugas de conexiones.
+   - Sincronización bidireccional en `updateEstadoReserv` para actualizar tanto la tabla `reserva` como `Cita`.
+3. **Frontend `PDCCalendario.jsp` Optimizado:**
+   - Grid expandido a 60 intervalos (8 a.m. a 11 p.m.).
+   - Tarjetas de citas con altura `--span: 5` y formato limpio `HH:mm` (sin segundos).
+   - Badges distintivos: `Web` y `Presencial`.
+   - Modales interactivos con formato de moneda en soles `S/ ` y botón de acción "Finalizar Atención" para médicos.
+   - Filtrado inteligente por rol: vista individualizada para Odontólogos y vista integral para Secretaría/Administración.

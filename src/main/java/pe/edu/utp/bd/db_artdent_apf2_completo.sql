@@ -711,26 +711,30 @@ BEGIN
     idCita INT,
     DiaReserva DATE,
     HoraReserva TIME,
+    Descripcion TEXT,
     NombrePaciente VARCHAR(100),
     ApellidoPaciente VARCHAR(100),
     EstadoReserva VARCHAR(50),
     TipoServicio VARCHAR(100),
     Costo DECIMAL(10,2),
+    Importe DECIMAL(10,2),
     NombreOdontologo VARCHAR(100),
     ApellidoOdontologo VARCHAR(100),
     orden_row INT,
     color CHAR(7)
   );
 
-  INSERT INTO TempCitas (idCita, DiaReserva, HoraReserva, NombrePaciente, ApellidoPaciente, 
-                         EstadoReserva, TipoServicio, Costo, NombreOdontologo, ApellidoOdontologo, orden_row, color)
+  INSERT INTO TempCitas (idCita, DiaReserva, HoraReserva, Descripcion, NombrePaciente, ApellidoPaciente, 
+                         EstadoReserva, TipoServicio, Costo, Importe, NombreOdontologo, ApellidoOdontologo, orden_row, color)
   SELECT c.idCita, 
          c.FechaCita, 
          c.HoraCita, 
+         COALESCE(c.Descripcion, '') AS Descripcion,
          p.Nombre AS NombrePaciente, 
          p.Apellido AS ApellidoPaciente, 
          e.TipoEstado AS EstadoReserva, 
          s.TipoServicio, s.Costo,
+         COALESCE(c.Importe, s.Costo) AS Importe,
          od.Nombre AS NombreOdontologo, 
          od.Apellido AS ApellidoOdontologo,
          CASE 
@@ -738,14 +742,19 @@ BEGIN
            WHEN TIME(c.HoraCita) = TIME('08:00:00') THEN 2
            ELSE 2 + FLOOR(TIMESTAMPDIFF(MINUTE, TIME('08:00:00'), TIME(c.HoraCita)) / 15)
          END AS orden_row,
-         CONCAT('#', LPAD(FLOOR(RAND() * 16777215), 6, '0')) AS color
+         CASE e.TipoEstado
+           WHEN 'Confirmado' THEN '#30a4c6'
+           WHEN 'Completado' THEN '#9fcc3a'
+           WHEN 'Reprogramado' THEN '#212529'
+           ELSE '#b4ddc2'
+         END AS color
   FROM Cita c
   INNER JOIN Paciente p ON c.Paciente_idPaciente = p.idPaciente
   INNER JOIN Estado e ON c.Estado_idEstado = e.idEstado
   INNER JOIN Servicio s ON c.Servicio_idServicio = s.idServicio
   INNER JOIN Usuario od ON c.Odontologo_idUsuario = od.idUsuario
   WHERE c.Origen = 'Presencial'
-    AND c.Estado_idEstado IN (3) 
+    AND c.Estado_idEstado IN (2, 3, 4) 
     AND c.FechaCita BETWEEN fechaInicio AND fechaFin
     AND DAYOFWEEK(c.FechaCita) = CASE diasemana
           WHEN 'Domingo' THEN 1
@@ -775,26 +784,30 @@ BEGIN
     idCita INT,
     DiaReserva DATE,
     HoraReserva TIME,
+    Descripcion TEXT,
     NombrePaciente VARCHAR(100),
     ApellidoPaciente VARCHAR(100),
     EstadoReserva VARCHAR(50),
     TipoServicio VARCHAR(100),
     Costo DECIMAL(10,2),
+    Importe DECIMAL(10,2),
     NombreOdontologo VARCHAR(100),
     ApellidoOdontologo VARCHAR(100),
     orden_row INT,
     color CHAR(7)
   );
 
-  INSERT INTO TempCitasSemana (idCita, DiaReserva, HoraReserva, NombrePaciente, ApellidoPaciente, 
-                               EstadoReserva, TipoServicio, Costo, NombreOdontologo, ApellidoOdontologo, orden_row, color)
+  INSERT INTO TempCitasSemana (idCita, DiaReserva, HoraReserva, Descripcion, NombrePaciente, ApellidoPaciente, 
+                               EstadoReserva, TipoServicio, Costo, Importe, NombreOdontologo, ApellidoOdontologo, orden_row, color)
   SELECT c.idCita, 
          c.FechaCita, 
          c.HoraCita, 
+         COALESCE(c.Descripcion, '') AS Descripcion,
          p.Nombre AS NombrePaciente, 
          p.Apellido AS ApellidoPaciente, 
          e.TipoEstado AS EstadoReserva, 
          s.TipoServicio, s.Costo,
+         COALESCE(c.Importe, s.Costo) AS Importe,
          od.Nombre AS NombreOdontologo, 
          od.Apellido AS ApellidoOdontologo,
          CASE 
@@ -802,14 +815,19 @@ BEGIN
            WHEN TIME(c.HoraCita) = TIME('08:00:00') THEN 2
            ELSE 2 + FLOOR(TIMESTAMPDIFF(MINUTE, TIME('08:00:00'), TIME(c.HoraCita)) / 15)
          END AS orden_row,
-         CONCAT('#', LPAD(FLOOR(RAND() * 16777215), 6, '0')) AS color
+         CASE e.TipoEstado
+           WHEN 'Confirmado' THEN '#30a4c6'
+           WHEN 'Completado' THEN '#9fcc3a'
+           WHEN 'Reprogramado' THEN '#212529'
+           ELSE '#b4ddc2'
+         END AS color
   FROM Cita c
   INNER JOIN Paciente p ON c.Paciente_idPaciente = p.idPaciente
   INNER JOIN Estado e ON c.Estado_idEstado = e.idEstado
   INNER JOIN Servicio s ON c.Servicio_idServicio = s.idServicio
   INNER JOIN Usuario od ON c.Odontologo_idUsuario = od.idUsuario
   WHERE c.Origen = 'Presencial'
-    AND c.Estado_idEstado IN (3) 
+    AND c.Estado_idEstado IN (2, 3, 4) 
     AND c.FechaCita BETWEEN fechaInicio AND fechaFin
     AND DAYOFWEEK(c.FechaCita) = CASE diasemana
           WHEN 'Domingo' THEN 1
@@ -1079,26 +1097,30 @@ BEGIN
     idReserva INT,
     DiaReserva DATE,
     HoraReserva TIME,
+    Descripcion TEXT,
     NombrePaciente VARCHAR(100),
     ApellidoPaciente VARCHAR(100),
     EstadoReserva VARCHAR(50),
     TipoServicio VARCHAR(100),
     Costo DECIMAL(10,2),
+    Importe DECIMAL(10,2),
     NombreOdontologo VARCHAR(100),
     ApellidoOdontologo VARCHAR(100),
     orden_row INT,
     color CHAR(7)
   );
 
-  INSERT INTO TempReservas (idReserva, DiaReserva, HoraReserva, NombrePaciente, ApellidoPaciente, 
-                            EstadoReserva, TipoServicio, Costo, NombreOdontologo, ApellidoOdontologo, orden_row, color)
+  INSERT INTO TempReservas (idReserva, DiaReserva, HoraReserva, Descripcion, NombrePaciente, ApellidoPaciente, 
+                            EstadoReserva, TipoServicio, Costo, Importe, NombreOdontologo, ApellidoOdontologo, orden_row, color)
   SELECT c.idCita, 
          c.FechaCita, 
          c.HoraCita, 
+         COALESCE(c.Descripcion, '') AS Descripcion,
          p.Nombre AS NombrePaciente, 
          p.Apellido AS ApellidoPaciente, 
          e.TipoEstado AS EstadoReserva, 
          s.TipoServicio, s.Costo,
+         COALESCE(c.Importe, s.Costo) AS Importe,
          od.Nombre AS NombreOdontologo, 
          od.Apellido AS ApellidoOdontologo,
          CASE 
@@ -1106,14 +1128,19 @@ BEGIN
            WHEN TIME(c.HoraCita) = TIME('08:00:00') THEN 2
            ELSE 2 + FLOOR(TIMESTAMPDIFF(MINUTE, TIME('08:00:00'), TIME(c.HoraCita)) / 15)
          END AS orden_row,
-         CONCAT('#', LPAD(FLOOR(RAND() * 16777215), 6, '0')) AS color
+         CASE e.TipoEstado
+           WHEN 'Confirmado' THEN '#30a4c6'
+           WHEN 'Completado' THEN '#9fcc3a'
+           WHEN 'Reprogramado' THEN '#212529'
+           ELSE '#b4ddc2'
+         END AS color
   FROM Cita c
   INNER JOIN Paciente p ON c.Paciente_idPaciente = p.idPaciente
   INNER JOIN Estado e ON c.Estado_idEstado = e.idEstado
   INNER JOIN Servicio s ON c.Servicio_idServicio = s.idServicio
   INNER JOIN Usuario od ON c.Odontologo_idUsuario = od.idUsuario
   WHERE c.Origen = 'Web'
-    AND c.Estado_idEstado IN (3) 
+    AND c.Estado_idEstado IN (2, 3, 4) 
     AND c.FechaCita BETWEEN fechaInicio AND fechaFin
     AND DAYOFWEEK(c.FechaCita) = CASE diasemana
           WHEN 'Domingo' THEN 1
@@ -1143,26 +1170,30 @@ BEGIN
     idReserva INT,
     DiaReserva DATE,
     HoraReserva TIME,
+    Descripcion TEXT,
     NombrePaciente VARCHAR(100),
     ApellidoPaciente VARCHAR(100),
     EstadoReserva VARCHAR(50),
     TipoServicio VARCHAR(100),
     Costo DECIMAL(10,2),
+    Importe DECIMAL(10,2),
     NombreOdontologo VARCHAR(100),
     ApellidoOdontologo VARCHAR(100),
     orden_row INT,
     color CHAR(7)
   );
 
-  INSERT INTO TempReservasSemana (idReserva, DiaReserva, HoraReserva, NombrePaciente, ApellidoPaciente, 
-                                  EstadoReserva, TipoServicio, Costo, NombreOdontologo, ApellidoOdontologo, orden_row, color)
+  INSERT INTO TempReservasSemana (idReserva, DiaReserva, HoraReserva, Descripcion, NombrePaciente, ApellidoPaciente, 
+                                  EstadoReserva, TipoServicio, Costo, Importe, NombreOdontologo, ApellidoOdontologo, orden_row, color)
   SELECT c.idCita, 
          c.FechaCita, 
          c.HoraCita, 
+         COALESCE(c.Descripcion, '') AS Descripcion,
          p.Nombre AS NombrePaciente, 
          p.Apellido AS ApellidoPaciente, 
          e.TipoEstado AS EstadoReserva, 
          s.TipoServicio, s.Costo,
+         COALESCE(c.Importe, s.Costo) AS Importe,
          od.Nombre AS NombreOdontologo, 
          od.Apellido AS ApellidoOdontologo,
          CASE 
@@ -1170,14 +1201,19 @@ BEGIN
            WHEN TIME(c.HoraCita) = TIME('08:00:00') THEN 2
            ELSE 2 + FLOOR(TIMESTAMPDIFF(MINUTE, TIME('08:00:00'), TIME(c.HoraCita)) / 15)
          END AS orden_row,
-         CONCAT('#', LPAD(FLOOR(RAND() * 16777215), 6, '0')) AS color
+         CASE e.TipoEstado
+           WHEN 'Confirmado' THEN '#30a4c6'
+           WHEN 'Completado' THEN '#9fcc3a'
+           WHEN 'Reprogramado' THEN '#212529'
+           ELSE '#b4ddc2'
+         END AS color
   FROM Cita c
   INNER JOIN Paciente p ON c.Paciente_idPaciente = p.idPaciente
   INNER JOIN Estado e ON c.Estado_idEstado = e.idEstado
   INNER JOIN Servicio s ON c.Servicio_idServicio = s.idServicio
   INNER JOIN Usuario od ON c.Odontologo_idUsuario = od.idUsuario
   WHERE c.Origen = 'Web'
-    AND c.Estado_idEstado IN (3) 
+    AND c.Estado_idEstado IN (2, 3, 4) 
     AND c.FechaCita BETWEEN fechaInicio AND fechaFin
     AND DAYOFWEEK(c.FechaCita) = CASE diasemana
           WHEN 'Domingo' THEN 1

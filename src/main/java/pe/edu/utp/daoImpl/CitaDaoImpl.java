@@ -512,50 +512,36 @@ public class CitaDaoImpl implements CitaDao {
     @Override
     public List<VerCita> listarCitasPorDia(String dia_semana) {
         List<VerCita> lista = new ArrayList<>();
-        String SQL = "{call ListarCitasSemanaActual(?)}";  // Procedimiento almacenado
+        String SQL = "{call ListarCitasSemanaActual(?)}";
 
-        try {
-            cx = Conexion.getConection();
-            ps = cx.prepareStatement(SQL);
-            ps.setString(1, dia_semana);
-
-            rs = ps.executeQuery();
-
-            while (rs.next()) {
-                VerCita re = new VerCita();
-                re.setIdCita(rs.getInt("idCita"));
-                re.setDiaReserva(rs.getString("DiaReserva"));
-                re.setHoraReserva(rs.getString("HoraReserva"));
-                re.setNombrePaciente(rs.getString("NombrePaciente"));
-                re.setApellidoPaciente(rs.getString("ApellidoPaciente"));
-                re.setEstado(rs.getString("EstadoReserva"));
-                re.setTipoServicio(rs.getString("TipoServicio"));
-                re.setNombreUsuario(rs.getString("NombreOdontologo"));
-                re.setApellidoUsuario(rs.getString("ApellidoOdontologo"));
-                re.setOrden_row(rs.getInt("orden_row"));
-                re.setColor(rs.getString("color"));
-                lista.add(re);
+        try (Connection conn = Conexion.getConection();
+             PreparedStatement st = conn.prepareStatement(SQL)) {
+            st.setString(1, dia_semana);
+            try (ResultSet res = st.executeQuery()) {
+                while (res.next()) {
+                    VerCita re = new VerCita();
+                    re.setIdCita(res.getInt("idCita"));
+                    re.setDiaReserva(res.getString("DiaReserva"));
+                    re.setHoraReserva(res.getString("HoraReserva"));
+                    re.setNombrePaciente(res.getString("NombrePaciente"));
+                    re.setApellidoPaciente(res.getString("ApellidoPaciente"));
+                    re.setEstado(res.getString("EstadoReserva"));
+                    re.setTipoServicio(res.getString("TipoServicio"));
+                    re.setNombreUsuario(res.getString("NombreOdontologo"));
+                    re.setApellidoUsuario(res.getString("ApellidoOdontologo"));
+                    re.setOrden_row(res.getInt("orden_row"));
+                    re.setColor(res.getString("color"));
+                    try {
+                        re.setCosto(res.getDouble("Costo"));
+                    } catch (Exception ignored) {}
+                    lista.add(re);
+                }
             }
         } catch (SQLException e) {
-            System.out.println("Error al obtener reservas: " + e.getMessage());
-        } finally {
-            // Cerrar recursos (ResultSet, PreparedStatement, Connection)
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (ps != null) {
-                    ps.close();
-                }
-                if (cx != null) {
-                    cx.close();
-                }
-            } catch (SQLException e) {
-                System.out.println("Error al cerrar recursos: " + e.getMessage());
-            }
+            System.out.println("Error al obtener citas por dia: " + e.getMessage());
         }
 
-        System.out.println("Total de reservas recuperadas: " + lista.size());
+        System.out.println("Total de citas recuperadas: " + lista.size());
         return lista;
     }
 
@@ -564,47 +550,32 @@ public class CitaDaoImpl implements CitaDao {
         List<VerCita> lista = new ArrayList<>();
         String SQL = "{call ListarCitasPorDiaSemana(?, ?)}";
 
-        try {
-            cx = Conexion.getConection();
-            ps = cx.prepareStatement(SQL);
-            ps.setString(1, dia_semana);
-            ps.setInt(2, semanaActual);
-
-            rs = ps.executeQuery();
-
-            while (rs.next()) {
-                VerCita re = new VerCita();
-                re.setIdCita(rs.getInt("idCita"));
-                re.setDiaReserva(rs.getString("DiaReserva"));
-                re.setHoraReserva(rs.getString("HoraReserva"));
-                re.setNombrePaciente(rs.getString("NombrePaciente"));
-                re.setApellidoPaciente(rs.getString("ApellidoPaciente"));
-                re.setEstado(rs.getString("EstadoReserva"));
-                re.setTipoServicio(rs.getString("TipoServicio"));
-                re.setNombreUsuario(rs.getString("NombreOdontologo"));
-                re.setApellidoUsuario(rs.getString("ApellidoOdontologo"));
-                re.setCosto(rs.getDouble("Costo"));
-                re.setOrden_row(rs.getInt("orden_row"));
-                re.setColor(rs.getString("color"));
-                lista.add(re);
-                System.out.println("COSSTOOOO: " + rs.getDouble("Costo"));
+        try (Connection conn = Conexion.getConection();
+             PreparedStatement st = conn.prepareStatement(SQL)) {
+            st.setString(1, dia_semana);
+            st.setInt(2, semanaActual);
+            try (ResultSet res = st.executeQuery()) {
+                while (res.next()) {
+                    VerCita re = new VerCita();
+                    re.setIdCita(res.getInt("idCita"));
+                    re.setDiaReserva(res.getString("DiaReserva"));
+                    re.setHoraReserva(res.getString("HoraReserva"));
+                    re.setNombrePaciente(res.getString("NombrePaciente"));
+                    re.setApellidoPaciente(res.getString("ApellidoPaciente"));
+                    re.setEstado(res.getString("EstadoReserva"));
+                    re.setTipoServicio(res.getString("TipoServicio"));
+                    re.setNombreUsuario(res.getString("NombreOdontologo"));
+                    re.setApellidoUsuario(res.getString("ApellidoOdontologo"));
+                    try {
+                        re.setCosto(res.getDouble("Costo"));
+                    } catch (Exception ignored) {}
+                    re.setOrden_row(res.getInt("orden_row"));
+                    re.setColor(res.getString("color"));
+                    lista.add(re);
+                }
             }
         } catch (SQLException e) {
-            System.out.println("Error al obtener citas: " + e.getMessage());
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (ps != null) {
-                    ps.close();
-                }
-                if (cx != null) {
-                    cx.close();
-                }
-            } catch (SQLException e) {
-                System.out.println("Error al cerrar recursos: " + e.getMessage());
-            }
+            System.out.println("Error al obtener citas por dia semana: " + e.getMessage());
         }
 
         System.out.println("Total de citas recuperadas: " + lista.size());
